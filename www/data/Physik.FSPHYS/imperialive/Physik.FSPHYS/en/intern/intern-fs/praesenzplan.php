@@ -21,12 +21,12 @@ function praesenzplan_anzeigen() {
 			<col style="width: 18%;">
 		</colgroup>
 		<tr>
-			<th>Zeit</th>
-			<th>Montag</th>
-			<th>Dienstag</th>
-			<th>Mittwoch</th>
-			<th>Donnerstag</th>
-			<th>Freitag</th>
+			<th>Time</th>
+			<th>Monday</th>
+			<th>Tuesday</th>
+			<th>Wednesday</th>
+			<th>Thursday</th>
+			<th>Friday</th>
 		</tr>
 HTML;
 	while ($row = $query->fetch()) {
@@ -73,10 +73,10 @@ function fepraesenzplan_anzeigen() {
 	</colgroup>
 	<tr>
 		<th>Nr.</th>
-		<th>Wochentag</th>
-		<th>Datum</th>
-		<th>Startzeit</th>
-		<th>Endzeit</th>
+		<th>Day of week</th>
+		<th>Date</th>
+		<th>Start time</th>
+		<th>End time</th>
 		<th>Name</th>
 	</tr>
 HTML;
@@ -136,7 +136,7 @@ function maske_aendere_pzeit($day, $time) {
 				<input type="text" name="pzeit" size="50" value="$person" />
 			</div>
 			<div style="text-align: center; margin-bottom: 6ex;">
-				<input type="submit" value="Eintragen" />
+				<input type="submit" value="Submit" />
 			</div>
 		</div>
 	</form>
@@ -176,7 +176,7 @@ function maske_aendere_fepzeit($col, $id) {
 				<input type="text" name="pzeit" size="50" value="$content" />
 			</div>
 			<div style="text-align: center; margin-bottom: 6ex;">
-				<input type="submit" value="Eintragen" />
+				<input type="submit" value="Submit" />
 			</div>
 		</div>
 	</form>
@@ -205,13 +205,13 @@ function maske_aendere_anzahl() {
 	<form method="POST" action="$SELF_PHP?fepraesenzplan=true">
 		<div class="center">
 			<div style="text-align: center;">
-				Anzahl der anzuzeigenden Termine:
+				Number of dates to display:
 			</div>
 			<div style="text-align: center;">
 				<input type="text" name="Anzahl" size="10" value="$count" />
 			</div>
 			<div style="text-align: center; margin-bottom: 6ex;">
-				<input type="submit" value="Eintragen" />
+				<input type="submit" value="Submit" />
 			</div>
 		</div>
 	</form>
@@ -220,8 +220,8 @@ HTML;
 ?>
 
 <p style="text-align: center;">
-<a href="/Physik.FSPHYS/intern/intern-fs/praesenzplan.php?praesenzplan=true">Präsenzplan</a> |
-<a href="/Physik.FSPHYS/intern/intern-fs/praesenzplan.php?fepraesenzplan=true">Ferienpräsenzplan</a></p>
+<a href="/Physik.FSPHYS/en/intern/intern-fs/praesenzplan.php?praesenzplan=true">Office hours (during semester)</a> |
+<a href="/Physik.FSPHYS/en/intern/intern-fs/praesenzplan.php?fepraesenzplan=true">Office hours (semester break)</a></p>
 
 <?php
 if ($_GET['praesenzplan']) {

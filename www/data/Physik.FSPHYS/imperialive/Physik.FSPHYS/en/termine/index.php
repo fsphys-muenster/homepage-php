@@ -4,7 +4,7 @@ include '/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/intern/intern-fs/admi
 
 <?php
 /*
-	Imperia modules...
+	Imperia-Module...
 */
 ?>
 
@@ -23,12 +23,12 @@ echo <<<HTML
 			<col style="width: 18%;">
 		</colgroup>
 		<tr>
-			<th>Zeit</th>
-			<th>Montag</th>
-			<th>Dienstag</th>
-			<th>Mittwoch</th>
-			<th>Donnerstag</th>
-			<th>Freitag</th>
+			<th>Time</th>
+			<th>Monday</th>
+			<th>Tuesday</th>
+			<th>Wednesday</th>
+			<th>Thursday</th>
+			<th>Friday</th>
 		</tr>
 HTML;
 while ($row = $query->fetch()) {
@@ -50,7 +50,7 @@ mysql_db_close($db);
 
 <?php
 /*
-	Imperia modules...
+	Imperia-Module...
 */
 ?>
 
@@ -67,9 +67,9 @@ echo <<<HTML
 		<col style="width: 32%" />
 	</colgroup>
 	<tr>
-		<th>Wochentag</th>
-		<th>Datum</th>
-		<th>Zeit</th>
+		<th>Day of week</th>
+		<th>Date</th>
+		<th>Time</th>
 		<th>Name</th>
 	</tr>
 HTML;
@@ -91,7 +91,7 @@ mysql_db_close($db);
 
 <?php
 /*
-	Imperia modules...
+	Imperia-Module...
 */
 ?>
 
