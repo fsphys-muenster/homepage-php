@@ -1,0 +1,75 @@
+Options -MultiViews
+DirectoryIndex index.php index.html index.shtml /ErrNotFound.asis
+
+#This doesn't work :-(
+#<VirtualHost *:80>
+#    ServerName www.uni-muenster.de
+#    RedirectPermanent / https://www.uni-muenster.de/
+#</VirtualHost>
+
+RewriteEngine On
+
+# Define variable for /Physik.FSPHYS path
+RewriteRule ^ - [E=site_dir:/Physik.FSPHYS]
+
+# Redirect wwu-muenster.de to uni-muenster.de because the former has no valid
+# HTTPS certificate
+RewriteCond %{SERVER_NAME} =wwu-muenster.de [OR]
+RewriteCond %{SERVER_NAME} =www.wwu-muenster.de
+RewriteRule ^/?(.*)$ https://www.uni-muenster.de%{ENV:site_dir}/$1 [L,R=permanent]
+
+# Redirect HTTP to HTTPS
+# default: [R] = [R=302] ("Found"/"Moved Temporarily")
+# [R=permanent] = [R=301]: "Moved Permanently"
+RewriteCond %{HTTPS} !=on
+RewriteRule ^/?(.*)$ https://%{SERVER_NAME}%{ENV:site_dir}/$1 [L,R=permanent]
+
+# Redirect <...>/index.php, <...>/index.html, <...>/index.shtml to <...>/
+RewriteRule ^(.*)/index\.(php|s?html)$ %{ENV:site_dir}/$1/ [L,R=permanent]
+RewriteRule ^index\.(php|s?html)$ %{ENV:site_dir}/ [L,R=permanent]
+
+# Redirect <...>.php, <...>.html to <...> (without file extension)
+# Only redirect if environment variable is set to avoid redirect loops
+# NOTE: Using the [END] flag instead of setting an environment variable is
+# better, but was first introduced in Apache 2.4!
+# NOTE: %{ENV:REDIRECT_redirected} etc. has to be checked because Apache (for
+# some reason) renames environment variables on redirect (this seems to be
+# undocumented); see
+# https://stackoverflow.com/q/3050444/595306
+RewriteCond %{ENV:redirected} !=1
+RewriteCond %{ENV:REDIRECT_redirected} !=1
+RewriteCond %{ENV:REDIRECT_REDIRECT_redirected} !=1
+RewriteCond %{ENV:REDIRECT_REDIRECT_REDIRECT_redirected} !=1
+RewriteRule ^(.+)\.(php|html)$ %{ENV:site_dir}/$1 [L,R=permanent]
+# Alternative to the environment variable method: Look at %{THE_REQUEST}
+# (because this doesn't change even if the URL is rewritten)
+# Not sure how robust this is, though
+#RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s(.+)\.(php|html)
+#RewriteRule ^ %1 [L,R]
+
+# Find file with file extension .php or .html on the filesystem for a URL
+# without file extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^ %{REQUEST_FILENAME}.php [L,E=redirected:1]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^ %{REQUEST_FILENAME}.html [L,E=redirected:1]
+
+
+#=============================================================================
+# URL aliases (should be avoided due to duplicate content)
+
+#RewriteRule ^(en/)?fachschaft/fachschaftler/ehemalige(\.html)?$ /Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
+
+
+#=============================================================================
+# List of URLs which have been changed, leaving the old URL to redirect to the new one
+
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/ehemalige_sammlung(\.html)?$ /Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/Maskottchen_Fritz(\.html)?$  /Physik.FSPHYS/$1fachschaft/fachschaftler/maskottchen_fritz
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/bernd_hofschoeer(\.html)?$   /Physik.FSPHYS/$1fachschaft/fachschaftler/bernd_hofschroeer
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?news/physiker-party_20151019(\.html)?$ /Physik.FSPHYS/$1news/physiker-party_20151029
+
