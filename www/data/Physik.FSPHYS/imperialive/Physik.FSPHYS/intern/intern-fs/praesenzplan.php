@@ -1,3 +1,4 @@
+<article class="module extended"><div class="module-content">
 <?php
 include '/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/intern/intern-fs/admin/php-include/db-access.inc';
 	
@@ -220,8 +221,8 @@ HTML;
 ?>
 
 <p style="text-align: center;">
-<a href="/Physik.FSPHYS/intern/intern-fs/praesenzplan.php?praesenzplan=true">Präsenzplan</a> |
-<a href="/Physik.FSPHYS/intern/intern-fs/praesenzplan.php?fepraesenzplan=true">Ferienpräsenzplan</a></p>
+<a href="/Physik.FSPHYS/intern/intern-fs/praesenzplan?praesenzplan=true">Präsenzplan</a> |
+<a href="/Physik.FSPHYS/intern/intern-fs/praesenzplan?fepraesenzplan=true">Ferienpräsenzplan</a></p>
 
 <?php
 if ($_GET['praesenzplan']) {
@@ -272,4 +273,5 @@ else if ($_GET['fepraesenzplan']) {
 	}
 }
 ?>
+</div></article>
 

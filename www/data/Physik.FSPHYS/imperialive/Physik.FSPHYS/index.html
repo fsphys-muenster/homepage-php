@@ -1,0 +1,99 @@
+<?php
+include '/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/intern/intern-fs/admin/php-include/db-access.inc';
+include '/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/intern/intern-fs/admin/php-include/office_hours.inc';
+// max. rows to show in preview for office hours during break
+$FP_MAX_ROWS = 10;
+?>
+
+<article class="module short"><div class="module-content">
+<h2>Aktuelle Präsenzzeiten</h2>
+
+<?php
+$current_date = new DateTime();
+$semester = semester_info($current_date)['during_semester'];
+$db = mysql_db_connect();
+
+if ($semester) {
+	echo <<<HTML
+	<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>
+HTML;
+	$timestamp = time();
+	// 1 (Monday) to 7 (Sunday)
+	$day_of_week = date('N');
+	// for Saturday and Sunday: Show Monday
+	if ($day_of_week >= 6) {
+		// timestamp for next Monday
+		$timestamp = mktime(0, 0, 0,
+			date('m'), date('d') + 8 - $day_of_week, date('Y'));
+	}
+	setlocale(LC_TIME, 'de_DE', 'de_DE.UTF-8', 'de', 'deu_deu');
+	$day_of_week_show = strftime('%A', $timestamp);
+	$sql = 'SELECT * FROM praesenzplan ORDER BY zeit ASC;';
+	$query = $db->query($sql);
+	echo <<<HTML
+	<table style="width: 100%;">
+		<tr>
+			<th scope="col" style="width: 20%;">Zeit</th>
+			<th scope="col">$day_of_week_show</th>
+		</tr>
+HTML;
+	while ($row = $query->fetch()) {
+		$time = $row['zeit'];
+		echo <<<HTML
+		<tr>
+			<td>$time</td>
+			<td>{$row[mb_strtolower($day_of_week_show)]}</td>
+		</tr>
+HTML;
+	}
+	echo '</table>';
+}
+else {
+	echo <<<HTML
+	<div class="subhead" style="margin: 1em 0;">Vorlesungsfreie Zeit</div>
+HTML;
+
+	$sql = 'SELECT Anzahl FROM fepraesenzplan WHERE ID = 0;';
+	$max = $db->query($sql)->fetch()[0];
+
+	$sql = 'SELECT * FROM fepraesenzplan ORDER BY ID ASC;';
+	$query = $db->query($sql);
+	echo <<<HTML
+	<table style="width: 100%;">
+		<tr>
+			<th scope="col" style="width: 30%;">Datum</th>
+			<th scope="col" style="width: 20%;">Zeit</th>
+			<th scope="col">Name</th>
+		</tr>
+HTML;
+	$row_num = 0;
+	$display_num = 0;
+	while (($row = $query->fetch()) && $row_num < $max && $display_num < $FP_MAX_ROWS) {
+		$row_num++;
+		// don't display entries in the past
+		$yesterday = mktime(0, 0, 0, date('m'), date('d') - 1, date('Y'));
+		if (strtotime($row['Datum']) < $yesterday) {
+			continue;
+		}
+		$display_num++;
+		// get localized day of week from date field
+		//setlocale(LC_TIME, 'de_DE', 'de_DE.UTF-8', 'de', 'deu_deu');
+		//$day_of_week = strftime('%A', strtotime($row['Datum']));
+		// convert times to Unix timestamps, then format using date()
+		$starttime = date('H:i', strtotime($row['starttime']));
+		echo <<<HTML
+		<tr>
+			<td>{$row['Datum']}</td>
+			<td>$starttime</td>
+			<td>{$row['name']}</td>
+		</tr>
+HTML;
+	}
+	echo '</table>';
+}
+
+mysql_db_close($db);
+?>
+<p><a class="int" href="/Physik.FSPHYS/termine/">Vollständiger Präsenzplan</a></p>
+</div></article>
+

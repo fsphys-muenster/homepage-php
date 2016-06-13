@@ -8,8 +8,9 @@ function mysql_db_connect() {
 	try {
 		$db = new PDO("mysql:host=$db_server;dbname=$db_name;charset=utf8", $db_user, $db_password);
 	} catch (PDOException $ex) {
-		throw new RuntimeException('Konnte keine Verbindung zur Datenbank herstellen!');
+		throw new RuntimeException('Could not connect to the database!');
 	}
+	$db->query("SET sql_mode = 'ANSI_QUOTES';");
 	return $db;
 }
 
