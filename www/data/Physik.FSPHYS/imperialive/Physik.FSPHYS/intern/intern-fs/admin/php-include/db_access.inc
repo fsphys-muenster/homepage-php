@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/error_settings.inc';
 
 function mysql_db_connect() {
 	$db_server = 'mysql5.uni-muenster.de';

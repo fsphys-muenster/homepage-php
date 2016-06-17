@@ -1,32 +1,35 @@
 <?php
+require_once __DIR__ . '/intern/intern-fs/admin/php-include/error_settings.inc';
 require_once __DIR__ . '/intern/intern-fs/admin/php-include/office_hours.inc';
+
 // max. rows to show in preview for office hours during break
-$FP_MAX_ROWS = 10;
+const FP_MAX_ROWS = 10;
 ?>
 
 <article class="module short"><div class="module-content">
 <h2>Aktuelle Präsenzzeiten</h2>
 
 <?php
-$current_date = new DateTime();
-$semester = semester_info($current_date)['during_semester'];
+$dt_current = new DateTime();
+$semester_info = semester_info($dt_current);
+$semester = $semester_info['during_semester'];
 $db = mysql_db_connect();
 
 if ($semester) {
 	echo <<<HTML
 	<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>
 HTML;
-	$timestamp = time();
 	// 1 (Monday) to 7 (Sunday)
-	$day_of_week = date('N');
+	$day_of_week = $dt_current->format('N');
 	// for Saturday and Sunday: Show Monday
 	if ($day_of_week >= 6) {
-		// timestamp for next Monday
-		$timestamp = mktime(0, 0, 0,
-			date('m'), date('d') + 8 - $day_of_week, date('Y'));
+		$days_to_monday = 8 - $day_of_week;
+		// set DateTime to next Monday
+		$dt_current->add(new DateInterval("P{$days_to_monday}D"));
 	}
-	setlocale(LC_TIME, 'de_DE', 'de_DE.UTF-8', 'de', 'deu_deu');
-	$day_of_week_show = strftime('%A', $timestamp);
+	// 'EEEE' →  full day of week in PHP intl; see IntlDateFormatter
+	// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html#details
+	$day_of_week_show = datefmt_format_object($dt_current, 'EEEE', 'de_DE');
 	$sql = 'SELECT * FROM praesenzplan ORDER BY zeit ASC;';
 	$query = $db->query($sql);
 	echo <<<HTML
@@ -67,23 +70,27 @@ HTML;
 HTML;
 	$row_num = 0;
 	$display_num = 0;
-	while (($row = $query->fetch()) && $row_num < $max && $display_num < $FP_MAX_ROWS) {
+	while (($row = $query->fetch()) && $row_num < $max && $display_num < FP_MAX_ROWS) {
 		$row_num++;
+		// DateTime for yesterday: subtract 1 day
+		$dt_yesterday = clone $dt_current;
+		$dt_yesterday->sub(new DateInterval('P1D'));
 		// don't display entries in the past
-		$yesterday = mktime(0, 0, 0, date('m'), date('d') - 1, date('Y'));
-		if (strtotime($row['Datum']) < $yesterday) {
+		$dt_row_date = date_create($row['Datum']);
+		if ($dt_row_date < $dt_yesterday) {
 			continue;
 		}
 		$display_num++;
-		// get localized day of week from date field
-		//setlocale(LC_TIME, 'de_DE', 'de_DE.UTF-8', 'de', 'deu_deu');
-		//$day_of_week = strftime('%A', strtotime($row['Datum']));
-		// convert times to Unix timestamps, then format using date()
-		$starttime = date('H:i', strtotime($row['starttime']));
+		$date_show = $row['Datum'];
+		// get localized day of week from date field (cf. above)
+		//$day_of_week_show = datefmt_format_object($dt_row_date, 'EEEE', 'de_DE');
+		// convert times DateTime objects and format
+		$dt_row_starttime = date_create($row['starttime']);
+		$starttime_show = $dt_row_starttime->format('H:i');
 		echo <<<HTML
 		<tr>
-			<td>{$row['Datum']}</td>
-			<td>$starttime</td>
+			<td>$date_show</td>
+			<td>$starttime_show</td>
 			<td>{$row['name']}</td>
 		</tr>
 HTML;

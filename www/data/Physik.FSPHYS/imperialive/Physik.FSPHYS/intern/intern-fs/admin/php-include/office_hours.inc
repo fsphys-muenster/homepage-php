@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/db-access.inc';
+require_once __DIR__ . '/error_settings.inc';
+require_once __DIR__ . '/db_access.inc';
 
 /*
 	Fallback function for semester_info() if there is no database information
@@ -14,10 +15,12 @@ function semester_info_fallback($date) {
 	// WS lecture start: ≈ 7th October, SS lecture start: ≈ 7th April
 	$ws_start = new DateTime("$year-10-07");
 	if ($ws_start > $date && !$is_ss) {
+		// subtract 1 year
 		$ws_start->sub(new DateInterval('P1Y'));
 	}
 	$ss_start = new DateTime("$year-04-07");
 	if ($ss_start < $date && !$is_ss) {
+		// subtract 1 year
 		$ss_start->add(new DateInterval('P1Y'));
 	}
 	$ws_start_yr = $ws_start->format('Y');
@@ -95,9 +98,9 @@ function office_hours_table($day=NULL, $db=NULL) {
 	$data = $query->fetchAll();
 	mysql_db_close($db);
 
-	# create the array entries with keys in ascending order 1–7
+	// create the array entries with keys in ascending order 1–7
 	$result = array_fill_keys(array_keys($days_of_week), array());
-	# transfer data from SQL query into 2D array
+	// transfer data from SQL query into 2D array
 	foreach ($data as $row) {
 		$day_num = $row['day_num'];
 		$start_time = $row['start_time'];
@@ -106,7 +109,7 @@ function office_hours_table($day=NULL, $db=NULL) {
 			'name' => $row['name']
 		);
 	}
-	# sort start times
+	// sort start times
 	foreach ($result as $day_data) {
 		ksort($day_data);
 	}
