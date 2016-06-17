@@ -1,6 +1,6 @@
 <article class="module extended"><div class="module-content">
 <?php
-include '/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/intern/intern-fs/admin/php-include/db-access.inc';
+require_once __DIR__ . '/admin/php-include/office_hours.inc';
 	
 function praesenzplan_anzeigen() {
 	$db = mysql_db_connect();
