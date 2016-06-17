@@ -10,8 +10,8 @@ const FP_MAX_ROWS = 10;
 <h2>Aktuelle Präsenzzeiten</h2>
 
 <?php
-$dt_current = new DateTime();
-$semester_info = semester_info($dt_current);
+$dt_now = new DateTimeImmutable();
+$semester_info = semester_info($dt_now);
 $semester = $semester_info['during_semester'];
 $db = mysql_db_connect();
 
@@ -20,16 +20,16 @@ if ($semester) {
 	<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>
 HTML;
 	// 1 (Monday) to 7 (Sunday)
-	$day_of_week = $dt_current->format('N');
-	// for Saturday and Sunday: Show Monday
+	$day_of_week = $dt_now->format('N');
+	// for Saturday and Sunday: show Monday
 	if ($day_of_week >= 6) {
 		$days_to_monday = 8 - $day_of_week;
 		// set DateTime to next Monday
-		$dt_current->add(new DateInterval("P{$days_to_monday}D"));
+		$dt_now = $dt_now->add(new DateInterval("P{$days_to_monday}D"));
 	}
 	// 'EEEE' →  full day of week in PHP intl; see IntlDateFormatter
 	// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html#details
-	$day_of_week_show = datefmt_format_object($dt_current, 'EEEE', 'de_DE');
+	$day_of_week_show = datefmt_format_object($dt_now, 'EEEE', 'de_DE');
 	$sql = 'SELECT * FROM praesenzplan ORDER BY zeit ASC;';
 	$query = $db->query($sql);
 	echo <<<HTML
@@ -73,8 +73,7 @@ HTML;
 	while (($row = $query->fetch()) && $row_num < $max && $display_num < FP_MAX_ROWS) {
 		$row_num++;
 		// DateTime for yesterday: subtract 1 day
-		$dt_yesterday = clone $dt_current;
-		$dt_yesterday->sub(new DateInterval('P1D'));
+		$dt_yesterday = $dt_now->sub(new DateInterval('P1D'));
 		// don't display entries in the past
 		$dt_row_date = date_create($row['Datum']);
 		if ($dt_row_date < $dt_yesterday) {
