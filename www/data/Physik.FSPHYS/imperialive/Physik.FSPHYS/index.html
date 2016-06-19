@@ -17,22 +17,18 @@ $semester = semester_info($dt_now)['during_semester'];
 $db = mysql_db_connect();
 
 if ($semester) {
-	echo <<<HTML
-	<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>
-HTML;
+	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>';
 	echo office_hours_html($dt_now);
 }
 else {
-	echo <<<HTML
-	<div class="subhead" style="margin: 1em 0;">Vorlesungsfreie Zeit</div>
-HTML;
+	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungsfreie Zeit</div>';
 
 	$sql = 'SELECT Anzahl FROM fepraesenzplan WHERE ID = 0;';
 	$max = $db->query($sql)->fetch()[0];
 
 	$sql = 'SELECT * FROM fepraesenzplan ORDER BY ID ASC;';
 	$query = $db->query($sql);
-	echo <<<HTML
+	echo <<<'HTML'
 	<table style="width: 100%;">
 		<tr>
 			<th scope="col" style="width: 30%;">Datum</th>

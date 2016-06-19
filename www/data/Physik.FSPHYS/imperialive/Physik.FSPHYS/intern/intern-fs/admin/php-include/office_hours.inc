@@ -4,6 +4,11 @@ require_once __DIR__ . '/localization.inc';
 require_once __DIR__ . '/db_access.inc';
 
 /*
+	The special value of the end_time column in the office_hours database
+	table signifying that no end time was specified.
+*/
+const UNSPECIFIED_END_TIME = '00:00:00';
+/*
 	Map between numerical values and text aliases for the days of the week, as
 	used in the ENUM defined in the MySQL database.
 */
@@ -230,14 +235,14 @@ HTML;
 		list($start_time, $end_time) = $time_entry;
 		$dt_start_time = date_create($start_time);
 		$start_time_show = $dt_start_time->format('H');
-		if ($end_time) {
+		if ($end_time == UNSPECIFIED_END_TIME || !$end_time) {
+			$loc_from = loc_get_str('from');
+			$time_show = "$loc_from $start_time_show";
+		}
+		else {
 			$dt_end_time = date_create($end_time);
 			$end_time_show = $dt_end_time->format('H');
 			$time_show = "$start_time_show–$end_time_show";
-		}
-		else {
-			$loc_from = loc_get_str('from');
-			$time_show = "$loc_from $start_time_show";
 		}
 		$result .= "<tr><td>$time_show</td>";
 		$time_key = "{$start_time}_{$end_time}";
