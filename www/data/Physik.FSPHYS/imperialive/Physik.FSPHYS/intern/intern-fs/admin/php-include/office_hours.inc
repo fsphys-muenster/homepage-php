@@ -1,6 +1,28 @@
 <?php
-require_once __DIR__ . '/error_settings.inc';
+require_once __DIR__ . '/php_settings.inc';
+require_once __DIR__ . '/localization.inc';
 require_once __DIR__ . '/db_access.inc';
+
+/*
+	Map between numerical values and text aliases for the days of the week, as
+	used in the ENUM defined in the MySQL database.
+*/
+const DAYS_OF_WEEK = array(
+	1 => 'Monday',
+	'Tuesday',
+	'Wednesday',
+	'Thursday',
+	'Friday',
+	'Saturday',
+	'Sunday',
+	'Monday' => 1,
+	'Tuesday' => 2,
+	'Wednesday' => 3,
+	'Thursday' => 4,
+	'Friday' => 5,
+	'Saturday' => 6,
+	'Sunday' => 7
+);
 
 /*
 	Fallback function for semester_info() if there is no database information
@@ -55,65 +77,181 @@ function semester_info($date) {
 	return semester_info_fallback($date);
 }
 
-/*
-	Map of numerical values to text aliases for the days of the week, as
-	used in the ENUM defined in the MySQL database.
-*/
-$days_of_week = array(
-	1 => 'Monday',
-	'Tuesday',
-	'Wednesday',
-	'Thursday',
-	'Friday',
-	'Saturday',
-	'Sunday'
-);
+function valid_day_of_week($day) {
+	return key_exists($day, DAYS_OF_WEEK) || in_array($day, DAYS_OF_WEEK);
+}
 
 /*
 	Returns all entries in the office hours database table as a 2D array:
-	$result[day of week (1–7)]['start_time']
-	gives a 2-element array containing the end time and the name (keys:
-	'end_time' and 'name'). The arrays are sorted by keys in ascending order.
+	$result[day of week (1–7)][{$start_time}_{$end_time}]
+	contains the name entered in the schedule for the entry with that day,
+	start time and end time. All arrays are sorted by keys in ascending order.
 	
-	If $day: Only return the slice $result[$day], 1 ≤ $day ≤ 7.
+	If $day: Only query for and return data for the day $day. $day must be an
+	element of the keys or the values of DAYS_OF_WEEK.
+	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
 function office_hours_table($day=NULL, $db=NULL) {
-	if (!$db) {
+	$open_db = !$db;
+	if ($open_db) {
 		$db = mysql_db_connect();
 	}
 	$sql = 'SELECT day+0 as day_num, start_time, end_time, name'
 		. ' FROM office_hours';
 	if ($day) {
-		if (!key_exists($day, $days_of_week)) {
+		if (!valid_day_of_week($day)) {
 			throw new DomainException('Value of $day is not valid: ' . $day);
 		}
 		$sql .= ' WHERE day = :day'
 	}
-	$sql .= ';'
+	$sql .= ' ORDER BY day_num, start_time, end_time ASC;'
 	$query = $db->prepare($sql);
 	if ($day) {
 		$query->bindValue(':day', $day);
 	}
 	$query->execute();
 	$data = $query->fetchAll();
-	mysql_db_close($db);
+	if ($open_db) {
+		mysql_db_close($db);
+	}
 
-	// create the array entries with keys in ascending order 1–7
-	$result = array_fill_keys(array_keys($days_of_week), array());
 	// transfer data from SQL query into 2D array
+	$result = array();
 	foreach ($data as $row) {
 		$day_num = $row['day_num'];
-		$start_time = $row['start_time'];
-		$result[$day_num][$start_time] = array(
-			'end_time' => $row['end_time'],
-			'name' => $row['name']
-		);
+		if (!key_exists($day_num, $result)) {
+			$result[$day_num] = array();
+		}
+		$time_key = $row['start_time'] . '_' . $row['end_time'];
+		$result[$day_num][$time_key] = $row['name'];
 	}
-	// sort start times
-	foreach ($result as $day_data) {
-		ksort($day_data);
+	return $result;
+}
+
+/*
+	Returns an array of 2-element arrays [$start_time, $end_time] containing
+	all start and end times present in the database. The array is sorted by
+	start times first and end times second (e.g. 13:00–14:00 < 13:00–15:00
+	< 14:00–15:00).
+	
+	If $day: Only query for and return data for the day $day. $day must be an
+	element of the keys or the values of DAYS_OF_WEEK.
+	If $db: Use $db as MySQL connection; else: create new MySQL connection.
+*/
+function office_hours_times($day=NULL, $db=NULL) {
+	$open_db = !$db;
+	if ($open_db) {
+		$db = mysql_db_connect();
 	}
-	return $day ? $result[$day] : $result;
+	$sql = 'SELECT DISTINCT start_time, end_time FROM office_hours';
+	if ($day) {
+		if (!valid_day_of_week($day)) {
+			throw new DomainException('Value of $day is not valid: ' . $day);
+		}
+		$sql .= ' WHERE day = :day';
+	}
+	$sql .= ' ORDER BY start_time, end_time ASC;';
+	$query = $db->prepare($sql);
+	if ($day) {
+		$query->bindValue(':day', $day);
+	}
+	$query->execute();
+	$data = $query->fetchAll();
+	if ($open_db) {
+		mysql_db_close($db);
+	}
+	return $data;
+}
+
+/*
+	Returns a string containing the HTML table with the full office hours
+	schedule.
+	
+	If $date: The table will only contain the column corresponding to the day
+	of the week of $date, or the next Monday if $date is in the weekend.
+	$date must be a DateTimeImmutable.
+*/
+function office_hours_html($date=NULL) {
+	// generate HTML table header
+	$loc_time = loc_get_str('time', true);
+	$result = <<<HTML
+	<table style="width: 100%;">
+		<tr>
+			<th scope="col" style="width: 20%;">$loc_time</th>
+HTML;
+	$monday_num = DAYS_OF_WEEK['Monday'];
+	$friday_num = DAYS_OF_WEEK['Friday'];
+	$date_day_of_week = NULL;
+	if ($date) {
+		// 1 (Monday) to 7 (Sunday)
+		$date_day_of_week = $date->format('N');
+		// for Saturday and Sunday: show Monday
+		if ($date_day_of_week >= DAYS_OF_WEEK['Saturday']) {
+			$days_to_monday = 8 - $date_day_of_week;
+			// set DateTime to next Monday
+			$date = $date->add(new DateInterval("P{$days_to_monday}D"));
+		}
+		// 'EEEE' →  full day of week in PHP intl; see IntlDateFormatter
+		// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html#details
+		$days = array(datefmt_format_object($date, 'EEEE', LOCALE));
+	}
+	else {
+		$days = array();
+		// table from Monday to Friday if no date is given
+		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
+			$day_of_week = DAYS_OF_WEEK[$day_num];
+			$dt_day = new DateTime($day_of_week);
+			$days[] = datefmt_format_object($dt_day, 'EEEE', LOCALE);
+		}
+	}
+	foreach ($days as $day_of_week) {
+		$result .= <<<HTML
+			<th scope="col">$day_of_week</th>
+HTML;
+	}
+	$result .= '</tr>';
+
+	// generate HTML table body
+	$db = mysql_db_connect();
+	$timetable = office_hours_table($date_day_of_week, $db);
+	$times = office_hours_times($date_day_of_week, $db);
+	mysql_db_close($db);
+	// if !$date: make sure that Monday–Friday are included in $timetable
+	if (!$date) {
+		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
+			if (!key_exists($day_num)) {
+				$timetable[$day_num] = array();
+			}
+		}
+		// restore key order
+		ksort($timetable);
+	}
+	foreach ($times as $time_entry) {
+		list($start_time, $end_time) = $time_entry;
+		$dt_start_time = date_create($start_time);
+		$start_time_show = $dt_start_time->format('H');
+		if ($end_time) {
+			$dt_end_time = date_create($end_time);
+			$end_time_show = $dt_end_time->format('H');
+			$time_show = "$start_time_show–$end_time_show";
+		}
+		else {
+			$loc_from = loc_get_str('from');
+			$time_show = "$loc_from $start_time_show";
+		}
+		$result .= "<tr><td>$time_show</td>";
+		$time_key = "{$start_time}_{$end_time}";
+		foreach ($timetable as $day_data) {
+			$name_show = '';
+			if (key_exists($time_key, $day_data)) {
+				$name_show = htmlspecialchars($day_data[$time_key]);
+			}
+			$result .= "<td>$name_show</td>";
+		}
+		$result .= '</tr>';
+	}
+	$result .= '</table>';
+	return $result;
 }
 
 ?>

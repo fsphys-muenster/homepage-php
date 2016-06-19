@@ -1,54 +1,26 @@
 <?php
-require_once __DIR__ . '/intern/intern-fs/admin/php-include/error_settings.inc';
+require_once __DIR__ . '/intern/intern-fs/admin/php-include/php_settings.inc';
 require_once __DIR__ . '/intern/intern-fs/admin/php-include/office_hours.inc';
 
+const LOCALE = 'de_DE';
 // max. rows to show in preview for office hours during break
 const FP_MAX_ROWS = 10;
 ?>
 
-<article class="module short"><div class="module-content">
+<article class="module short">
+<div class="module-content">
 <h2>Aktuelle Präsenzzeiten</h2>
 
 <?php
 $dt_now = new DateTimeImmutable();
-$semester_info = semester_info($dt_now);
-$semester = $semester_info['during_semester'];
+$semester = semester_info($dt_now)['during_semester'];
 $db = mysql_db_connect();
 
 if ($semester) {
 	echo <<<HTML
 	<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>
 HTML;
-	// 1 (Monday) to 7 (Sunday)
-	$day_of_week = $dt_now->format('N');
-	// for Saturday and Sunday: show Monday
-	if ($day_of_week >= 6) {
-		$days_to_monday = 8 - $day_of_week;
-		// set DateTime to next Monday
-		$dt_now = $dt_now->add(new DateInterval("P{$days_to_monday}D"));
-	}
-	// 'EEEE' →  full day of week in PHP intl; see IntlDateFormatter
-	// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html#details
-	$day_of_week_show = datefmt_format_object($dt_now, 'EEEE', 'de_DE');
-	$sql = 'SELECT * FROM praesenzplan ORDER BY zeit ASC;';
-	$query = $db->query($sql);
-	echo <<<HTML
-	<table style="width: 100%;">
-		<tr>
-			<th scope="col" style="width: 20%;">Zeit</th>
-			<th scope="col">$day_of_week_show</th>
-		</tr>
-HTML;
-	while ($row = $query->fetch()) {
-		$time = $row['zeit'];
-		echo <<<HTML
-		<tr>
-			<td>$time</td>
-			<td>{$row[mb_strtolower($day_of_week_show)]}</td>
-		</tr>
-HTML;
-	}
-	echo '</table>';
+	echo office_hours_html($dt_now);
 }
 else {
 	echo <<<HTML
@@ -99,6 +71,8 @@ HTML;
 
 mysql_db_close($db);
 ?>
+
 <p><a class="int" href="/Physik.FSPHYS/termine/">Vollständiger Präsenzplan</a></p>
-</div></article>
+</div>
+</article>
 
