@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . '/../intern/intern-fs/admin/php-include/php_settings.inc';
 require_once __DIR__ . '/../intern/intern-fs/admin/php-include/db_access.inc';
-
-const LOCALE = 'de_DE';
 ?>
 
 <?php
@@ -16,7 +14,7 @@ $db = mysql_db_connect();
 
 $sql = 'SELECT * FROM praesenzplan ORDER BY zeit ASC;';
 $query = $db->query($sql);
-echo <<<HTML
+echo <<<'HTML'
 	<table style="width: 100%;">
 		<colgroup>
 			<col style="width: 10%;">
@@ -65,7 +63,7 @@ $limit = $query->fetch()[0];
 // get and display data
 $sql = 'SELECT * FROM fepraesenzplan ORDER BY ID ASC;';
 $query = $db->query($sql);
-echo <<<HTML
+echo <<<'HTML'
 	<table style="width: 100%;">
 		<colgroup>
 			<col style="width: 18%" />

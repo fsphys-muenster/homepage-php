@@ -4,11 +4,17 @@ require_once __DIR__ . '/php_settings.inc';
 /*
 	Scripts including this file can define a constant LOCALE which determines
 	the locale used by default for the localization functions in this file. If
-	LOCALE is not set, the default is 'de_DE'.
+	LOCALE is not set, the default is determined from the file path.
 */
-const LOCALE_DEFAULT = 'de_DE';
-if (!defined('LOCALE')) {
-	const LOCALE = LOCALE_DEFAULT;
+// can be extended to include other languages, e.g.
+// strpos($_SERVER['PHP_SELF'], '/Physik.FSPHYS/fr/') === 0
+// for French
+if (strpos($_SERVER['PHP_SELF'], '/Physik.FSPHYS/en/') === 0) {
+	const LOCALE = 'en_US';
+}
+// there is no language code in German URLs
+else {
+	const LOCALE = 'de_DE';
 }
 
 $LOC_STRINGS = array(

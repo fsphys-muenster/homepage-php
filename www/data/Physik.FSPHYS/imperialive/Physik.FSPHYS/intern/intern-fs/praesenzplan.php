@@ -34,7 +34,7 @@ HTML;
 		$time = $row['zeit'];
 		$javascript = function($day, $time) {
 			return <<<JS
-			onMouseover="this.style='background-color: #d9ee83;';" onMouseout="this.style='';" onMouseDown="javascript:redirect('$SELF_PHP?praesenzplan=true&amp;day=$day&amp;time=$time');"
+			onMouseover="this.style='background-color: #d9ee83;';" onMouseout="this.style='';" onMouseDown="javascript:redirect('?praesenzplan=true&amp;day=$day&amp;time=$time');"
 JS;
 		};
 		echo <<<HTML
@@ -83,7 +83,7 @@ function fepraesenzplan_anzeigen() {
 HTML;
 	$javascript = function($col, $id) {
 		return <<<JS
-		onMouseover="this.style='background-color: #d9ee83;';" onMouseout="this.style='';" onMouseDown="javascript:redirect('$SELF_PHP?fepraesenzplan=true&amp;col=$col&amp;id=$id');"
+		onMouseover="this.style='background-color: #d9ee83;';" onMouseout="this.style='';" onMouseDown="javascript:redirect('?fepraesenzplan=true&amp;col=$col&amp;id=$id');"
 JS;
 	};
 	while ($row = $query->fetch()) {
@@ -129,7 +129,7 @@ function maske_aendere_pzeit($day, $time) {
 	
 	$person = $row[$day];
 	echo <<<HTML
-	<form method="POST" action="$SELF_PHP?praesenzplan=true">
+	<form method="POST" action="?praesenzplan=true">
 		<input type="hidden" name="day" value="$day">
 		<input type="hidden" name="time" value="$time">
 		<div class="center">
@@ -169,7 +169,7 @@ function maske_aendere_fepzeit($col, $id) {
 	$content = $result[$col];
 
 	echo <<<HTML
-	<form method="POST" action="$SELF_PHP?fepraesenzplan=true">
+	<form method="POST" action="?fepraesenzplan=true">
 		<input type="hidden" name="col" value="$col" />
 		<input type="hidden" name="id" value="$id" />
 		<div class="center">
@@ -203,7 +203,7 @@ function maske_aendere_anzahl() {
 	
 	$count = $row[0];
 	echo <<<HTML
-	<form method="POST" action="$SELF_PHP?fepraesenzplan=true">
+	<form method="POST" action="?fepraesenzplan=true">
 		<div class="center">
 			<div style="text-align: center;">
 				Anzahl der anzuzeigenden Termine:
