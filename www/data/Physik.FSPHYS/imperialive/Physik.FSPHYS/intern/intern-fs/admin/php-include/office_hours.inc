@@ -97,10 +97,7 @@ function valid_day_of_week($day) {
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
 function office_hours_table($day=NULL, $db=NULL) {
-	$open_db = !$db;
-	if ($open_db) {
-		$db = mysql_db_connect();
-	}
+	$open_db = mysql_db_connect_if_null($db);
 	$sql = 'SELECT day+0 as day_num, start_time, end_time, name'
 		. ' FROM office_hours';
 	if ($day) {
@@ -144,9 +141,7 @@ function office_hours_table($day=NULL, $db=NULL) {
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
 function office_hours_times($day=NULL, $db=NULL) {
-	$open_db = !$db;
-	if ($open_db) {
-		$db = mysql_db_connect();
+	$open_db = mysql_db_connect_if_null($db);
 	}
 	$sql = 'SELECT DISTINCT start_time, end_time FROM office_hours';
 	if ($day) {
@@ -172,17 +167,21 @@ function office_hours_times($day=NULL, $db=NULL) {
 	Returns a string containing the HTML table with the full office hours
 	schedule.
 	
+	If $db: Use $db as MySQL connection; else: create new MySQL connection.
+	$time_width: Width of the time column (CSS).
+	$day_width: Width of each day column (CSS).
 	If $date: The table will only contain the column corresponding to the day
 	of the week of $date, or the next Monday if $date is in the weekend.
 	$date must be a DateTimeImmutable.
 */
-function office_hours_html($date=NULL) {
+function office_hours_html($db=NULL, $time_width='10%', $day_width=NULL,
+	$date=NULL) {
 	// generate HTML table header
 	$loc_time = loc_get_str('time', true);
 	$result = <<<HTML
 	<table style="width: 100%;">
 		<tr>
-			<th scope="col" style="width: 20%;">$loc_time</th>
+			<th scope="col" style="width: $time_width;">$loc_time</th>
 HTML;
 	$monday_num = DAYS_OF_WEEK['Monday'];
 	$friday_num = DAYS_OF_WEEK['Friday'];
@@ -209,18 +208,26 @@ HTML;
 			$days[] = datefmt_format_object($dt_day, 'EEEE', LOCALE);
 		}
 	}
+	$day_css = '';
+	if ($day_width) {
+		$day_css = <<<CSS
+ style="width: $time_width;"
+CSS;
+	}
 	foreach ($days as $day_of_week) {
 		$result .= <<<HTML
-			<th scope="col">$day_of_week</th>
+			<th scope="col"$day_css>$day_of_week</th>
 HTML;
 	}
 	$result .= '</tr>';
 
 	// generate HTML table body
-	$db = mysql_db_connect();
+	$open_db = mysql_db_connect_if_null($db);
 	$timetable = office_hours_table($date_day_of_week, $db);
 	$times = office_hours_times($date_day_of_week, $db);
-	mysql_db_close($db);
+	if ($open_db) {
+		mysql_db_close($db);
+	}
 	// if !$date: make sure that Monday–Friday are included in $timetable
 	if (!$date) {
 		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {

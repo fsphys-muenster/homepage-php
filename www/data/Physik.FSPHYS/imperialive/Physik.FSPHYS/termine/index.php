@@ -12,41 +12,7 @@ require_once __DIR__ . '/../intern/intern-fs/admin/php-include/db_access.inc';
 <?php
 $db = mysql_db_connect();
 
-$sql = 'SELECT * FROM praesenzplan ORDER BY zeit ASC;';
-$query = $db->query($sql);
-echo <<<'HTML'
-	<table style="width: 100%;">
-		<colgroup>
-			<col style="width: 10%;">
-			<col style="width: 18%;">
-			<col style="width: 18%;">
-			<col style="width: 18%;">
-			<col style="width: 18%;">
-			<col style="width: 18%;">
-		</colgroup>
-		<tr>
-			<th scope="col">Zeit</th>
-			<th scope="col">Montag</th>
-			<th scope="col">Dienstag</th>
-			<th scope="col">Mittwoch</th>
-			<th scope="col">Donnerstag</th>
-			<th scope="col">Freitag</th>
-		</tr>
-HTML;
-while ($row = $query->fetch()) {
-	$time = $row['zeit'];
-	echo <<<HTML
-		<tr>
-			<td>$time</td>
-			<td>{$row['montag']}</td>
-			<td>{$row['dienstag']}</td>
-			<td>{$row['mittwoch']}</td>
-			<td>{$row['donnerstag']}</td>
-			<td>{$row['freitag']}</td>
-		</tr>
-HTML;
-}
-echo '</table>';
+echo office_hours_html($db, '10%', '18%');
 ?>
 
 <?php

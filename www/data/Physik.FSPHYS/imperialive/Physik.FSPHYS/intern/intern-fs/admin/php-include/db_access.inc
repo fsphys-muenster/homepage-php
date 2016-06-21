@@ -19,8 +19,20 @@ function mysql_db_connect() {
 	return $db;
 }
 
+/*
+	If not $db: create a new database connection (PDO) in it.
+	Return true if a connection was created, false otherwise.
+*/
+function mysql_db_connect_if_null(&$db) {
+	$open_db = !$db;
+	if ($open_db) {
+		$db = mysql_db_connect();
+	}
+	return $open_db;
+}
+
 function mysql_db_close(&$db) {
-	$db = null;
+	$db = NULL;
 }
 
 ?>

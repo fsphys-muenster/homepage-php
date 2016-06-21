@@ -1,4 +1,5 @@
 <article class="module extended"><div class="module-content">
+
 <?php
 require_once __DIR__ . '/admin/php-include/office_hours.inc';
 	
@@ -34,7 +35,7 @@ HTML;
 		$time = $row['zeit'];
 		$javascript = function($day, $time) {
 			return <<<JS
-			onMouseover="this.style='background-color: #d9ee83;';" onMouseout="this.style='';" onMouseDown="javascript:redirect('?praesenzplan=true&amp;day=$day&amp;time=$time');"
+			onmouseover="this.style='background-color: #d9ee83;';" onmouseout="this.style='';" onmousedown="redirect('?praesenzplan=true&amp;day=$day&amp;time=$time');"
 JS;
 		};
 		echo <<<HTML
@@ -83,7 +84,7 @@ function fepraesenzplan_anzeigen() {
 HTML;
 	$javascript = function($col, $id) {
 		return <<<JS
-		onMouseover="this.style='background-color: #d9ee83;';" onMouseout="this.style='';" onMouseDown="javascript:redirect('?fepraesenzplan=true&amp;col=$col&amp;id=$id');"
+		onmouseover="this.style='background-color: #d9ee83;';" onmouseout="this.style='';" onmousedown="redirect('?fepraesenzplan=true&amp;col=$col&amp;id=$id');"
 JS;
 	};
 	while ($row = $query->fetch()) {

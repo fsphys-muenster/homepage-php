@@ -17,7 +17,7 @@ $db = mysql_db_connect();
 
 if ($semester) {
 	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>';
-	echo office_hours_html($dt_now);
+	echo office_hours_html($db, '20%', NULL, $dt_now);
 }
 else {
 	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungsfreie Zeit</div>';
