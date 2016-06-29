@@ -1,12 +1,6 @@
 Options -MultiViews
 DirectoryIndex index.php index.html index.shtml /ErrNotFound.asis
 
-#This doesn't work :-(
-#<VirtualHost *:80>
-#    ServerName www.uni-muenster.de
-#    RedirectPermanent / https://www.uni-muenster.de/
-#</VirtualHost>
-
 RewriteEngine On
 
 # Define variable for /Physik.FSPHYS path
@@ -28,7 +22,7 @@ RewriteRule ^/?(.*)$ https://%{SERVER_NAME}%{ENV:site_dir}/$1 [L,R=permanent]
 RewriteRule ^(.*)/index\.(php|s?html)$ %{ENV:site_dir}/$1/ [L,R=permanent]
 RewriteRule ^index\.(php|s?html)$ %{ENV:site_dir}/ [L,R=permanent]
 
-# Redirect <...>.php, <...>.html to <...> (without file extension)
+# Redirect <...>.php, <...>.html, <...>.shtml to <...> (without file extension)
 # Only redirect if environment variable is set to avoid redirect loops
 # NOTE: Using the [END] flag instead of setting an environment variable is
 # better, but was first introduced in Apache 2.4!
@@ -40,23 +34,37 @@ RewriteCond %{ENV:redirected} !=1
 RewriteCond %{ENV:REDIRECT_redirected} !=1
 RewriteCond %{ENV:REDIRECT_REDIRECT_redirected} !=1
 RewriteCond %{ENV:REDIRECT_REDIRECT_REDIRECT_redirected} !=1
-RewriteRule ^(.+)\.(php|html)$ %{ENV:site_dir}/$1 [L,R=permanent]
+RewriteRule ^(.+)\.(php|s?html)$ %{ENV:site_dir}/$1 [L,R=permanent]
 # Alternative to the environment variable method: Look at %{THE_REQUEST}
 # (because this doesn't change even if the URL is rewritten)
 # Not sure how robust this is, though
-#RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s(.+)\.(php|html)
+#RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s(.+)\.(php|s?html)
 #RewriteRule ^ %1 [L,R]
 
-# Find file with file extension .php or .html on the filesystem for a URL
+# Find file with file extension .php, .html or .shtml on the filesystem for a URL
 # without file extension
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^ %{REQUEST_FILENAME}.php [L,E=redirected:1]
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^ %{REQUEST_FILENAME}.html [L,E=redirected:1]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.shtml -f
+RewriteRule ^ %{REQUEST_FILENAME}.shtml [L,E=redirected:1]
+
+# Execute main page as PHP (necessary because its template must be a .htms
+# file, which will only generate files ending in .html); cf.
+# https://www.uni-muenster.de/ZIV/Technik/WWW/WebspaceKonfig.html
+# Note: This sets PHP as the handler for ALL files called "index.html"
+# in this directory’s subdirectories – not sure how to avoid this without
+# putting a .htaccess file in every subdirectory...
+<Files "index.html">
+    AddHandler php5-script .html
+</Files>
 
 
 #=============================================================================
@@ -66,10 +74,36 @@ RewriteRule ^ %{REQUEST_FILENAME}.html [L,E=redirected:1]
 
 
 #=============================================================================
-# List of URLs which have been changed, leaving the old URL to redirect to the new one
+# URL redirects
+# URL for event calendar
+RedirectTemp /Physik.FSPHYS/termine/kalender \
+    /Rektorat/exec/termine.php?layout=toptermin-ergebnis&einrichtungsid=163
+RedirectTemp /Physik.FSPHYS/en/termine/kalender \
+    /Rektorat/exec/termine.php?layout=topterminenglish-ergebnis&einrichtungsid=163&language=english
+# URL for for study guide
+RedirectMatch temp ^/Physik\.FSPHYS/(en/)?studieren/studienfuehrer$ \
+    http://xn--studienfhrer-physik-dbc.de/Universität_Münster
+# URL for Facebook
+RedirectMatch temp ^/Physik\.FSPHYS/(en/)?fb$ \
+    https://www.facebook.com/fsphys/
 
-RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/ehemalige_sammlung(\.html)?$ /Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
-RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/Maskottchen_Fritz(\.html)?$  /Physik.FSPHYS/$1fachschaft/fachschaftler/maskottchen_fritz
-RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/bernd_hofschoeer(\.html)?$   /Physik.FSPHYS/$1fachschaft/fachschaftler/bernd_hofschroeer
-RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?news/physiker-party_20151019(\.html)?$ /Physik.FSPHYS/$1news/physiker-party_20151029
+# List of URLs which have been changed, leaving the old URL to redirect to the new one
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/ehemalige_sammlung(\.html)?$ \
+    /Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/verteiler_richtlinie(\.html)?$ \
+    /Physik.FSPHYS/$1service/verteiler
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/bernd_hofschoeer(\.html)?$ \
+    /Physik.FSPHYS/$1fachschaft/fachschaftler/bernd_hofschroeer
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/Maskottchen_Fritz(\.html)?$ \
+    /Physik.FSPHYS/$1fachschaft/fachschaftler/maskottchen_fritz
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?news/physiker-party_20151019(\.html)?$ \
+    /Physik.FSPHYS/$1news/physiker-party_20151029
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/bama-tage/(ap|ft|gp|kp|mp|pc|pi|tp|sonder)_2011(\.html)?$ \
+    /Physik.FSPHYS/$1studieren/bama-tage/$2
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-woche(/|/index\.html)?$ \
+    /Physik.FSPHYS/$1studieren/erstis/woche/
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-woche/u18-eltern(\.html)?$ \
+    /Physik.FSPHYS/$1studieren/erstis/u18-eltern
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-wochenende(/|/index\.html)?$ \
+    /Physik.FSPHYS/$1studieren/erstis/wochenende/
 
