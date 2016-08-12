@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../intern/intern-fs/admin/php-include/php_settings.inc';
-require_once __DIR__ . '/../intern/intern-fs/admin/php-include/db_access.inc';
+require_once 'db_access.inc';
+require_once 'office_hours.inc';
 ?>
 
 <?php
@@ -12,7 +12,7 @@ require_once __DIR__ . '/../intern/intern-fs/admin/php-include/db_access.inc';
 <?php
 $db = mysql_db_connect();
 
-echo office_hours_html($db, '10%', '18%');
+echo office_hours_html($db);
 ?>
 
 <?php

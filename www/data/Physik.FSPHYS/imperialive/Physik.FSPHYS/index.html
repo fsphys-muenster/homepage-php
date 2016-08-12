@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/intern/intern-fs/admin/php-include/php_settings.inc';
-require_once __DIR__ . '/intern/intern-fs/admin/php-include/office_hours.inc';
+require_once 'office_hours.inc';
 
 // max. rows to show in preview for office hours during break
 const FP_MAX_ROWS = 10;
@@ -17,7 +16,9 @@ $db = mysql_db_connect();
 
 if ($semester) {
 	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>';
-	echo office_hours_html($db, '20%', NULL, $dt_now);
+	$options = DEFAULT_HTML_OPTIONS;
+	$options['time_width'] = 20;
+	echo office_hours_html($db, $options, $dt_now);
 }
 else {
 	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungsfreie Zeit</div>';

@@ -9,6 +9,47 @@ require_once 'db_access.inc';
 */
 const UNSPECIFIED_END_TIME = '00:00:00';
 /*
+	Default options for the functions office_hours_html() and
+	office_hours_break_html().
+*/
+const DEFAULT_HTML_OPTIONS = array(
+	'edit_mode' => false,
+	'time_width' => 5,
+	// 'day_width': default undefined or, equivalently,
+	// 'day_width' => NULL,
+	// 'br_day_of_week_width': default undefined or, equivalently,
+	// 'br_day_of_week_width' => NULL,
+	// 'br_date_width': default undefined or, equivalently,
+	// 'br_date_width' => NULL,
+	'br_time_width' => 15,
+	// 'br_name_width': default undefined or, equivalently,
+	// 'br_name_width' => NULL,
+	'short' => false
+);
+/*
+	Attributes (CSS classes) used in the office hours schedule HTML table.
+*/
+const OH_CSS_PREFIX = 'fsphys_oh_';
+const OH_CSS_TABLE_CLASS = OH_CSS_PREFIX . 'table';
+const OH_CSS_TABLE_EDIT_CLASS = OH_CSS_PREFIX . 'table_edit';
+/*
+	SQL conditions to select a certain primary key (semester & break table).
+*/
+const PK_CONDITION = 'day = :day AND start_time = :start_time'
+	. ' AND end_time = :end_time';
+const BREAK_PK_CONDITION = '"date" = :day AND start_time = :start_time'
+	. ' AND end_time = :end_time';
+/*
+	The names of the columns in the SQL tables.
+*/
+const OH_COL_NAMES = array('day', 'start_time', 'end_time', 'name');
+const OH_KEY_COL_NAMES = array('day', 'start_time', 'end_time');
+const OH_BREAK_COL_NAMES = array(
+	'date', 'start_time', 'end_time', 'name', 'show'
+);
+const OH_BREAK_KEY_COL_NAMES = array('date', 'start_time', 'end_time');
+
+/*
 	Map between numerical values and text aliases for the days of the week, as
 	used in the ENUM defined in the MySQL database.
 */
@@ -84,8 +125,8 @@ function semester_info($date) {
 	return semester_info_fallback($date);
 }
 
-function valid_day_of_week($day) {
-	return key_exists($day, DAYS_OF_WEEK) || in_array($day, DAYS_OF_WEEK);
+function oh_valid_day_of_week($day) {
+	return key_exists($day, DAYS_OF_WEEK);
 }
 
 /*
@@ -147,7 +188,7 @@ function office_hours_times($db=NULL, $day=NULL) {
 	$sql = 'SELECT DISTINCT start_time, end_time FROM office_hours';
 	if ($day) {
 		if (!oh_valid_day_of_week($day)) {
-			throw new \DomainException('Value of $day is not valid: ' . $day);
+			throw new \DomainException("Value of \$day is not valid: $day");
 		}
 		$sql .= ' WHERE day = :day';
 	}
@@ -165,25 +206,83 @@ function office_hours_times($db=NULL, $day=NULL) {
 }
 
 /*
+	Returns all entries in the database table for the office hours during the
+	break, ordered by date → start_time → end_time (ascending).
+
+	If $db: Use $db as MySQL connection; else: create new MySQL connection.
+*/
+function office_hours_break_data($db=NULL) {
+	$opened_db = mysql_db_connect_if_null($db);
+	$sql = <<<'SQL'
+	SELECT * FROM office_hours_break ORDER BY date, start_time, end_time ASC;
+SQL;
+	$query = $db->query($sql);
+	$data = $query->fetchAll();
+	if ($opened_db) {
+		mysql_db_close($db);
+	}
+	return $data;
+}
+
+function oh_valid_col_name($break, $col) {
+	return $break ? in_array($col, OH_BREAK_COL_NAMES)
+		: in_array($col, OH_COL_NAMES);
+}
+
+function oh_table_data($break) {
+	$tbl_name = $break ? 'office_hours_break' : 'office_hours';
+	$day_col = $break ? 'date' : 'day';
+	return [$tbl_name, $day_col];
+}
+
+/*
+	$break (bool): Select which MySQL table to use (during semester or break).
+	$day: If $break: The value for the 'date' column
+	      Else: The value for the 'day' column
+	
+	Returns false on failure.
+*/
+/*
 	Returns a string containing the HTML table with the full office hours
 	schedule.
 	
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
-	$time_width: Width of the time column (CSS).
-	$day_width: Width of each day column (CSS).
+	
+	$html_options:
+	'edit_mode': Insert id and class attributes to allow the table to be used
+	for editing the schedule.
+	'day_width': Width of each day column (CSS) in percent;
+	if NULL: all day columns will have equal width.
+	'time_width': Width of the time column(s) (CSS) in percent (in edit mode,
+		both columns have this width, while in normal mode, both columns are
+		merged into one whose width is twice this value).
+	
 	If $date: The table will only contain the column corresponding to the day
 	of the week of $date, or the next Monday if $date is in the weekend.
-	$date must be a DateTimeImmutable.
 */
-function office_hours_html($db=NULL, $time_width='10%', $day_width=NULL,
+// XXX modify this to work like office_hours_break_html (get rid of the
+// office_hours_table stuff)
+function office_hours_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS,
 	$date=NULL) {
+	extract($html_options);
 	// generate HTML table header
-	$loc_time = loc_get_str('time', true);
-	$result = <<<HTML
-	<table style="width: 100%;">
-		<tr>
-			<th scope="col" style="width: $time_width;">$loc_time</th>
+	$table_classes = OH_CSS_TABLE_CLASS;
+	$time_width_dbl = 2 * $time_width;
+	if ($edit_mode) {
+		$table_classes .= ' ' . OH_CSS_TABLE_EDIT_CLASS;
+		$loc_start_time = loc_get_str('start time', true);
+		$loc_end_time = loc_get_str('end time', true);
+		$time_header = <<<HTML
+<th scope="col" style="width: $time_width%;">$loc_start_time</th>
+<th scope="col" style="width: $time_width%;">$loc_end_time</th>
 HTML;
+	}
+	else {
+		$loc_time = loc_get_str('time', true);
+		$time_header = <<<HTML
+<th scope="col" style="width: {$time_width_dbl}%;">$loc_time</th>
+HTML;
+	}
 	$monday_num = DAYS_OF_WEEK['Monday'];
 	$friday_num = DAYS_OF_WEEK['Friday'];
 	$date_day_of_week = NULL;
@@ -206,34 +305,39 @@ HTML;
 		// table from Monday to Friday if no date is given
 		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
 			$day_of_week = DAYS_OF_WEEK[$day_num];
-			$dt_day = new DateTime($day_of_week);
+			$dt_day = new \DateTime($day_of_week);
 			$days[] = datefmt_format_object($dt_day, 'EEEE', LOCALE);
 		}
 	}
-	$day_css = '';
-	if ($day_width) {
-		$day_css = <<<CSS
- style="width: $time_width;"
-CSS;
+	$result = <<<HTML
+	<table class="$table_classes">
+		<tr>
+			$time_header
+HTML;
+	if (!isset($day_width)) {
+		$day_width = (100 - $time_width_dbl) / 5;
 	}
+	$day_css = <<<CSS
+ style="width: $day_width%;"
+CSS;
 	foreach ($days as $day_of_week) {
 		$result .= <<<HTML
-			<th scope="col"$day_css>$day_of_week</th>
+			<th scope="col"$day_css>$day_of_week</th>\n
 HTML;
 	}
 	$result .= '</tr>';
 
 	// generate HTML table body
-	$open_db = mysql_db_connect_if_null($db);
-	$timetable = office_hours_table($date_day_of_week, $db);
-	$times = office_hours_times($date_day_of_week, $db);
-	if ($open_db) {
+	$opened_db = mysql_db_connect_if_null($db);
+	$timetable = office_hours_table($db, $date_day_of_week);
+	$times = office_hours_times($db, $date_day_of_week);
+	if ($opened_db) {
 		mysql_db_close($db);
 	}
 	// if !$date: make sure that Monday–Friday are included in $timetable
 	if (!$date) {
 		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
-			if (!key_exists($day_num)) {
+			if (!key_exists($day_num, $timetable)) {
 				$timetable[$day_num] = array();
 			}
 		}
@@ -242,25 +346,46 @@ HTML;
 	}
 	foreach ($times as $time_entry) {
 		list($start_time, $end_time) = $time_entry;
-		$dt_start_time = date_create($start_time);
+		$dt_start_time = new \DateTime($start_time);
 		$start_time_show = $dt_start_time->format('H');
 		if ($end_time == UNSPECIFIED_END_TIME || !$end_time) {
 			$loc_from = loc_get_str('from');
+			$end_time_show = '–';
 			$time_show = "$loc_from $start_time_show";
 		}
 		else {
-			$dt_end_time = date_create($end_time);
+			$dt_end_time = new \DateTime($end_time);
 			$end_time_show = $dt_end_time->format('H');
-			$time_show = "$start_time_show–$end_time_show";
+			$time_show = "{$start_time_show}–$end_time_show";
 		}
-		$result .= "<tr><td>$time_show</td>";
-		$time_key = "{$start_time}_{$end_time}";
-		foreach ($timetable as $day_data) {
+		if ($edit_mode) {
+			$qstr_base = "?break=&start_time=$start_time&end_time=$end_time";
+			$qstr_start = htmlspecialchars("$qstr_base&col=start_time");
+			$qstr_end = htmlspecialchars("$qstr_base&col=end_time");
+			$result .= <<<HTML
+		<tr>
+			<td><a href="$qstr_start">$start_time_show</a></td>
+			<td><a href="$qstr_end">$end_time_show</a></td>
+HTML;
+		}
+		else {
+			$result .= "<tr><td>$time_show</td>";
+		}
+		$time_key = "{$start_time}-{$end_time}";
+		foreach ($timetable as $day => $day_data) {
 			$name_show = '';
 			if (key_exists($time_key, $day_data)) {
 				$name_show = htmlspecialchars($day_data[$time_key]);
 			}
-			$result .= "<td>$name_show</td>";
+			if ($edit_mode) {
+				$qstr_name = htmlspecialchars("$qstr_base&day=$day&col=name");
+				$result .= <<<HTML
+			<td><a href="$qstr_name">$name_show</a></td>
+HTML;
+			}
+			else {
+				$result .= "<td>$name_show</td>";
+			}
 		}
 		$result .= '</tr>';
 	}
