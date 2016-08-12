@@ -3,11 +3,10 @@ The code used for the pages written in PHP on https://www.uni-muenster.de/Physik
 
 ## Execution
 In order for the included files to be found, PHP’s `include_path` .ini setting
-must include the path
-`/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/intern/intern-fs/admin/php-include`.
-This is set by the `.user.ini` file in
-`/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/` and so will be in effect
-for all scripts provided that evaluation of `.user.ini` files is enabled.
+must include the path `/www/data/Physik.FSPHYS/php_include`. This is set by the
+`.user.ini` file in `/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/` and
+so will be in effect for all scripts provided that evaluation of `.user.ini`
+files is enabled.
 
 ## Note on localization
 Localization is defined in `localization.inc`, which detects the correct locale
