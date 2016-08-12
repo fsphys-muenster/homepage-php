@@ -242,6 +242,148 @@ function oh_table_data($break) {
 	
 	Returns false on failure.
 */
+function office_hours_get($db, $break, $day, $start_time, $end_time, $col=NULL) {
+	if ($col && !oh_valid_col_name($break, $col)) {
+		return false;
+	}
+	list($tbl_name, ) = oh_table_data($break);
+	$PK_CONDITION = $break ? BREAK_PK_CONDITION : PK_CONDITION;
+	// compare enum integer indices as integers, not as strings
+	$day_dtype = is_int($day) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
+	$sql = "SELECT * FROM $tbl_name WHERE $PK_CONDITION;";
+	$opened_db = mysql_db_connect_if_null($db);
+	$query = $db->prepare($sql);
+	$query->bindValue(':day', $day, $day_dtype);
+	$query->bindValue(':start_time', $start_time);
+	$query->bindValue(':end_time', $end_time);
+	$query->execute();
+	$result = $query->fetch();
+	if ($opened_db) {
+		mysql_db_close($db);
+	}
+	if ($col) {
+		return $result[$col];
+	}
+	return $result;
+}
+
+function office_hours_insert($db, $break, $row) {
+	$col_names_arr = array_keys($row);
+	foreach ($col_names_arr as $col) {
+		if (!oh_valid_col_name($break, $col)) {
+			return false;
+		}
+	}
+	list($tbl_name, ) = oh_table_data($break);
+	// enclose column names in double quotes to guard against reserved names
+	$col_names = implode(', ', array_map(
+		function($x) { return '"' . $x . '"'; }, $col_names_arr));
+	// use the appropriate number of '?' placeholders for values
+	$val_names = implode(', ', array_fill(0, count($row), '?'));
+	$sql = "INSERT INTO $tbl_name ($col_names) VALUES($val_names);";
+	$opened_db = mysql_db_connect_if_null($db);
+	$query = $db->prepare($sql);
+	foreach (array_values($row) as $i => $val) {
+		$pdo_dtype = is_bool($val) ? \PDO::PARAM_BOOL : \PDO::PARAM_STR;
+		// bindValue() uses 1-indexed positions
+		$query->bindValue($i + 1, $val, $pdo_dtype);
+	}
+	try {
+		$result = $query->execute();
+	}
+	catch (\PDOException $ex) {
+		$result = false;
+	}
+	if ($opened_db) {
+		mysql_db_close($db);
+	}
+	return $result;
+}
+
+/*
+	$break (bool): Select which MySQL table to use (during semester or break).
+	$day: If $break: The value for the 'date' column
+	      Else: The value for the 'day' column
+	$col: The name of the table column whose value is to be set. A new row
+		for this key will be created if needed or the existing row will be
+		updated. The new or updated row will have the value $value for the
+		column $col.
+	
+	Returns true on success or false on failure.
+*/
+function office_hours_set($db, $break, $day, $start_time, $end_time,
+	$col, $value) {
+	if (!oh_valid_col_name($break, $col)) {
+		return false;
+	}
+	list($tbl_name, $day_col) = oh_table_data($break);
+	$key_arr = $break ? OH_BREAK_KEY_COL_NAMES : OH_KEY_COL_NAMES;
+	// if setting one of the key columns, the SQL query is slightly different
+	$set_key = in_array($col, $key_arr);
+	if ($set_key) {
+		$PK_CONDITION = $break ? BREAK_PK_CONDITION : PK_CONDITION;
+		$sql = "UPDATE $tbl_name SET $col = :value WHERE $PK_CONDITION;";
+	}
+	// insert row into table or update if row already exists (“upsert”);
+	// in standard SQL, this is done with the MERGE statement, but this is not
+	// available in MySQL
+	// https://en.wikipedia.org/wiki/Merge_%28SQL%29
+	else {
+		$sql = <<<SQL
+		INSERT INTO $tbl_name ($day_col, start_time, end_time, $col)
+			VALUES(:day, :start_time, :end_time, :value)
+			ON DUPLICATE KEY UPDATE $col = :value;
+SQL;
+	}
+	$opened_db = mysql_db_connect_if_null($db);
+	$query = $db->prepare($sql);
+	$query->bindValue(':day', $day);
+	$query->bindValue(':start_time', $start_time);
+	$query->bindValue(':end_time', $end_time);
+	$query->bindValue(':value', $value);
+	try {
+		$result = $query->execute();
+	}
+	catch (\PDOException $ex) {
+		$result = false;
+	}
+	// if setting a key column and the row didn’t exist, insert instead
+	if ($set_key && !$query->rowCount()) {
+		$row = [
+			$day_col => $day,
+			'start_time' => $start_time,
+			'end_time' => $end_time
+		];
+		$row[$col] = $value;
+		$result = office_hours_insert($db, $break, $row);
+	}
+	if ($opened_db) {
+		mysql_db_close($db);
+	}
+	return $result;
+}
+
+function office_hours_delete($db, $break, $day, $start_time, $end_time) {
+	list($tbl_name, ) = oh_table_data($break);
+	$PK_CONDITION = $break ? BREAK_PK_CONDITION : PK_CONDITION;
+	$sql = "DELETE FROM $tbl_name WHERE $PK_CONDITION;";
+	$opened_db = mysql_db_connect_if_null($db);
+	$query = $db->prepare($sql);
+	$query->bindValue(':day', $day);
+	$query->bindValue(':start_time', $start_time);
+	$query->bindValue(':end_time', $end_time);
+	try {
+		$result = $query->execute();
+	}
+	catch (\PDOException $ex) {
+		$result = false;
+	}
+	if ($opened_db) {
+		mysql_db_close($db);
+	}
+	return $result;
+}
+
 /*
 	Returns a string containing the HTML table with the full office hours
 	schedule.
