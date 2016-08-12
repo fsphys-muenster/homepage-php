@@ -393,4 +393,162 @@ HTML;
 	return $result;
 }
 
-?>
+/*
+	Returns a string containing the HTML table with the full office hours
+	schedule during the break period.
+	
+	If $db: Use $db as MySQL connection; else: create new MySQL connection.
+	
+	$html_options:
+	'edit_mode': Insert id and class attributes to allow the table to be used
+	for editing the schedule.
+	'br_*_width': Width of the (*)-column (CSS) in percent
+	'br_time_width': Width of the time column(s) (CSS) in percent (in edit
+		mode, both columns have this width, while in normal mode, both columns
+		are merged into one whose width is twice this value).
+	'short': Show “day of week” column if true
+*/
+function office_hours_break_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS) {
+	extract($html_options);
+	// generate HTML table header
+	$table_classes = OH_CSS_TABLE_CLASS;
+	$loc_day_of_week = loc_get_str('day_of_week', true);
+	$day_of_week_css = '';
+	if (isset($br_day_of_week_width)) {
+		$day_of_week_css = <<<CSS
+ style="width: $br_day_of_week_width%;"
+CSS;
+	}
+	$day_of_week_header = $short ? '' : <<<HTML
+<th scope="col"$day_of_week_css>$loc_day_of_week</th>
+HTML;
+	$edit_header = '';
+	// for editing: one individual table column for each database column
+	// (“edit” column includes “show” value and settings like deleting a row)
+	if ($edit_mode) {
+		$table_classes .= ' ' . OH_CSS_TABLE_EDIT_CLASS;
+		$loc_start_time = loc_get_str('start time', true);
+		$loc_end_time = loc_get_str('end time', true);
+		$loc_edit = loc_get_str('edit', true);
+		$time_header = <<<HTML
+<th scope="col" style="width: $br_time_width%;">$loc_start_time</th>
+<th scope="col" style="width: $br_time_width%;">$loc_end_time</th>
+HTML;
+		$edit_header = <<<HTML
+<th scope="col">$loc_edit</th>
+HTML;
+	}
+	// for display: only one time column (from … to …)
+	else {
+		$loc_time = loc_get_str('time', true);
+		$br_time_width *= 2;
+		$time_header = <<<HTML
+<th scope="col" style="width: $br_time_width%;">$loc_time</th>
+HTML;
+	}
+	$date_css = '';
+	if (isset($br_date_width)) {
+		$date_css = <<<CSS
+ style="width: $br_date_width%;"
+CSS;
+	}
+	$name_css = '';
+	if (isset($br_name_width)) {
+		$name_css = <<<CSS
+ style="width: $br_name_width%;"
+CSS;
+	}
+	$loc_date = loc_get_str('date', true);
+	$loc_name = loc_get_str('name', true);
+	$result = <<<HTML
+	<table class="$table_classes">
+		<tr>
+			$day_of_week_header
+			<th scope="col"$date_css>$loc_date</th>
+			$time_header
+			<th scope="col"$name_css>$loc_name</th>
+			$edit_header
+		</tr>
+HTML;
+
+	// generate HTML table body
+	$opened_db = mysql_db_connect_if_null($db);
+	$data = office_hours_break_data($db);
+	if ($opened_db) {
+		mysql_db_close($db);
+	}
+	$loc_to = loc_get_str('to');
+	foreach ($data as $i => $row) {
+		list($date, $start_time, $end_time, $name, $show) = $row;
+		if (!$show && !$edit_mode) {
+			continue;
+		}
+		$dt_date = new \DateTime($date);
+		$dt_start_time = new \DateTime($start_time);
+		$dt_end_time = new \DateTime($end_time);
+		$start_time_show = $dt_start_time->format('H:i');
+		$end_time_show = $dt_end_time->format('H:i');
+		if ($short) {
+			$time_show = $start_time_show;
+			$day_of_week_cell = '';
+		}
+		else {
+			$time_show = "$start_time_show $loc_to $end_time_show";
+			$day_of_week = datefmt_format_object($dt_date, 'EEEE', LOCALE);
+			$day_of_week_cell = "<td>$day_of_week</td>";
+		}
+		$date_show = $date;
+		$name_show = htmlspecialchars($name);
+		$qstr_base = "?break=1&day=$date&start_time=$start_time"
+			. "&end_time=$end_time";
+		if ($edit_mode) {
+			$qstr_date = htmlspecialchars("$qstr_base&col=date");
+			$qstr_start = htmlspecialchars("$qstr_base&col=start_time");
+			$qstr_end = htmlspecialchars("$qstr_base&col=end_time");
+			$qstr_name = htmlspecialchars("$qstr_base&col=name");
+			$qstr_delete = htmlspecialchars("$qstr_base&delete");
+			$loc_show = loc_get_str('show');
+			$checked = $show ? ' checked' : '';
+			$date_show = <<<HTML
+<a href="$qstr_date">$date_show</a>
+HTML;
+			$time_cells = <<<HTML
+<td><a href="$qstr_start">$start_time_show</a></td>
+<td><a href="$qstr_end">$end_time_show</a></td>
+HTML;
+			$name_show = <<<HTML
+<a href="$qstr_name">$name_show</a>
+HTML;
+			// PHP’s parsing of request data allows easily creating arrays
+			// https://secure.php.net/manual/en/reserved.variables.post.php#87650
+			$edit_cell = <<<HTML
+<td class="editcol">
+	<input name="r[{$i}][date]" type="hidden" value="$date" />
+	<input name="r[{$i}][start_time]" type="hidden" value="$start_time" />
+	<input name="r[{$i}][end_time]" type="hidden" value="$end_time" />
+	<label><input name="r[{$i}][show]" type="checkbox"$checked value="" />
+		$loc_show</label>
+	|
+	<a href="$qstr_delete">❌</a>
+</td>
+HTML;
+		}
+		else {
+			$time_cells = "<td>$time_show</td>";
+			$edit_cell = '';
+		}
+		// append row to HTML table
+		$result .= <<<HTML
+		<tr>
+			$day_of_week_cell
+			<td>$date_show</td>
+			$time_cells
+			<td>$name_show</td>
+			$edit_cell
+		</tr>
+HTML;
+	}
+	$result .= '</table>';
+	return $result;
+}
+
