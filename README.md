@@ -1,14 +1,18 @@
 # homepage-php
 The code used for the pages written in PHP on https://www.uni-muenster.de/Physik.FSPHYS/.
 
+## Execution
+In order for the included files to be found, PHP’s `include_path` .ini setting
+must include the path
+`/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/intern/intern-fs/admin/php-include`.
+This is set by the `.user.ini` file in
+`/www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/` and so will be in effect
+for all scripts provided that evaluation of `.user.ini` files is enabled.
+
 ## Note on localization
 Localization is defined in `localization.inc`, which detects the correct locale
-to use from its location on the file system. In order for this to work, a copy
-of `localization.inc` must be present in each of the subtrees for the different
-languages (`…/en/…`, `…/fr/…` etc.). (Note that the `.inc` files must be
-present in all the subtrees anyway because they are included through a path
-relative to the executing script’s directory). Alternatively, a script can define
-the constant `LOCALE` (e.g. `const LOCALE = 'de_DE'`) *before* including
-`localization.inc` and set the default locale used by `localization.inc` in
-this way.
+to use from the location of the executed script on the file system.
+Alternatively, a script can define the constant `LOCALE` (e.g.
+`const LOCALE = 'de_DE'`) *before* including `localization.inc` and set the
+default locale used by `localization.inc` in this way.
 

@@ -1,18 +1,25 @@
 <?php
-require_once __DIR__ . '/php_settings.inc';
-
+namespace de\uni_muenster\fsphys;
+/*
+	Connects to the MySQL database at mysql5.uni-muenster.de returning a PDO
+	object.
+	
+	Information on PDO:
+	https://secure.php.net/manual/en/class.pdo.php
+*/
 function mysql_db_connect() {
 	$db_server = 'mysql5.uni-muenster.de';
 	$db_name = '*****';
 	$db_user = '*****';
 	$db_password = '*****';
 	try {
-		$db = new PDO("mysql:host=$db_server;dbname=$db_name;charset=utf8",
+		$db = new \PDO("mysql:host=$db_server;dbname=$db_name;charset=utf8",
 			$db_user, $db_password);
 	}
-	catch (PDOException $ex) {
-		throw new RuntimeException('Could not connect to the database!');
+	catch (\PDOException $ex) {
+		throw new \RuntimeException('Could not connect to the database!');
 	}
+	$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 	// see https://dev.mysql.com/doc/refman/en/sql-mode.html for information
 	// on MySQL modes
 	$db->query("SET sql_mode = 'ANSI,TRADITIONAL';");
@@ -20,7 +27,7 @@ function mysql_db_connect() {
 }
 
 /*
-	If not $db: create a new database connection (PDO) in it.
+	If not $db: create a new database connection (PDO) in $db.
 	Return true if a connection was created, false otherwise.
 */
 function mysql_db_connect_if_null(&$db) {
@@ -35,4 +42,3 @@ function mysql_db_close(&$db) {
 	$db = NULL;
 }
 
-?>

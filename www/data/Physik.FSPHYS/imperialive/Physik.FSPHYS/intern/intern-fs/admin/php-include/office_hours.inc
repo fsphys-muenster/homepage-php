@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/php_settings.inc';
-require_once __DIR__ . '/localization.inc';
-require_once __DIR__ . '/db_access.inc';
+namespace de\uni_muenster\fsphys;
+require_once 'localization.inc';
+require_once 'db_access.inc';
 
 /*
 	The special value of the end_time column in the office_hours database
@@ -40,32 +40,34 @@ function semester_info_fallback($date) {
 	$is_ss = $month >= 4 && $month < 10;
 	// get dates for current and next semester
 	// WS lecture start: ≈ 7th October, SS lecture start: ≈ 7th April
-	$ws_start = new DateTime("$year-10-07");
-	if ($ws_start > $date && !$is_ss) {
-		// subtract 1 year
-		$ws_start->sub(new DateInterval('P1Y'));
-	}
-	$ss_start = new DateTime("$year-04-07");
-	if ($ss_start < $date && !$is_ss) {
-		// subtract 1 year
-		$ss_start->add(new DateInterval('P1Y'));
+	$ws_start = new \DateTime("$year-10-07");
+	$ss_start = new \DateTime("$year-04-07");
+	// correct year if we are in WS
+	if (!$is_ss) {
+		if ($ws_start > $date) {
+			// subtract 1 year
+			$ws_start->sub(new \DateInterval('P1Y'));
+		}
+		if ($ss_start < $date) {
+			// add 1 year
+			$ss_start->add(new \DateInterval('P1Y'));
+		}
 	}
 	$ws_start_yr = $ws_start->format('Y');
 	$ws_start_yr_nxt = $ws_start_yr + 1;
 	// WS lecture end: ≈ 2nd February, SS lecture end: ≈ 20th July
-	$ws_lecture_end = new DateTime("$ws_start_yr_nxt-02-02");
-	$ss_lecture_end = new DateTime("$ws_start_yr-07-20");
+	$ws_lecture_end = new \DateTime("$ws_start_yr_nxt-02-02");
+	$ss_lecture_end = new \DateTime("$ws_start_yr-07-20");
 	// during semester: true; during break: false
 	$semester = ($date >= $ss_start && $date < $ss_lecture_end)
 		|| ($date >= $ws_start && $date < $ws_lecture_end);
-	
-	res = array(
+	$res = array(
 		'summer_winter' => $is_ss ? 'SS' : 'WS',
 		'lecture_start' => $is_ss ? $ss_start : $ws_start,
 		'lecture_end' => $is_ss ? $ss_end : $ws_end,
 		'during_semester' => $semester
 	);
-	return res;
+	return $res;
 }
 
 /*
@@ -96,24 +98,24 @@ function valid_day_of_week($day) {
 	element of the keys or the values of DAYS_OF_WEEK.
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
-function office_hours_table($day=NULL, $db=NULL) {
-	$open_db = mysql_db_connect_if_null($db);
+function office_hours_table($db=NULL, $day=NULL) {
+	$opened_db = mysql_db_connect_if_null($db);
 	$sql = 'SELECT day+0 as day_num, start_time, end_time, name'
 		. ' FROM office_hours';
 	if ($day) {
-		if (!valid_day_of_week($day)) {
-			throw new DomainException('Value of $day is not valid: ' . $day);
+		if (!oh_valid_day_of_week($day)) {
+			throw new \DomainException("Value of \$day is not valid: $day");
 		}
-		$sql .= ' WHERE day = :day'
+		$sql .= ' WHERE day = :day';
 	}
-	$sql .= ' ORDER BY day_num, start_time, end_time ASC;'
+	$sql .= ' ORDER BY day_num, start_time, end_time ASC;';
 	$query = $db->prepare($sql);
 	if ($day) {
 		$query->bindValue(':day', $day);
 	}
 	$query->execute();
 	$data = $query->fetchAll();
-	if ($open_db) {
+	if ($opened_db) {
 		mysql_db_close($db);
 	}
 
@@ -124,7 +126,7 @@ function office_hours_table($day=NULL, $db=NULL) {
 		if (!key_exists($day_num, $result)) {
 			$result[$day_num] = array();
 		}
-		$time_key = $row['start_time'] . '_' . $row['end_time'];
+		$time_key = $row['start_time'] . '-' . $row['end_time'];
 		$result[$day_num][$time_key] = $row['name'];
 	}
 	return $result;
@@ -140,13 +142,12 @@ function office_hours_table($day=NULL, $db=NULL) {
 	element of the keys or the values of DAYS_OF_WEEK.
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
-function office_hours_times($day=NULL, $db=NULL) {
-	$open_db = mysql_db_connect_if_null($db);
-	}
+function office_hours_times($db=NULL, $day=NULL) {
+	$opened_db = mysql_db_connect_if_null($db);
 	$sql = 'SELECT DISTINCT start_time, end_time FROM office_hours';
 	if ($day) {
-		if (!valid_day_of_week($day)) {
-			throw new DomainException('Value of $day is not valid: ' . $day);
+		if (!oh_valid_day_of_week($day)) {
+			throw new \DomainException('Value of $day is not valid: ' . $day);
 		}
 		$sql .= ' WHERE day = :day';
 	}
@@ -157,7 +158,7 @@ function office_hours_times($day=NULL, $db=NULL) {
 	}
 	$query->execute();
 	$data = $query->fetchAll();
-	if ($open_db) {
+	if ($opened_db) {
 		mysql_db_close($db);
 	}
 	return $data;
@@ -193,9 +194,10 @@ HTML;
 		if ($date_day_of_week >= DAYS_OF_WEEK['Saturday']) {
 			$days_to_monday = 8 - $date_day_of_week;
 			// set DateTime to next Monday
-			$date = $date->add(new DateInterval("P{$days_to_monday}D"));
+			$date = $date->add(new \DateInterval("P{$days_to_monday}D"));
 		}
 		// 'EEEE' →  full day of week in PHP intl; see IntlDateFormatter
+		// https://secure.php.net/manual/en/class.intldateformatter.php
 		// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html#details
 		$days = array(datefmt_format_object($date, 'EEEE', LOCALE));
 	}
