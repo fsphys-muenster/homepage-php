@@ -5,8 +5,8 @@ table.fsphys_oh_table {
 table.fsphys_oh_table.fsphys_oh_table_edit td {
 	padding: 0;
 }
-/* see https://www.uni-muenster.de/wwu/css/main.css */
-table.fsphys_oh_table td a {
+/* same padding as in https://www.uni-muenster.de/wwu/css/main.css for <td> */
+table.fsphys_oh_table_edit td:not(.editcol) a {
 	display: block;
 	padding: 9px 10px;
 	color: inherit;
