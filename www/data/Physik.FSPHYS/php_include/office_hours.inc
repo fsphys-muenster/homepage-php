@@ -12,7 +12,7 @@ const UNSPECIFIED_END_TIME = '00:00:00';
 	Default options for the functions office_hours_html() and
 	office_hours_break_html().
 */
-const DEFAULT_HTML_OPTIONS = array(
+const DEFAULT_HTML_OPTIONS = [
 	'edit_mode' => false,
 	'time_width' => 5,
 	// 'day_width': default undefined or, equivalently,
@@ -25,7 +25,7 @@ const DEFAULT_HTML_OPTIONS = array(
 	// 'br_name_width': default undefined or, equivalently,
 	// 'br_name_width' => NULL,
 	'short' => false
-);
+];
 /*
 	Attributes (CSS classes) used in the office hours schedule HTML table.
 */
@@ -42,18 +42,16 @@ const BREAK_PK_CONDITION = '"date" = :day AND start_time = :start_time'
 /*
 	The names of the columns in the SQL tables.
 */
-const OH_COL_NAMES = array('day', 'start_time', 'end_time', 'name');
-const OH_KEY_COL_NAMES = array('day', 'start_time', 'end_time');
-const OH_BREAK_COL_NAMES = array(
-	'date', 'start_time', 'end_time', 'name', 'show'
-);
-const OH_BREAK_KEY_COL_NAMES = array('date', 'start_time', 'end_time');
+const OH_COL_NAMES = ['day', 'start_time', 'end_time', 'name'];
+const OH_KEY_COL_NAMES = ['day', 'start_time', 'end_time'];
+const OH_BREAK_COL_NAMES = ['date', 'start_time', 'end_time', 'name', 'show'];
+const OH_BREAK_KEY_COL_NAMES = ['date', 'start_time', 'end_time'];
 
 /*
 	Map between numerical values and text aliases for the days of the week, as
 	used in the ENUM defined in the MySQL database.
 */
-const DAYS_OF_WEEK = array(
+const DAYS_OF_WEEK = [
 	1 => 'Monday',
 	'Tuesday',
 	'Wednesday',
@@ -68,7 +66,7 @@ const DAYS_OF_WEEK = array(
 	'Friday' => 5,
 	'Saturday' => 6,
 	'Sunday' => 7
-);
+];
 
 /*
 	Fallback function for semester_info() if there is no database information
@@ -102,24 +100,24 @@ function semester_info_fallback($date) {
 	// during semester: true; during break: false
 	$semester = ($date >= $ss_start && $date < $ss_lecture_end)
 		|| ($date >= $ws_start && $date < $ws_lecture_end);
-	$res = array(
+	$res = [
 		'summer_winter' => $is_ss ? 'SS' : 'WS',
 		'lecture_start' => $is_ss ? $ss_start : $ws_start,
 		'lecture_end' => $is_ss ? $ss_end : $ws_end,
 		'during_semester' => $semester
-	);
+	];
 	return $res;
 }
 
 /*
 	Returns an array containing information about what semester $date is in:
-	array(
+	[
 		'summer_winter' => 'SS' or 'WS',
 		'lecture_start' => lecture start date for the semester (DateTime),
 		'lecture_end' => lecture end date for the semester (DateTime),
 		'during_semester' => if $date is during the semester (between
 			lecture_start and lecture_end) or during the break
-	);
+	]
 */
 function semester_info($date) {
 	return semester_info_fallback($date);
@@ -161,11 +159,11 @@ function office_hours_table($db=NULL, $day=NULL) {
 	}
 
 	// transfer data from SQL query into 2D array
-	$result = array();
+	$result = [];
 	foreach ($data as $row) {
 		$day_num = $row['day_num'];
 		if (!key_exists($day_num, $result)) {
-			$result[$day_num] = array();
+			$result[$day_num] = [];
 		}
 		$time_key = $row['start_time'] . '-' . $row['end_time'];
 		$result[$day_num][$time_key] = $row['name'];
@@ -440,10 +438,10 @@ HTML;
 		// 'EEEE' →  full day of week in PHP intl; see IntlDateFormatter
 		// https://secure.php.net/manual/en/class.intldateformatter.php
 		// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html#details
-		$days = array(datefmt_format_object($date, 'EEEE', LOCALE));
+		$days = [datefmt_format_object($date, 'EEEE', LOCALE)];
 	}
 	else {
-		$days = array();
+		$days = [];
 		// table from Monday to Friday if no date is given
 		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
 			$day_of_week = DAYS_OF_WEEK[$day_num];
@@ -480,7 +478,7 @@ HTML;
 	if (!$date) {
 		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
 			if (!key_exists($day_num, $timetable)) {
-				$timetable[$day_num] = array();
+				$timetable[$day_num] = [];
 			}
 		}
 		// restore key order

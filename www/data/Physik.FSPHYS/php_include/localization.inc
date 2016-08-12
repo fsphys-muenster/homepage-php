@@ -22,8 +22,8 @@ if (!defined('LOCALE')) {
 	}
 }
 
-$LOC_STRINGS = array(
-	'de_DE' => array(
+$LOC_STRINGS = [
+	'de_DE' => [
 		'date' => 'Datum',
 		'day_of_week' => 'Wochentag',
 		'edit' => 'bearbeiten',
@@ -38,8 +38,8 @@ $LOC_STRINGS = array(
 		'start time' => 'Start&shy;zeit',
 		'time' => 'Zeit',
 		'to' => 'bis',
-	),
-	'en_US' => array(
+	],
+	'en_US' => [
 		'date' => 'date',
 		'day_of_week' => 'day of week',
 		'edit' => 'edit',
@@ -54,8 +54,8 @@ $LOC_STRINGS = array(
 		'start time' => 'start time',
 		'time' => 'time',
 		'to' => 'to',
-	),
-);
+	],
+];
 $LOC_STRINGS['de'] = &$LOC_STRINGS['de_DE'];
 $LOC_STRINGS['en'] = &$LOC_STRINGS['en_US'];
 
