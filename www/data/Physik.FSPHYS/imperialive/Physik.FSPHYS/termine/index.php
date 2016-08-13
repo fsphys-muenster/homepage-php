@@ -1,4 +1,6 @@
 <?php
+use de\uni_muenster\fsphys;
+require_once 'error_handler.inc';
 require_once 'db_access.inc';
 require_once 'office_hours.inc';
 ?>

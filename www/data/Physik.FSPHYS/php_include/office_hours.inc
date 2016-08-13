@@ -1,5 +1,6 @@
 <?php
 namespace de\uni_muenster\fsphys;
+require_once 'error_handler.inc';
 require_once 'localization.inc';
 require_once 'db_access.inc';
 
@@ -546,7 +547,7 @@ HTML;
 	'br_time_width': Width of the time column(s) (CSS) in percent (in edit
 		mode, both columns have this width, while in normal mode, both columns
 		are merged into one whose width is twice this value).
-	'short': Show “day of week” column if true
+	'short': Show “day of week” column if false
 */
 function office_hours_break_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS) {
 	extract($html_options);

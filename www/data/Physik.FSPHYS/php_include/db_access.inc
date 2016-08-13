@@ -1,5 +1,7 @@
 <?php
 namespace de\uni_muenster\fsphys;
+require_once 'error_handler.inc';
+
 /*
 	Connects to the MySQL database at mysql5.uni-muenster.de returning a PDO
 	object.
@@ -12,13 +14,8 @@ function mysql_db_connect() {
 	$db_name = '*****';
 	$db_user = '*****';
 	$db_password = '*****';
-	try {
-		$db = new \PDO("mysql:host=$db_server;dbname=$db_name;charset=utf8",
-			$db_user, $db_password);
-	}
-	catch (\PDOException $ex) {
-		throw new \RuntimeException('Could not connect to the database!');
-	}
+	$db = new \PDO("mysql:host=$db_server;dbname=$db_name;charset=utf8",
+		$db_user, $db_password);
 	$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 	// see https://dev.mysql.com/doc/refman/en/sql-mode.html for information
 	// on MySQL modes

@@ -1,4 +1,6 @@
 <?php
+use de\uni_muenster\fsphys;
+require_once 'error_handler.inc';
 require_once 'office_hours.inc';
 
 // max. rows to show in preview for office hours during break
@@ -10,62 +12,24 @@ const FP_MAX_ROWS = 10;
 <h2>Aktuelle Präsenzzeiten</h2>
 
 <?php
-$dt_now = new DateTimeImmutable();
-$semester = semester_info($dt_now)['during_semester'];
-$db = mysql_db_connect();
+$dt_now = new \DateTimeImmutable();
+$semester = fsphys\semester_info($dt_now)['during_semester'];
+$db = fsphys\mysql_db_connect();
 
 if ($semester) {
 	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>';
-	$options = DEFAULT_HTML_OPTIONS;
+	$options = fsphys\DEFAULT_HTML_OPTIONS;
 	$options['time_width'] = 20;
-	echo office_hours_html($db, $options, $dt_now);
+	echo fsphys\office_hours_html($db, $options, $dt_now);
 }
 else {
 	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungsfreie Zeit</div>';
-
-	$sql = 'SELECT Anzahl FROM fepraesenzplan WHERE ID = 0;';
-	$max = $db->query($sql)->fetch()[0];
-
-	$sql = 'SELECT * FROM fepraesenzplan ORDER BY ID ASC;';
-	$query = $db->query($sql);
-	echo <<<'HTML'
-	<table style="width: 100%;">
-		<tr>
-			<th scope="col" style="width: 30%;">Datum</th>
-			<th scope="col" style="width: 20%;">Zeit</th>
-			<th scope="col">Name</th>
-		</tr>
-HTML;
-	$row_num = 0;
-	$display_num = 0;
-	while (($row = $query->fetch()) && $row_num < $max && $display_num < FP_MAX_ROWS) {
-		$row_num++;
-		// DateTime for yesterday: subtract 1 day
-		$dt_yesterday = $dt_now->sub(new DateInterval('P1D'));
-		// don't display entries in the past
-		$dt_row_date = date_create($row['Datum']);
-		if ($dt_row_date < $dt_yesterday) {
-			continue;
-		}
-		$display_num++;
-		$date_show = $row['Datum'];
-		// get localized day of week from date field (cf. above)
-		//$day_of_week_show = datefmt_format_object($dt_row_date, 'EEEE', 'de_DE');
-		// convert times DateTime objects and format
-		$dt_row_starttime = date_create($row['starttime']);
-		$starttime_show = $dt_row_starttime->format('H:i');
-		echo <<<HTML
-		<tr>
-			<td>$date_show</td>
-			<td>$starttime_show</td>
-			<td>{$row['name']}</td>
-		</tr>
-HTML;
-	}
-	echo '</table>';
+	$options = fsphys\DEFAULT_HTML_OPTIONS;
+	$options['short'] = true;
+	echo fsphys\office_hours_html($db, $options, $dt_now);
 }
 
-mysql_db_close($db);
+fsphys\mysql_db_close($db);
 ?>
 
 <p><a class="int" href="/Physik.FSPHYS/termine/">Vollständiger Präsenzplan</a></p>

@@ -1,5 +1,6 @@
 <?php
 use de\uni_muenster\fsphys;
+require_once 'error_handler.inc';
 require_once 'office_hours.inc';
 
 function dget($dict, $key, $default=NULL) {
@@ -15,16 +16,32 @@ function keys_set($arr, ...$keys) {
 	return true;
 }
 
-function update_times($db, $time_col, $old_val, $new_val) {
+function update_times($db, $start_time, $end_time, $time_col, $new_time) {
 	if (!in_array($time_col, ['start_time', 'end_time'])) {
 		return false;
 	}
+	if ($time_col == 'start_time') {
+		$old_time = $start_time;
+		$other_time_col = 'end_time';
+	}
+	else {
+		$old_time = $end_time;
+		$other_time_col = 'start_time';
+	}
+	// overwrite rows that already exist;
+	// this could be done with the standard MERGE statement, but this is not
+	// available in MySQL
+	// https://en.wikipedia.org/wiki/Merge_%28SQL%29
 	$sql = <<<SQL
-	UPDATE office_hours SET $time_col = :new_val WHERE $time_col = :old_val;
+	DELETE FROM office_hours
+		WHERE $time_col = :new_time AND $other_time_col = :other_time;
+	UPDATE office_hours SET $time_col = :new_time
+		WHERE $time_col = :old_time AND $other_time_col = :other_time;
 SQL;
 	$query = $db->prepare($sql);
-	$query->bindValue(':old_val', $old_val);
-	$query->bindValue(':new_val', $new_val);
+	$query->bindValue(':old_time', $old_time);
+	$query->bindValue(':new_time', $new_time);
+	$query->bindValue(':other_time', $$other_time_col);
 	$result = $query->execute();
 	return $result;
 }
@@ -86,7 +103,7 @@ if (isset($_GET['break'])) {
 		// only $show_mask_time
 		else {
 			$req_day = '';
-			$val = $data_arr[$req_col];
+			$val = dget($data_arr, $req_col);
 		}
 		$val = htmlspecialchars($val);
 ?>
@@ -146,7 +163,8 @@ if (isset($_GET['break'])) {
 			// !$req_day means that times are being set in the non-break
 			// schedule
 			else {
-				update_times($db, $req_col, $data_arr[$req_col], $raw_val);
+				update_times($db, $req_start_time, $req_end_time, $req_col,
+					$raw_val);
 			}
 		}
 		elseif ($new_entry) {
