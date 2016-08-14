@@ -75,40 +75,8 @@ mysql_db_close($db);
 */
 ?>
 
-<!-- Javascript to select the correct schedule tab depending on the date
+<!-- JavaScript to select the correct schedule tab depending on the date
      (during the semester or the semester break) -->
-<script type="text/javascript">
-	// note: month ranges from 0 to 11 in JS Date objects
-	function is_ss(date) {
-		var month = date.getMonth();
-		// between start of April and end of September
-		return month >= 3 && month < 9;
-	}
-	var current_date = new Date();
-	var current_year = current_date.getFullYear();
-	// get dates for current and next semester
-	// WS lecture start: ≈ 7th October, SS lecture start: ≈ 7th April
-	var ws_start = new Date(current_year, 9, 7);
-	if (ws_start > current_date && !is_ss(current_date)) {
-		ws_start.setFullYear(ws_start.getFullYear() - 1);
-	}
-	var ss_start = new Date(current_year, 3, 7);
-	if (ss_start < current_date && !is_ss(current_date)) {
-		ss_start.setFullYear(ss_start.getFullYear() + 1);
-	}
-	// WS lecture end: ≈ 1st February, SS lecture end: ≈ 20th July
-	var ws_lecture_end = new Date(ws_start.getFullYear() + 1, 1, 1);
-	var ss_lecture_end = new Date(ws_start.getFullYear(), 6, 20);
-	document.addEventListener('DOMContentLoaded', function() {
-		// get tab tags
-		var tabs = $('ul.element.tabs').children();
-		if ((current_date >= ss_start && current_date < ss_lecture_end)
-			|| (current_date >= ws_start && current_date < ws_lecture_end)) {
-			tabClicks($(tabs.get(0)));
-		}
-		else {
-			tabClicks($(tabs.get(1)));
-		}
-	});
-</script>
+<script type="text/javascript"
+	src="/Physik.FSPHYS/js/office_hours_date_select.js"></script>
 
