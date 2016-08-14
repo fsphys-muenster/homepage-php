@@ -16,6 +16,7 @@ function mysql_db_connect() {
 	$db_password = '*****';
 	$db = new \PDO("mysql:host=$db_server;dbname=$db_name;charset=utf8",
 		$db_user, $db_password);
+	// throw exceptions on PDO errors
 	$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 	// see https://dev.mysql.com/doc/refman/en/sql-mode.html for information
 	// on MySQL modes

@@ -20,7 +20,7 @@ function update_times($db, $start_time, $end_time, $time_col, $new_time) {
 	if (!in_array($time_col, ['start_time', 'end_time'])) {
 		return false;
 	}
-	if ($time_col == 'start_time') {
+	if ($time_col === 'start_time') {
 		$old_time = $start_time;
 		$other_time_col = 'end_time';
 	}

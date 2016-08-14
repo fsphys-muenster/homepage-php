@@ -4,35 +4,39 @@ require_once 'error_handler.inc';
 require_once 'office_hours.inc';
 
 // max. rows to show in preview for office hours during break
-const FP_MAX_ROWS = 10;
+const OH_BREAK_MAX_ROWS = 9;
 ?>
 
 <article class="module short">
 <div class="module-content">
-<h2>Aktuelle Präsenzzeiten</h2>
+<h2><?=fsphys\loc_get_str('current office hours', true)?></h2>
+
+<div class="subhead" style="margin: 1em 0;">
 
 <?php
-$dt_now = new \DateTimeImmutable();
+$dt_now = new \DateTime();
 $semester = fsphys\semester_info($dt_now)['during_semester'];
 $db = fsphys\mysql_db_connect();
-
 if ($semester) {
-	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungszeit</div>';
+	echo fsphys\loc_get_str('during the semester', true);
 	$options = fsphys\DEFAULT_HTML_OPTIONS;
-	$options['time_width'] = 20;
+	$options['time_width'] = 10;
 	echo fsphys\office_hours_html($db, $options, $dt_now);
 }
 else {
-	echo '<div class="subhead" style="margin: 1em 0;">Vorlesungsfreie Zeit</div>';
+	echo fsphys\loc_get_str('semester break', true);
 	$options = fsphys\DEFAULT_HTML_OPTIONS;
 	$options['short'] = true;
-	echo fsphys\office_hours_html($db, $options, $dt_now);
+	echo fsphys\office_hours_break_html($db, $options, OH_BREAK_MAX_ROWS);
 }
-
 fsphys\mysql_db_close($db);
 ?>
 
-<p><a class="int" href="/Physik.FSPHYS/termine/">Vollständiger Präsenzplan</a></p>
+</div>
+
+<p><a class="int"
+	href="/Physik.FSPHYS/<?=fsphys\loc_url_lang_code()?>termine/">
+	<?=fsphys\loc_get_str('complete office hours schedule', true)?></a></p>
 </div>
 </article>
 

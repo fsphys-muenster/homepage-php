@@ -25,8 +25,11 @@ if (!defined('LOCALE')) {
 
 $LOC_STRINGS = [
 	'de_DE' => [
+		'current office hours' => 'aktuelle Präsenzzeiten',
+		'complete office hours schedule' => 'vollständiger Präsenzplan',
 		'date' => 'Datum',
 		'day_of_week' => 'Wochentag',
+		'during the semester' => 'Vorlesungszeit',
 		'edit' => 'bearbeiten',
 		'end time' => 'End&shy;zeit',
 		'from' => 'ab',
@@ -35,14 +38,18 @@ $LOC_STRINGS = [
 		'office hours' => 'Präsenzplan',
 		'office hours (break)' => 'Ferienpräsenzplan',
 		'save show setting' => 'Anzeigeeinstellung speichern',
+		'semester break' => 'vorlesungsfreie Zeit',
 		'show' => 'zeigen',
 		'start time' => 'Start&shy;zeit',
 		'time' => 'Zeit',
 		'to' => 'bis',
 	],
 	'en_US' => [
+		'current office hours' => 'current office hours',
+		'complete office hours schedule' => 'complete office hours schedule',
 		'date' => 'date',
 		'day_of_week' => 'day of week',
+		'during the semester' => 'during the semester',
 		'edit' => 'edit',
 		'end time' => 'end time',
 		'from' => 'from',
@@ -51,6 +58,7 @@ $LOC_STRINGS = [
 		'office hours' => 'office hours',
 		'office hours (break)' => 'office hours (break)',
 		'save show setting' => 'save show setting',
+		'semester break' => 'semester break',
 		'show' => 'show',
 		'start time' => 'start time',
 		'time' => 'time',
@@ -73,5 +81,9 @@ function loc_get_str($key, $capitalize=false, $locale=LOCALE) {
 	global $LOC_STRINGS;
 	$str = $LOC_STRINGS[$locale][$key];
 	return $capitalize ? mb_ucfirst($str) : $str;
+}
+
+function loc_url_lang_code() {
+	return (strpos(LOCALE, 'de') === 0 ? '' : substr(LOCALE, 0, 2)) . '/';
 }
 

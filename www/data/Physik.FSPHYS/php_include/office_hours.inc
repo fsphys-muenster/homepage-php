@@ -14,7 +14,8 @@ const UNSPECIFIED_END_TIME = '00:00:00';
 	office_hours_break_html().
 */
 const DEFAULT_HTML_OPTIONS = [
-	'edit_mode' => false,
+	// 'edit_mode': default undefined or, equivalently,
+	// 'edit_mode' => false,
 	'time_width' => 5,
 	// 'day_width': default undefined or, equivalently,
 	// 'day_width' => NULL,
@@ -25,7 +26,10 @@ const DEFAULT_HTML_OPTIONS = [
 	'br_time_width' => 15,
 	// 'br_name_width': default undefined or, equivalently,
 	// 'br_name_width' => NULL,
-	'short' => false
+	// 'short': default undefined or, equivalently,
+	// 'short' => false,
+	// 'max_rows': default undefined or, equivalently,
+	// 'max_rows' => NULL,
 ];
 /*
 	Attributes (CSS classes) used in the office hours schedule HTML table.
@@ -104,7 +108,7 @@ function semester_info_fallback($date) {
 	$res = [
 		'summer_winter' => $is_ss ? 'SS' : 'WS',
 		'lecture_start' => $is_ss ? $ss_start : $ws_start,
-		'lecture_end' => $is_ss ? $ss_end : $ws_end,
+		'lecture_end' => $is_ss ? $ss_lecture_end : $ws_lecture_end,
 		'during_semester' => $semester
 	];
 	return $res;
@@ -139,19 +143,24 @@ function oh_valid_day_of_week($day) {
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
 function office_hours_table($db=NULL, $day=NULL) {
-	$opened_db = mysql_db_connect_if_null($db);
-	$sql = 'SELECT day+0 as day_num, start_time, end_time, name'
-		. ' FROM office_hours';
+	$where_clause = '';
 	if ($day) {
 		if (!oh_valid_day_of_week($day)) {
 			throw new \DomainException("Value of \$day is not valid: $day");
 		}
-		$sql .= ' WHERE day = :day';
+		$where_clause = 'WHERE day = :day';
 	}
-	$sql .= ' ORDER BY day_num, start_time, end_time ASC;';
+	$sql = <<<SQL
+	SELECT day+0 as day_num, start_time, end_time, name FROM office_hours
+		$where_clause
+		ORDER BY day_num, start_time, end_time ASC;
+SQL;
+	$opened_db = mysql_db_connect_if_null($db);
 	$query = $db->prepare($sql);
 	if ($day) {
-		$query->bindValue(':day', $day);
+		// compare enum integer indices as integers, not as strings
+		$day_dtype = is_int($day) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
+		$query->bindValue(':day', $day, $day_dtype);
 	}
 	$query->execute();
 	$data = $query->fetchAll();
@@ -178,24 +187,15 @@ function office_hours_table($db=NULL, $day=NULL) {
 	start times first and end times second (e.g. 13:00–14:00 < 13:00–15:00
 	< 14:00–15:00).
 	
-	If $day: Only query for and return data for the day $day. $day must be an
-	element of the keys or the values of DAYS_OF_WEEK.
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
-function office_hours_times($db=NULL, $day=NULL) {
+function office_hours_times($db=NULL) {
+	$sql = <<<'SQL'
+	SELECT DISTINCT start_time, end_time FROM office_hours
+		ORDER BY start_time, end_time ASC;
+SQL;
 	$opened_db = mysql_db_connect_if_null($db);
-	$sql = 'SELECT DISTINCT start_time, end_time FROM office_hours';
-	if ($day) {
-		if (!oh_valid_day_of_week($day)) {
-			throw new \DomainException("Value of \$day is not valid: $day");
-		}
-		$sql .= ' WHERE day = :day';
-	}
-	$sql .= ' ORDER BY start_time, end_time ASC;';
 	$query = $db->prepare($sql);
-	if ($day) {
-		$query->bindValue(':day', $day);
-	}
 	$query->execute();
 	$data = $query->fetchAll();
 	if ($opened_db) {
@@ -210,10 +210,21 @@ function office_hours_times($db=NULL, $day=NULL) {
 
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 */
-function office_hours_break_data($db=NULL) {
+function office_hours_break_data($db=NULL, $limit=NULL, $date=NULL) {
 	$opened_db = mysql_db_connect_if_null($db);
-	$sql = <<<'SQL'
-	SELECT * FROM office_hours_break ORDER BY date, start_time, end_time ASC;
+	$limit_clause = '';
+	if ($limit) {
+		if (!$date) {
+			// DateTime for yesterday: subtract 1 day
+			$date = (new \DateTime())->sub(new \DateInterval('P1D'));
+		}
+		$where_clause = "WHERE date >= '{$date->format('Y-m-d')}'";
+		$limit_clause = 'LIMIT ' . intval($limit);
+	}
+	$sql = <<<SQL
+	SELECT * FROM office_hours_break $where_clause
+		ORDER BY date, start_time, end_time ASC
+		$limit_clause;
 SQL;
 	$query = $db->query($sql);
 	$data = $query->fetchAll();
@@ -228,7 +239,7 @@ function oh_valid_col_name($break, $col) {
 		: in_array($col, OH_COL_NAMES);
 }
 
-function oh_table_data($break) {
+function oh_table_info($break) {
 	$tbl_name = $break ? 'office_hours_break' : 'office_hours';
 	$day_col = $break ? 'date' : 'day';
 	return [$tbl_name, $day_col];
@@ -245,13 +256,13 @@ function office_hours_get($db, $break, $day, $start_time, $end_time, $col=NULL) 
 	if ($col && !oh_valid_col_name($break, $col)) {
 		return false;
 	}
-	list($tbl_name, ) = oh_table_data($break);
+	list($tbl_name, ) = oh_table_info($break);
 	$PK_CONDITION = $break ? BREAK_PK_CONDITION : PK_CONDITION;
-	// compare enum integer indices as integers, not as strings
-	$day_dtype = is_int($day) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
 	$sql = "SELECT * FROM $tbl_name WHERE $PK_CONDITION;";
 	$opened_db = mysql_db_connect_if_null($db);
 	$query = $db->prepare($sql);
+	// compare enum integer indices as integers, not as strings
+	$day_dtype = is_int($day) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
 	$query->bindValue(':day', $day, $day_dtype);
 	$query->bindValue(':start_time', $start_time);
 	$query->bindValue(':end_time', $end_time);
@@ -273,7 +284,7 @@ function office_hours_insert($db, $break, $row) {
 			return false;
 		}
 	}
-	list($tbl_name, ) = oh_table_data($break);
+	list($tbl_name, ) = oh_table_info($break);
 	// enclose column names in double quotes to guard against reserved names
 	$col_names = implode(', ', array_map(
 		function($x) { return '"' . $x . '"'; }, $col_names_arr));
@@ -315,7 +326,7 @@ function office_hours_set($db, $break, $day, $start_time, $end_time,
 	if (!oh_valid_col_name($break, $col)) {
 		return false;
 	}
-	list($tbl_name, $day_col) = oh_table_data($break);
+	list($tbl_name, $day_col) = oh_table_info($break);
 	$key_arr = $break ? OH_BREAK_KEY_COL_NAMES : OH_KEY_COL_NAMES;
 	// if setting one of the key columns, the SQL query is slightly different
 	$set_key = in_array($col, $key_arr);
@@ -363,7 +374,7 @@ SQL;
 }
 
 function office_hours_delete($db, $break, $day, $start_time, $end_time) {
-	list($tbl_name, ) = oh_table_data($break);
+	list($tbl_name, ) = oh_table_info($break);
 	$PK_CONDITION = $break ? BREAK_PK_CONDITION : PK_CONDITION;
 	$sql = "DELETE FROM $tbl_name WHERE $PK_CONDITION;";
 	$opened_db = mysql_db_connect_if_null($db);
@@ -404,8 +415,9 @@ function office_hours_delete($db, $break, $day, $start_time, $end_time) {
 // XXX modify this to work like office_hours_break_html (get rid of the
 // office_hours_table stuff)
 function office_hours_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS,
-	$date=NULL) {
+	\DateTime $date=NULL) {
 	extract($html_options);
+	$edit_mode = isset($edit_mode) && $edit_mode;
 	// generate HTML table header
 	$table_classes = OH_CSS_TABLE_CLASS;
 	$time_width_dbl = 2 * $time_width;
@@ -426,27 +438,27 @@ HTML;
 	}
 	$monday_num = DAYS_OF_WEEK['Monday'];
 	$friday_num = DAYS_OF_WEEK['Friday'];
-	$date_day_of_week = NULL;
 	if ($date) {
 		// 1 (Monday) to 7 (Sunday)
-		$date_day_of_week = $date->format('N');
+		$date_day_of_week = intval($date->format('N'));
 		// for Saturday and Sunday: show Monday
 		if ($date_day_of_week >= DAYS_OF_WEEK['Saturday']) {
 			$days_to_monday = 8 - $date_day_of_week;
 			// set DateTime to next Monday
-			$date = $date->add(new \DateInterval("P{$days_to_monday}D"));
+			$date->add(new \DateInterval("P{$days_to_monday}D"));
+			$date_day_of_week = intval($date->format('N'));
 		}
 		// 'EEEE' →  full day of week in PHP intl; see IntlDateFormatter
 		// https://secure.php.net/manual/en/class.intldateformatter.php
-		// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html#details
+		// https://ssl.icu-project.org/apiref/icu4c/classSimpleDateFormat.html
 		$days = [datefmt_format_object($date, 'EEEE', LOCALE)];
 	}
 	else {
 		$days = [];
 		// table from Monday to Friday if no date is given
 		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
-			$day_of_week = DAYS_OF_WEEK[$day_num];
-			$dt_day = new \DateTime($day_of_week);
+			$dt_day = new \DateTime(DAYS_OF_WEEK[$day_num]);
+			// 'EEEE' →  full localized day of week (see above)
 			$days[] = datefmt_format_object($dt_day, 'EEEE', LOCALE);
 		}
 	}
@@ -461,17 +473,17 @@ HTML;
 	$day_css = <<<CSS
  style="width: $day_width%;"
 CSS;
-	foreach ($days as $day_of_week) {
+	foreach ($days as $day_name) {
 		$result .= <<<HTML
-			<th scope="col"$day_css>$day_of_week</th>\n
+			<th scope="col"$day_css>$day_name</th>\n
 HTML;
 	}
 	$result .= '</tr>';
 
 	// generate HTML table body
 	$opened_db = mysql_db_connect_if_null($db);
+	$times = office_hours_times($db);
 	$timetable = office_hours_table($db, $date_day_of_week);
-	$times = office_hours_times($db, $date_day_of_week);
 	if ($opened_db) {
 		mysql_db_close($db);
 	}
@@ -489,7 +501,7 @@ HTML;
 		list($start_time, $end_time) = $time_entry;
 		$dt_start_time = new \DateTime($start_time);
 		$start_time_show = $dt_start_time->format('H');
-		if ($end_time == UNSPECIFIED_END_TIME || !$end_time) {
+		if ($end_time === UNSPECIFIED_END_TIME || !$end_time) {
 			$loc_from = loc_get_str('from');
 			$end_time_show = '–';
 			$time_show = "$loc_from $start_time_show";
@@ -541,16 +553,20 @@ HTML;
 	If $db: Use $db as MySQL connection; else: create new MySQL connection.
 	
 	$html_options:
-	'edit_mode': Insert id and class attributes to allow the table to be used
-	for editing the schedule.
-	'br_*_width': Width of the (*)-column (CSS) in percent
-	'br_time_width': Width of the time column(s) (CSS) in percent (in edit
-		mode, both columns have this width, while in normal mode, both columns
-		are merged into one whose width is twice this value).
-	'short': Show “day of week” column if false
+	  'edit_mode': Insert id and class attributes to allow the table to be used
+	    for editing the schedule.
+	  'br_*_width': Width of the (*)-column (CSS) in percent
+	  'br_time_width': Width of the time column(s) (CSS) in percent (in edit
+	    mode, both columns have this width, while in normal mode, both columns
+	    are merged into one whose width is twice this value).
+	  'short': Show “day of week” column if false
+	$max_rows: How many rows to display (unset/NULL: no limit)
 */
-function office_hours_break_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS) {
+function office_hours_break_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS,
+	$max_rows=NULL) {
 	extract($html_options);
+	$edit_mode = isset($edit_mode) && $edit_mode;
+	$short = isset($short) && $short;
 	// generate HTML table header
 	$table_classes = OH_CSS_TABLE_CLASS;
 	$loc_day_of_week = loc_get_str('day_of_week', true);
@@ -614,7 +630,7 @@ HTML;
 
 	// generate HTML table body
 	$opened_db = mysql_db_connect_if_null($db);
-	$data = office_hours_break_data($db);
+	$data = office_hours_break_data($db, $max_rows);
 	if ($opened_db) {
 		mysql_db_close($db);
 	}
