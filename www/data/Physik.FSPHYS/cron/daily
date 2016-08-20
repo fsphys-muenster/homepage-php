@@ -1,0 +1,7 @@
+#!/bin/sh
+# Executed daily, see
+# https://www.uni-muenster.de/ZIV/Technik/WWW/EigeneProgramme.html
+
+cd /www/data/Physik.FSPHYS/
+/usr/sbin/logrotate cron/logrotate.config
+
