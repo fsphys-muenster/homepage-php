@@ -34,7 +34,7 @@ q::before {
 q::after {
 	content: close-quote;
 }
-/* class for “list items” within paragraphs (-> teasers) */
+/* class for “list items” within paragraphs (→ teasers) */
 .fsphys-inline-li {
 	display: list-item;
 	list-style-type: square;
@@ -46,8 +46,17 @@ q::after {
 .fsphys-inline-li + br {
 	display: none;
 }
+/* office hours table widths */
+table.fsphys_oh_table {
+	width: 100%;
+}
+table.fsphys_oh_table th.fsphys_oh_day_col {
+	width: 18%;
+}
 
-/* fix some mistakes in the central CSS */
+/**********
+	fix some mistakes in the central CSS (main.css etc.)
+**********/
 abbr, p {
 	font-style: inherit;
 }
