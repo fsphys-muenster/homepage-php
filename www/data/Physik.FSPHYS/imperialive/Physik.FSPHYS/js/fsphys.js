@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-	// remove "index.html" or "index.php" as well as file endings in all internal
-	// URLs (since they are redirected on the server side to the "clean" versions)
-	// anyway
+	// remove “index.(s)html” or “index.php” as well as file endings in all
+	// internal URLs (since they are redirected on the server side to the
+	// “clean” versions) anyway
 	function clean_links(list) {
-		var re = /^(https?:[/][/](www|sso)\.(uni-muenster|wwu)\.de)?[/]Physik.FSPHYS[/](.*?)(index)?\.(html|php)$/;
+		var re = /^(https?:[/][/](www|sso)\.(uni-muenster|wwu)\.de)?[/]Physik.FSPHYS[/](.*?)(index)?\.(s?html|php)$/;
 		for (var i = 0; i < list.length; i++) {
 			var l = list[i];
 			if (l.tagName.toLowerCase() != 'a') {

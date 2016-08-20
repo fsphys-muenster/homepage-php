@@ -12,31 +12,27 @@ const OH_BREAK_MAX_ROWS = 9;
 <h2><?=fsphys\loc_get_str('current office hours', true)?></h2>
 
 <div class="subhead" style="margin: 1em 0;">
-
 <?php
 $dt_now = new \DateTime();
 $semester = fsphys\semester_info($dt_now)['during_semester'];
 $db = fsphys\mysql_db_connect();
 if ($semester) {
 	echo fsphys\loc_get_str('during the semester', true);
-	$options = fsphys\DEFAULT_HTML_OPTIONS;
-	$options['time_width'] = 10;
-	echo fsphys\office_hours_html($db, $options, $dt_now);
+	echo '</div>';
+	echo fsphys\office_hours_html($db, [], $dt_now);
 }
 else {
 	echo fsphys\loc_get_str('semester break', true);
-	$options = fsphys\DEFAULT_HTML_OPTIONS;
-	$options['short'] = true;
+	echo '</div>';
+	$options = ['short' => true];
 	echo fsphys\office_hours_break_html($db, $options, OH_BREAK_MAX_ROWS);
 }
 fsphys\mysql_db_close($db);
 ?>
 
-</div>
-
 <p><a class="int"
-	href="/Physik.FSPHYS/<?=fsphys\loc_url_lang_code()?>termine/">
-	<?=fsphys\loc_get_str('complete office hours schedule', true)?></a></p>
+	href="/Physik.FSPHYS/<?=fsphys\loc_url_lang_code()?>termine/"><?=
+		fsphys\loc_get_str('complete office hours schedule', true)?></a></p>
 </div>
 </article>
 

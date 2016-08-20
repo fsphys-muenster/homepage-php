@@ -10,33 +10,18 @@ require_once 'db_access.inc';
 */
 const UNSPECIFIED_END_TIME = '00:00:00';
 /*
-	Default options for the functions office_hours_html() and
-	office_hours_break_html().
-*/
-const DEFAULT_HTML_OPTIONS = [
-	// 'edit_mode': default undefined or, equivalently,
-	// 'edit_mode' => false,
-	'time_width' => 5,
-	// 'day_width': default undefined or, equivalently,
-	// 'day_width' => NULL,
-	// 'br_day_of_week_width': default undefined or, equivalently,
-	// 'br_day_of_week_width' => NULL,
-	// 'br_date_width': default undefined or, equivalently,
-	// 'br_date_width' => NULL,
-	'br_time_width' => 15,
-	// 'br_name_width': default undefined or, equivalently,
-	// 'br_name_width' => NULL,
-	// 'short': default undefined or, equivalently,
-	// 'short' => false,
-	// 'max_rows': default undefined or, equivalently,
-	// 'max_rows' => NULL,
-];
-/*
 	Attributes (CSS classes) used in the office hours schedule HTML table.
 */
 const OH_CSS_PREFIX = 'fsphys_oh_';
 const OH_CSS_TABLE_CLASS = OH_CSS_PREFIX . 'table';
 const OH_CSS_TABLE_EDIT_CLASS = OH_CSS_PREFIX . 'table_edit';
+const OH_CSS_TABLE_SHORT_CLASS = OH_CSS_PREFIX . 'short';
+const OH_CSS_DAY_COL_CLASS = OH_CSS_PREFIX . 'day_col';
+const OH_CSS_TIME_COL_CLASS = OH_CSS_PREFIX . 'time_col';
+const OH_CSS_DATE_COL_CLASS = OH_CSS_PREFIX . 'date_col';
+const OH_CSS_EDIT_COL_CLASS = OH_CSS_PREFIX . 'edit_col';
+const OH_CSS_NON_EDIT_CLASS = OH_CSS_PREFIX . 'non_edit';
+const OH_CSS_EDIT_DELETE_CLASS = OH_CSS_PREFIX . 'delete';
 /*
 	SQL conditions to select a certain primary key (semester & break table).
 */
@@ -212,7 +197,7 @@ SQL;
 */
 function office_hours_break_data($db=NULL, $limit=NULL, $date=NULL) {
 	$opened_db = mysql_db_connect_if_null($db);
-	$limit_clause = '';
+	$where_clause = $limit_clause = '';
 	if ($limit) {
 		if (!$date) {
 			// DateTime for yesterday: subtract 1 day
@@ -403,37 +388,32 @@ function office_hours_delete($db, $break, $day, $start_time, $end_time) {
 	$html_options:
 	'edit_mode': Insert id and class attributes to allow the table to be used
 	for editing the schedule.
-	'day_width': Width of each day column (CSS) in percent;
-	if NULL: all day columns will have equal width.
-	'time_width': Width of the time column(s) (CSS) in percent (in edit mode,
-		both columns have this width, while in normal mode, both columns are
-		merged into one whose width is twice this value).
 	
 	If $date: The table will only contain the column corresponding to the day
 	of the week of $date, or the next Monday if $date is in the weekend.
 */
 // XXX modify this to work like office_hours_break_html (get rid of the
 // office_hours_table stuff)
-function office_hours_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS,
-	\DateTime $date=NULL) {
+function office_hours_html($db=NULL, $html_options=[], \DateTime $date=NULL) {
 	extract($html_options);
+	$OH_CSS_DAY_COL_CLASS = OH_CSS_DAY_COL_CLASS;
+	$OH_CSS_TIME_COL_CLASS = OH_CSS_TIME_COL_CLASS;
 	$edit_mode = isset($edit_mode) && $edit_mode;
 	// generate HTML table header
 	$table_classes = OH_CSS_TABLE_CLASS;
-	$time_width_dbl = 2 * $time_width;
 	if ($edit_mode) {
 		$table_classes .= ' ' . OH_CSS_TABLE_EDIT_CLASS;
 		$loc_start_time = loc_get_str('start time', true);
 		$loc_end_time = loc_get_str('end time', true);
 		$time_header = <<<HTML
-<th scope="col" style="width: $time_width%;">$loc_start_time</th>
-<th scope="col" style="width: $time_width%;">$loc_end_time</th>
+<th scope="col" class="$OH_CSS_TIME_COL_CLASS">$loc_start_time</th>
+<th scope="col" class="$OH_CSS_TIME_COL_CLASS">$loc_end_time</th>
 HTML;
 	}
 	else {
 		$loc_time = loc_get_str('time', true);
 		$time_header = <<<HTML
-<th scope="col" style="width: {$time_width_dbl}%;">$loc_time</th>
+<th scope="col" class="$OH_CSS_TIME_COL_CLASS">$loc_time</th>
 HTML;
 	}
 	$monday_num = DAYS_OF_WEEK['Monday'];
@@ -454,6 +434,7 @@ HTML;
 		$days = [datefmt_format_object($date, 'EEEE', LOCALE)];
 	}
 	else {
+		$date_day_of_week = NULL;
 		$days = [];
 		// table from Monday to Friday if no date is given
 		for ($day_num = $monday_num; $day_num <= $friday_num; $day_num++) {
@@ -467,15 +448,9 @@ HTML;
 		<tr>
 			$time_header
 HTML;
-	if (!isset($day_width)) {
-		$day_width = (100 - $time_width_dbl) / 5;
-	}
-	$day_css = <<<CSS
- style="width: $day_width%;"
-CSS;
 	foreach ($days as $day_name) {
 		$result .= <<<HTML
-			<th scope="col"$day_css>$day_name</th>\n
+			<th scope="col" class="$OH_CSS_DAY_COL_CLASS">$day_name</th>\n
 HTML;
 	}
 	$result .= '</tr>';
@@ -504,7 +479,7 @@ HTML;
 		if ($end_time === UNSPECIFIED_END_TIME || !$end_time) {
 			$loc_from = loc_get_str('from');
 			$end_time_show = '–';
-			$time_show = "$loc_from $start_time_show";
+			$time_show = "$loc_from&nbsp;$start_time_show";
 		}
 		else {
 			$dt_end_time = new \DateTime($end_time);
@@ -517,8 +492,8 @@ HTML;
 			$qstr_end = htmlspecialchars("$qstr_base&col=end_time");
 			$result .= <<<HTML
 		<tr>
-			<td><a href="$qstr_start">$start_time_show</a></td>
-			<td><a href="$qstr_end">$end_time_show</a></td>
+			<td><a href="$qstr_start"><span class="fsphys_oh_webkit-fix">$start_time_show</span></a></td>
+			<td><a href="$qstr_end"><span class="fsphys_oh_webkit-fix">$end_time_show</span></a></td>
 HTML;
 		}
 		else {
@@ -533,7 +508,7 @@ HTML;
 			if ($edit_mode) {
 				$qstr_name = htmlspecialchars("$qstr_base&day=$day&col=name");
 				$result .= <<<HTML
-			<td><a href="$qstr_name">$name_show</a></td>
+			<td><a href="$qstr_name"><span class="fsphys_oh_webkit-fix">$name_show</span></a></td>
 HTML;
 			}
 			else {
@@ -555,31 +530,27 @@ HTML;
 	$html_options:
 	  'edit_mode': Insert id and class attributes to allow the table to be used
 	    for editing the schedule.
-	  'br_*_width': Width of the (*)-column (CSS) in percent
-	  'br_time_width': Width of the time column(s) (CSS) in percent (in edit
-	    mode, both columns have this width, while in normal mode, both columns
-	    are merged into one whose width is twice this value).
 	  'short': Show “day of week” column if false
 	$max_rows: How many rows to display (unset/NULL: no limit)
 */
-function office_hours_break_html($db=NULL, $html_options=DEFAULT_HTML_OPTIONS,
-	$max_rows=NULL) {
+function office_hours_break_html($db=NULL, $html_options=[], $max_rows=NULL) {
 	extract($html_options);
+	$OH_CSS_DATE_COL_CLASS = OH_CSS_DATE_COL_CLASS;
+	$OH_CSS_TIME_COL_CLASS = OH_CSS_TIME_COL_CLASS;
+	$OH_CSS_EDIT_COL_CLASS = OH_CSS_EDIT_COL_CLASS;
+	$OH_CSS_NON_EDIT_CLASS = OH_CSS_NON_EDIT_CLASS;
+	$OH_CSS_EDIT_DELETE_CLASS = OH_CSS_EDIT_DELETE_CLASS;
 	$edit_mode = isset($edit_mode) && $edit_mode;
 	$short = isset($short) && $short;
 	// generate HTML table header
 	$table_classes = OH_CSS_TABLE_CLASS;
-	$loc_day_of_week = loc_get_str('day_of_week', true);
-	$day_of_week_css = '';
-	if (isset($br_day_of_week_width)) {
-		$day_of_week_css = <<<CSS
- style="width: $br_day_of_week_width%;"
-CSS;
+	if ($short) {
+		$table_classes .= ' ' . OH_CSS_TABLE_SHORT_CLASS;
 	}
+	$loc_day_of_week = loc_get_str('day_of_week', true);
 	$day_of_week_header = $short ? '' : <<<HTML
-<th scope="col"$day_of_week_css>$loc_day_of_week</th>
+<th scope="col">$loc_day_of_week</th>
 HTML;
-	$edit_header = '';
 	// for editing: one individual table column for each database column
 	// (“edit” column includes “show” value and settings like deleting a row)
 	if ($edit_mode) {
@@ -588,8 +559,8 @@ HTML;
 		$loc_end_time = loc_get_str('end time', true);
 		$loc_edit = loc_get_str('edit', true);
 		$time_header = <<<HTML
-<th scope="col" style="width: $br_time_width%;">$loc_start_time</th>
-<th scope="col" style="width: $br_time_width%;">$loc_end_time</th>
+<th scope="col" class="$OH_CSS_TIME_COL_CLASS">$loc_start_time</th>
+<th scope="col" class="$OH_CSS_TIME_COL_CLASS">$loc_end_time</th>
 HTML;
 		$edit_header = <<<HTML
 <th scope="col">$loc_edit</th>
@@ -598,22 +569,10 @@ HTML;
 	// for display: only one time column (from … to …)
 	else {
 		$loc_time = loc_get_str('time', true);
-		$br_time_width *= 2;
 		$time_header = <<<HTML
-<th scope="col" style="width: $br_time_width%;">$loc_time</th>
+<th scope="col" class="$OH_CSS_TIME_COL_CLASS">$loc_time</th>
 HTML;
-	}
-	$date_css = '';
-	if (isset($br_date_width)) {
-		$date_css = <<<CSS
- style="width: $br_date_width%;"
-CSS;
-	}
-	$name_css = '';
-	if (isset($br_name_width)) {
-		$name_css = <<<CSS
- style="width: $br_name_width%;"
-CSS;
+		$edit_header = '';
 	}
 	$loc_date = loc_get_str('date', true);
 	$loc_name = loc_get_str('name', true);
@@ -621,9 +580,9 @@ CSS;
 	<table class="$table_classes">
 		<tr>
 			$day_of_week_header
-			<th scope="col"$date_css>$loc_date</th>
+			<th scope="col" class="$OH_CSS_DATE_COL_CLASS">$loc_date</th>
 			$time_header
-			<th scope="col"$name_css>$loc_name</th>
+			<th scope="col">$loc_name</th>
 			$edit_header
 		</tr>
 HTML;
@@ -652,9 +611,13 @@ HTML;
 		else {
 			$time_show = "$start_time_show $loc_to $end_time_show";
 			$day_of_week = datefmt_format_object($dt_date, 'EEEE', LOCALE);
-			$day_of_week_cell = "<td>$day_of_week</td>";
+			$day_of_week_cell = <<<HTML
+<td class="$OH_CSS_NON_EDIT_CLASS">$day_of_week</td>
+HTML;
 		}
-		$date_show = $date;
+		$date_show = <<<HTML
+<time datetime="{$date}T$start_time">$date</time>
+HTML;
 		$name_show = htmlspecialchars($name);
 		$qstr_base = "?break=1&day=$date&start_time=$start_time"
 			. "&end_time=$end_time";
@@ -663,30 +626,34 @@ HTML;
 			$qstr_start = htmlspecialchars("$qstr_base&col=start_time");
 			$qstr_end = htmlspecialchars("$qstr_base&col=end_time");
 			$qstr_name = htmlspecialchars("$qstr_base&col=name");
-			$qstr_delete = htmlspecialchars("$qstr_base&delete");
 			$loc_show = loc_get_str('show');
-			$checked = $show ? ' checked' : '';
+			$loc_delete = loc_get_str('delete', true);
+			$checked = $show ? 'checked' : '';
 			$date_show = <<<HTML
-<a href="$qstr_date">$date_show</a>
+<a href="$qstr_date"><span class="fsphys_oh_webkit-fix">$date_show</span></a>
 HTML;
 			$time_cells = <<<HTML
-<td><a href="$qstr_start">$start_time_show</a></td>
-<td><a href="$qstr_end">$end_time_show</a></td>
+<td><a href="$qstr_start"><span class="fsphys_oh_webkit-fix">$start_time_show</span></a></td>
+<td><a href="$qstr_end"><span class="fsphys_oh_webkit-fix">$end_time_show</span></a></td>
 HTML;
 			$name_show = <<<HTML
-<a href="$qstr_name">$name_show</a>
+<a href="$qstr_name"><span class="fsphys_oh_webkit-fix">$name_show</span></a>
 HTML;
 			// PHP’s parsing of request data allows easily creating arrays
 			// https://secure.php.net/manual/en/reserved.variables.post.php#87650
 			$edit_cell = <<<HTML
-<td class="editcol">
-	<input name="r[{$i}][date]" type="hidden" value="$date" />
-	<input name="r[{$i}][start_time]" type="hidden" value="$start_time" />
-	<input name="r[{$i}][end_time]" type="hidden" value="$end_time" />
-	<label><input name="r[{$i}][show]" type="checkbox"$checked value="" />
-		$loc_show</label>
-	|
-	<a href="$qstr_delete">❌</a>
+<td class="$OH_CSS_EDIT_COL_CLASS">
+	<div>
+		<input name="r[$i][date]" type="hidden" value="$date" />
+		<input name="r[$i][start_time]" type="hidden" value="$start_time" />
+		<input name="r[$i][end_time]" type="hidden" value="$end_time" />
+		<input name="r[$i][show]" id="r[$i][show]" type="checkbox" $checked
+			value="" />
+		<label for="r[$i][show]">$loc_show</label>
+		<button name="delete" type="submit" title="$loc_delete"
+			class="$OH_CSS_EDIT_DELETE_CLASS" value="$i"><span
+			class="fsphys_oh_webkit-fix">❌</span></button>
+	</div>
 </td>
 HTML;
 		}
