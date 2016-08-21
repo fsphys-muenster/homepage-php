@@ -139,8 +139,8 @@ but leave the checkbox/radio focusable so it can still receive keyboard events.
 	opacity: 0;
 	/* ensure that the invisible element does not block mouse events such as
 	hovering */
+	z-index: -1000;
 	pointer-events: none;
-	z-index: -100;
 }
 /* input[…]:focus + label  instead of  input[…] + label:focus (<label>s cannot
 even be focused by default!) */

@@ -25,6 +25,13 @@ if (!defined('LOCALE')) {
 
 $LOC_STRINGS = [
 	'de_DE' => [
+		'DEFAULT_ERR_MSG' => '<p class="module fsphys_error">'
+		. 'Leider ist bei der Erzeugung dieses Teils der Seite ein Fehler '
+		. 'aufgetreten. Das kann z.&nbsp;B. daran liegen, dass die benötigte '
+		. 'Datenbank zur Zeit nicht verfügbar ist. Versuch’ es am besten '
+		. 'später noch einmal oder schreib’ uns eine Nachricht, falls es '
+		. 'dringend ist.'
+		. '</p>',
 		'current office hours' => 'aktuelle Präsenzzeiten',
 		'complete office hours schedule' => 'vollständiger Präsenzplan',
 		'date' => 'Datum',
@@ -48,6 +55,12 @@ $LOC_STRINGS = [
 		'to' => 'bis',
 	],
 	'en_US' => [
+		'DEFAULT_ERR_MSG' => '<p class="fsphys_error">'
+		. 'Unfortunately, an error occured while generating this part of the '
+		. 'page. One possible reason for this could be that the required '
+		. 'database is currently unavailable. Please try again later or send '
+		. 'us a message if it’s urgent.'
+		. '</p>',
 		'current office hours' => 'current office hours',
 		'complete office hours schedule' => 'complete office hours schedule',
 		'date' => 'date',

@@ -79,6 +79,8 @@ SQL;
 	}
 	return $result;
 }
+
+fsphys\run_and_catch(function() {
 ?>
 
 <article class="module extended">
@@ -257,4 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 });
 </script>
+
+<?php
+}); // fsphys\run_and_catch() end
+?>
 

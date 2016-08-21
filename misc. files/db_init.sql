@@ -5,14 +5,14 @@
 
 CREATE TABLE IF NOT EXISTS "localization__de" (
 	"key"   VARCHAR(255) NOT NULL,
-	"value" VARCHAR(255) NOT NULL,
+	"value" VARCHAR(1000) NOT NULL,
 	PRIMARY KEY ("key")
 )
 COMMENT='Localization data for language “de” (German)';
 
 CREATE TABLE IF NOT EXISTS "localization__en" (
 	"key"   VARCHAR(255) NOT NULL,
-	"value" VARCHAR(255) NOT NULL,
+	"value" VARCHAR(1000) NOT NULL,
 	PRIMARY KEY ("key")
 )
 COMMENT='Localization data for language “en” (English)';

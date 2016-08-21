@@ -9,6 +9,9 @@ const OH_BREAK_MAX_ROWS = 9;
 
 <article class="module short">
 <div class="module-content">
+<?php
+fsphys\run_and_catch(function() {
+?>
 <h2><?=fsphys\loc_get_str('current office hours', true)?></h2>
 
 <div class="subhead" style="margin: 1em 0;">
@@ -33,6 +36,9 @@ fsphys\mysql_db_close($db);
 <p><a class="int"
 	href="/Physik.FSPHYS/<?=fsphys\loc_url_lang_code()?>termine/"><?=
 		fsphys\loc_get_str('complete office hours schedule', true)?></a></p>
+<?php
+}); // fsphys\run_and_catch() end
+?>
 </div>
 </article>
 

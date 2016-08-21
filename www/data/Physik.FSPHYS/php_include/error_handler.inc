@@ -1,5 +1,6 @@
 <?php
 namespace de\uni_muenster\fsphys;
+require_once 'localization.inc';
 
 const LOG_EMAIL = 'simon.may@uni-muenster.de';
 // all fatal PHP runtime errors (category “error”)
@@ -8,6 +9,7 @@ const E_CAT_ERROR = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR
 // all PHP warnings
 const E_CAT_WARNING = E_WARNING | E_CORE_WARNING | E_COMPILE_WARNING
 	| E_USER_WARNING;
+define('DEFAULT_ERR_MSG', loc_get_str('DEFAULT_ERR_MSG'));
 
 function error_type_to_string($errno) {
 	static $types = NULL;
@@ -20,6 +22,21 @@ function error_type_to_string($errno) {
 		}
 	}
 	return isset($types[$errno]) ? $types[$errno] : "Error #{$errno}";
+}
+
+function run_and_catch($func, $error_msg=DEFAULT_ERR_MSG) {
+	// use output buffering to avoid half-rendered pages
+	ob_start();
+	try {
+		$func();
+		ob_end_flush();
+	}
+	// XXX change to \Throwable in PHP 7
+	catch (\Exception $ex) {
+		ob_end_clean();
+		error_log($ex);
+		echo DEFAULT_ERR_MSG;
+	}
 }
 
 set_exception_handler(function($ex) {

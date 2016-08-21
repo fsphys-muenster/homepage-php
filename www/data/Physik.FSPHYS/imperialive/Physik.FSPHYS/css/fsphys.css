@@ -39,12 +39,20 @@ q::after {
 	display: list-item;
 	list-style-type: square;
 	margin-left: 2em;
-	margin-top: 0.3em;
-	margin-bottom: 0.3em;
+	margin-top: 0.5ex;
+	margin-bottom: 0.5ex;
 }
 /* eliminate extra space from <br> elements after fsphys-inline-li items */
 .fsphys-inline-li + br {
 	display: none;
+}
+.fsphys_error, .main .fsphys_error {
+	text-align: center;
+	color: #600000;
+	background-color: #e0c0c0;
+	border: medium solid #a00000;
+	padding: 10px;
+	float: none;
 }
 /* office hours table widths */
 table.fsphys_oh_table {
