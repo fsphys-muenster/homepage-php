@@ -3,5 +3,7 @@
 # https://www.uni-muenster.de/ZIV/Technik/WWW/EigeneProgramme.html
 
 cd /www/data/Physik.FSPHYS/
-/usr/sbin/logrotate cron/logrotate.config
+
+cd cron/
+/usr/sbin/logrotate -s logrotate_status logrotate.conf
 
