@@ -34,6 +34,26 @@ q::before {
 q::after {
 	content: close-quote;
 }
+/* use hyphenation */
+p {
+	hyphens: auto;
+}
+/* style for error messages */
+.fsphys_error, .main .fsphys_error {
+	text-align: center;
+	color: #600000;
+	background-color: #e0c0c0;
+	border: medium solid #a00000;
+	padding: 10px;
+	float: none;
+}
+.fsphys_error * {
+	color: inherit;
+}
+/* class for “pseudo-paragraphs” (→ teasers) */
+br.fsphys-par {
+	margin-bottom: 1em;
+}
 /* class for “list items” within paragraphs (→ teasers) */
 .fsphys-inline-li {
 	display: list-item;
@@ -45,14 +65,6 @@ q::after {
 /* eliminate extra space from <br> elements after fsphys-inline-li items */
 .fsphys-inline-li + br {
 	display: none;
-}
-.fsphys_error, .main .fsphys_error {
-	text-align: center;
-	color: #600000;
-	background-color: #e0c0c0;
-	border: medium solid #a00000;
-	padding: 10px;
-	float: none;
 }
 /* office hours table widths */
 table.fsphys_oh_table {
@@ -78,5 +90,9 @@ hr {
 (see also https://stackoverflow.com/q/710158/595306) */
 ol, ul {
 	overflow: hidden;
+}
+/* subheadings have *zero* margins for some reason */
+div.subhead {
+	margin: 1ex 0;
 }
 

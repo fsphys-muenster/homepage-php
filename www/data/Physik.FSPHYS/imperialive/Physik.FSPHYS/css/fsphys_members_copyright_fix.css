@@ -1,0 +1,10 @@
+/* align copyright text left because the corresponding images (member photos)
+are also left-aligned */
+.content figure.teaserfigure figcaption address {
+	text-align: left;
+}
+/* hide copyright notices in overview because they’re annoying */
+.content figure.inline-left figcaption address {
+	display: none;
+}
+

@@ -14,7 +14,7 @@ fsphys\run_and_catch(function() {
 ?>
 <h2><?=fsphys\loc_get_str('current office hours', true)?></h2>
 
-<div class="subhead" style="margin: 1em 0;">
+<div class="subhead">
 <?php
 $dt_now = new \DateTime();
 $semester = fsphys\semester_info($dt_now)['during_semester'];
