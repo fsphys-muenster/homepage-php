@@ -1,3 +1,6 @@
+/**********
+	stuff which is nice to have in general
+**********/
 /* add dotted underline border & help cursor to abbreviations with title attribute */
 abbr[title] {
 	text-decoration: underline dotted;
@@ -38,6 +41,64 @@ q::after {
 p {
 	hyphens: auto;
 }
+/**********
+	add flags to links with “hreflang” attribute
+	(adapted from https://imperia.uni-muenster.de/wwu/css/edit2014.css)
+**********/
+a[hreflang="ar"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ar.gif)
+}
+a[hreflang="zh"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_zh.gif)
+}
+a[hreflang="de"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_de.gif)
+}
+a[hreflang="en"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_en.gif)
+}
+a[hreflang="fr"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_fr.gif)
+}
+a[hreflang="el"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_el.gif)
+}
+a[hreflang="it"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_it.gif)
+}
+a[hreflang="ja"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ja.gif)
+}
+a[hreflang="nl"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_nl.gif)
+}
+a[hreflang="pl"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_pl.gif)
+}
+a[hreflang="pt"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_pt.gif)
+}
+a[hreflang="ru"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ru.gif)
+}
+a[hreflang="es"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_es.gif)
+}
+a[hreflang="tr"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_tr.gif)
+}
+a[hreflang="la"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_la.gif)
+}
+a[hreflang="el"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_el.gif)
+}
+a[hreflang="he"]::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_he.gif)
+}
+/**********
+	FSPHYS-specific, including some hacks to work around Imperia limitations
+**********/
 /* style for error messages */
 .fsphys_error, .main .fsphys_error {
 	text-align: center;
@@ -50,11 +111,15 @@ p {
 .fsphys_error * {
 	color: inherit;
 }
+ul.fsphys_footnotes {
+	list-style-type: none;
+}
 /* class for “pseudo-paragraphs” (→ teasers) */
 br.fsphys-par {
 	margin-bottom: 1em;
 }
-/* class for “list items” within paragraphs (→ teasers) */
+/* class for “list items” within paragraphs (→ teasers);
+   copied/adapted from main.css for consistency */
 .fsphys-inline-li {
 	display: list-item;
 	list-style-type: square;
@@ -66,12 +131,41 @@ br.fsphys-par {
 .fsphys-inline-li + br {
 	display: none;
 }
-/* office hours table widths */
+/* CSS for office hours */
 table.fsphys_oh_table {
 	width: 100%;
 }
-table.fsphys_oh_table th.fsphys_oh_day_col {
+table.fsphys_oh_table th.fsphys_oh_day_col:not(.fsphys_oh_single) {
 	width: 18%;
+}
+/* reduce vertical padding on front page so that news and office hours have
+   similar width (main.css has padding: 9px 10px) */
+.fsphys_oh_front_page td {
+	padding: 5px 10px;
+}
+/* grade calculator
+   https://www.uni-muenster.de/Physik.FSPHYS/studieren/notenrechner */
+#fsphys_gc_form table {
+	width: 100%;
+	/* needed to be able to set height on td (?) */
+	height: 1px;
+}
+#fsphys_gc_form table td {
+	hyphens: auto;
+	/* ensure consistent line height (→ input elements vs. normal text) */
+	height: 2em;
+	/* reduce vertical padding (main.css has padding: 9px 10px) */
+	padding: 4px 10px;
+}
+#fsphys_gc_form table input {
+	/* input fields make the table cells way too wide without this */
+	width: 100%;
+}
+#fsphys_gc_form table tr.fsphys_gc_indent td:first-child {
+	padding-left: 2.5em;
+}
+#fsphys_gc_form .fsphys_gc_weight {
+	text-align: right;
 }
 
 /**********

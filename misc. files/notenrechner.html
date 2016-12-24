@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<!-- This is a standalone bare-bones version of the grade calculator
+(German version) -->
+<head>
+	<title>Notenrechner B.&nbsp;Sc.</title>
+	<meta charset=utf-8>
+</head>
+
+<div>
+<script type=text/javascript src=grade_calculator.js></script>
+
+<p><small>Version: <span id=fsphys_gc_version>2016-11-17</span>, <abbr title="Prüfungsordnung">PO</abbr>-Version: Ab <span id=fsphys_gc_er_version>WS 2016/2017</span></small></p>
+<div id=fsphys_gc_form>
+<table>
+<colgroup><col style="width: 35%;"><col><col><col style="width: 35%;"></colgroup>
+<thead>
+<tr>
+	<th scope=col>Modul</th>
+	<th scope=col>Note</th>
+	<th scope=col>Gewichtung nach <abbr title="Prüfungsordnung">PO</abbr>&nbsp;(%)</th>
+	<th scope=col>Hinweise</th>
+</tr>
+</thead>
+<tr>
+	<td><label for=fsphys_gc_physics_1>Physik&nbsp;I</label></td>
+	<td><input id=fsphys_gc_physics_1 type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_physics_1_weight class=fsphys_gc_weight>11</td>
+	<td rowspan=3>Aus den Modulen <i>Physik&nbsp;I–III</i> werden nur die zwei besten Noten mit einer Gewichtung von jeweils 11&nbsp;% in die Gesamtnote mit einbezogen.</td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_physics_2>Physik&nbsp;II</label></td>
+	<td><input id=fsphys_gc_physics_2 type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_physics_2_weight class=fsphys_gc_weight>11</td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_physics_3>Physik&nbsp;III</label></td>
+	<td><input id=fsphys_gc_physics_3 type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_physics_3_weight class=fsphys_gc_weight>0</td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_math_2>Mathematische Grundlagen<br>(Mathe für Physiker&nbsp;II)</label></td>
+	<td><input id=fsphys_gc_math_2 type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_math_2_weight class=fsphys_gc_weight>11</td>
+	<td rowspan=2>Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und <i>Integrationstheorie</i> geht mit 11&nbsp;% in die Gesamtnote ein. (<i>Mathe für Physiker&nbsp;I</i> ist eine Studienleistung, hat also 0&nbsp;%.)</td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_math_3>Integrationstheorie<br>(Mathe für Physiker&nbsp;III)</label></td>
+	<td><input id=fsphys_gc_math_3 type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_math_3_weight class=fsphys_gc_weight>0</td>
+</tr>
+<tr>
+	<td colspan=3>Fachübergreifende Studien</td>
+	<td rowspan=5>Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)</td>
+</tr>
+<tr class=fsphys_gc_indent>
+	<td><label for=fsphys_gc_minor_1>Prüfungsleistung&nbsp;1</label></td>
+	<td><input id=fsphys_gc_minor_1 type=number min=1 max=4 step=0.1 value=4></td>
+	<td class=fsphys_gc_weight><input id=fsphys_gc_minor_1_weight type=number min=0 max=100 value=50></td>
+</tr>
+<tr class=fsphys_gc_indent>
+	<td><label for=fsphys_gc_minor_2>Prüfungsleistung&nbsp;2</label></td>
+	<td><input id=fsphys_gc_minor_2 type=number min=1 max=4 step=0.1 value=4></td>
+	<td class=fsphys_gc_weight><input id=fsphys_gc_minor_2_weight type=number min=0 max=100 value=50></td>
+</tr>
+<tr class=fsphys_gc_indent>
+	<td><label for=fsphys_gc_minor_3>Prüfungsleistung&nbsp;3</label></td>
+	<td><input id=fsphys_gc_minor_3 type=number min=1 max=4 step=0.1 value=4></td>
+	<td class=fsphys_gc_weight><input id=fsphys_gc_minor_3_weight type=number min=0 max=100 value=0></td>
+</tr>
+<tr class=fsphys_gc_indent>
+	<td>Gesamtnote Nebenfach</td>
+	<td><output id=fsphys_gc_minor for="fsphys_gc_minor_1 fsphys_gc_minor_2 fsphys_gc_minor_3 fsphys_gc_minor_1_weight fsphys_gc_minor_2_weight fsphys_gc_minor_3_weight">4,00</output></td>
+	<td id=fsphys_gc_minor_weight class=fsphys_gc_weight>12</td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_quantum_mechanics>Atom- und Quantenphysik</label></td>
+	<td><input id=fsphys_gc_quantum_mechanics type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_quantum_mechanics_weight class=fsphys_gc_weight>7</td>
+	<td></td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_signal_processing>Messtechnik und Signalverarbeitung</label></td>
+	<td><input id=fsphys_gc_signal_processing type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_signal_processing_weight class=fsphys_gc_weight>7</td>
+	<td></td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_structure_of_matter>Struktur der Materie</label></td>
+	<td><input id=fsphys_gc_structure_of_matter type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_structure_of_matter_weight class=fsphys_gc_weight>12</td>
+	<td></td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_lab_course_2>Experimentelle Übungen&nbsp;II</label></td>
+	<td><input id=fsphys_gc_lab_course_2 type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_lab_course_2_weight class=fsphys_gc_weight>9</td>
+	<td>Die <i>Experimentellen Übungen&nbsp;I</i> gehen nicht in die Gesamtnote ein.</td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_statistical_physics>Quantentheorie und Statistische Physik</label></td>
+	<td><input id=fsphys_gc_statistical_physics type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_statistical_physics_weight class=fsphys_gc_weight>10</td>
+	<td></td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_bachelor_thesis>Examensmodul<br>(Bachelor-Arbeit)</label></td>
+	<td><input id=fsphys_gc_bachelor_thesis type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_bachelor_thesis_weight class=fsphys_gc_weight>10</td>
+	<td></td>
+</tr>
+</table>
+<p style="font-size: larger;"><strong>Bachelor-Note:&nbsp;<output id=fsphys_gc_total for="fsphys_gc_physics_1 fsphys_gc_physics_2 fsphys_gc_physics_3 fsphys_gc_math_2 fsphys_gc_math_3 fsphys_gc_minor_1 fsphys_gc_minor_2 fsphys_gc_minor_3 fsphys_gc_minor_1_weight fsphys_gc_minor_2_weight fsphys_gc_minor_3_weight fsphys_gc_quantum_mechanics fsphys_gc_signal_processing fsphys_gc_structure_of_matter fsphys_gc_lab_course_2 fsphys_gc_statistical_physics fsphys_gc_bachelor_thesis">4,00</output></strong></p>
+</div>
+
+</div>
+
+</html>
+
