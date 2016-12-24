@@ -396,8 +396,8 @@ function office_hours_delete($db, $break, $day, $start_time, $end_time) {
 // office_hours_table stuff)
 function office_hours_html($db=NULL, $html_options=[], \DateTime $date=NULL) {
 	extract($html_options);
-	$OH_CSS_DAY_COL_CLASS = OH_CSS_DAY_COL_CLASS;
 	$OH_CSS_TIME_COL_CLASS = OH_CSS_TIME_COL_CLASS;
+	$OH_CSS_DAY_COL_CLASS = OH_CSS_DAY_COL_CLASS;
 	$edit_mode = isset($edit_mode) && $edit_mode;
 	// generate HTML table header
 	$table_classes = OH_CSS_TABLE_CLASS;
@@ -448,9 +448,11 @@ HTML;
 		<tr>
 			$time_header
 HTML;
+	$day_col_single = count($days) == 1 ? ' fsphys_oh_single' : '';
 	foreach ($days as $day_name) {
 		$result .= <<<HTML
-			<th scope="col" class="$OH_CSS_DAY_COL_CLASS">$day_name</th>\n
+			<th scope="col"
+				class="$OH_CSS_DAY_COL_CLASS$day_col_single">$day_name</th>\n
 HTML;
 	}
 	$result .= '</tr>';

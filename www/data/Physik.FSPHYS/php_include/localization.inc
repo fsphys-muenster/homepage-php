@@ -32,6 +32,12 @@ $LOC_STRINGS = [
 		. 'später noch einmal oder schreib’ uns eine Nachricht, falls es '
 		. 'dringend ist.'
 		. '</p>',
+		'HOLIDAY_MSG' => '<p>In der Zeit vom <a class=ext '
+		. 'href="/studium/orga/termine.html"><time datetime=2016-12-23>'
+		. '2016-12-23</time> bis zum <time datetime=2017-01-06>2017-01-06'
+		. '</time> sind Weihnachtsferien</a>. In den Ferien finden keine '
+		. 'Fachschaftssitzungen oder Präsenzdienst statt.</p>'
+		. '<p>Schöne Feiertage!</p>',
 		'current office hours' => 'aktuelle Präsenzzeiten',
 		'complete office hours schedule' => 'vollständiger Präsenzplan',
 		'date' => 'Datum',
@@ -43,6 +49,7 @@ $LOC_STRINGS = [
 		'end time' => 'End&shy;zeit',
 		'enter' => 'eintragen',
 		'from' => 'ab',
+		'holidays' => 'Ferien',
 		'name' => 'Name',
 		'new entry' => 'neuer Eintrag',
 		'office hours' => 'Präsenzplan',
@@ -61,6 +68,12 @@ $LOC_STRINGS = [
 		. 'database is currently unavailable. Please try again later or send '
 		. 'us a message if it’s urgent.'
 		. '</p>',
+		'HOLIDAY_MSG' => '<p>The time between <a class=ext '
+		. 'href="/studium/orga/termine.html"><time datetime=2016-12-23>'
+		. '2016-12-23</time> and <time datetime=2017-01-06>2017-01-06'
+		. '</time> is this year’s winter break</a>. There are no student '
+		. 'council meetings or office hours during the break.</p>'
+		. '<p>Happy holidays!</p>',
 		'current office hours' => 'current office hours',
 		'complete office hours schedule' => 'complete office hours schedule',
 		'date' => 'date',
@@ -72,6 +85,7 @@ $LOC_STRINGS = [
 		'end time' => 'end time',
 		'enter' => 'enter',
 		'from' => 'from',
+		'holidays' => 'holidays',
 		'name' => 'name',
 		'new entry' => 'new entry',
 		'office hours' => 'office hours',

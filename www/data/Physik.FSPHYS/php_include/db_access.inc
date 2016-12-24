@@ -3,6 +3,12 @@ namespace de\uni_muenster\fsphys;
 require_once 'error_handler.inc';
 
 /*
+	Thrown if a database-related error occurs, such as unexpected values
+	returned from the database.
+*/
+class DBException extends \RuntimeException {}
+
+/*
 	Connects to the MySQL database at mysql5.uni-muenster.de returning a PDO
 	object.
 	

@@ -1,10 +1,11 @@
 <?php
 use de\uni_muenster\fsphys;
 require_once 'error_handler.inc';
+require_once 'settings.inc';
 require_once 'office_hours.inc';
 
 // max. rows to show in preview for office hours during break
-const OH_BREAK_MAX_ROWS = 9;
+const OH_BREAK_MAX_ROWS = 10;
 ?>
 
 <article class="module short">
@@ -19,16 +20,30 @@ fsphys\run_and_catch(function() {
 $dt_now = new \DateTime();
 $semester = fsphys\semester_info($dt_now)['during_semester'];
 $db = fsphys\mysql_db_connect();
-if ($semester) {
-	echo fsphys\loc_get_str('during the semester', true);
-	echo '</div>';
-	echo fsphys\office_hours_html($db, [], $dt_now);
+$holidays = fsphys\get_setting('office_hours.start_page_holiday_message', $db,
+	'int');
+if ($holidays) {
+?>
+	<?=fsphys\loc_get_str('holidays', true)?></div>
+	<?=fsphys\loc_get_str('HOLIDAY_MSG')?>
+<?php
+}
+elseif ($semester) {
+?>
+	<?=fsphys\loc_get_str('during the semester', true)?></div>
+	<div class="fsphys_oh_front_page">
+		<?=fsphys\office_hours_html($db, [], $dt_now)?>
+	</div>
+<?php
 }
 else {
-	echo fsphys\loc_get_str('semester break', true);
-	echo '</div>';
-	$options = ['short' => true];
-	echo fsphys\office_hours_break_html($db, $options, OH_BREAK_MAX_ROWS);
+?>
+	<?=fsphys\loc_get_str('semester break', true)?></div>
+	<div class="fsphys_oh_front_page">
+		<?=fsphys\office_hours_break_html($db, ['short' => true],
+			OH_BREAK_MAX_ROWS)?>
+	</div>
+<?php
 }
 fsphys\mysql_db_close($db);
 ?>
