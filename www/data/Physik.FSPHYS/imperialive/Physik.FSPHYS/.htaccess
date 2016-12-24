@@ -1,5 +1,7 @@
 Options -MultiViews
-DirectoryIndex index.php index.html index.shtml /ErrNotFound.asis
+
+# enable PHP 7.1 (will be the default starting January 2017)
+AddHandler php71-script php
 
 RewriteEngine On
 
@@ -13,65 +15,42 @@ RewriteCond %{SERVER_NAME} =www.wwu-muenster.de
 RewriteRule ^/?(.*)$ https://www.uni-muenster.de%{ENV:site_dir}/$1 [L,R=permanent]
 
 # Redirect HTTP to HTTPS
-# default: [R] = [R=302] ("Found"/"Moved Temporarily")
-# [R=permanent] = [R=301]: "Moved Permanently"
+# default: [R] = [R=temp] = [R=302] (“Found”/“Moved Temporarily”)
+# [R=permanent] = [R=301]: “Moved Permanently”
 RewriteCond %{HTTPS} !=on
 RewriteRule ^/?(.*)$ https://%{SERVER_NAME}%{ENV:site_dir}/$1 [L,R=permanent]
 
-# Redirect <...>/index.php, <...>/index.html, <...>/index.shtml to <...>/
-RewriteRule ^(.*)/index\.(php|s?html)$ %{ENV:site_dir}/$1/ [L,R=permanent]
-RewriteRule ^index\.(php|s?html)$ %{ENV:site_dir}/ [L,R=permanent]
+# Redirect <…>/index.php, <…>/index.shtml, <…>/index.html to <…>/
+RewriteRule ^(.*)/index\.(php|s?html)$ %{ENV:site_dir}/$1/ [END,R=permanent]
+RewriteRule ^index\.(php|s?html)$ %{ENV:site_dir}/ [END,R=permanent]
 
-# Redirect <...>.php, <...>.html, <...>.shtml to <...> (without file extension)
-# Only redirect if environment variable is set to avoid redirect loops
-# NOTE: Using the [END] flag instead of setting an environment variable is
-# better, but was first introduced in Apache 2.4!
-# NOTE: %{ENV:REDIRECT_redirected} etc. has to be checked because Apache (for
-# some reason) renames environment variables on redirect (this seems to be
-# undocumented); see
-# https://stackoverflow.com/q/3050444/595306
-RewriteCond %{ENV:redirected} !=1
-RewriteCond %{ENV:REDIRECT_redirected} !=1
-RewriteCond %{ENV:REDIRECT_REDIRECT_redirected} !=1
-RewriteCond %{ENV:REDIRECT_REDIRECT_REDIRECT_redirected} !=1
-RewriteRule ^(.+)\.(php|s?html)$ %{ENV:site_dir}/$1 [L,R=permanent]
-# Alternative to the environment variable method: Look at %{THE_REQUEST}
-# (because this doesn't change even if the URL is rewritten)
-# Not sure how robust this is, though
-#RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s(.+)\.(php|s?html)
-#RewriteRule ^ %1 [L,R]
+# Redirect <…>.php, <…>.html, <…>.shtml to <…> (without file extension)
+RewriteRule ^(.+)\.(php|s?html)$ %{ENV:site_dir}/$1 [END,R=permanent]
 
-# Find file with file extension .php, .html or .shtml on the filesystem for a URL
+# Find file with file extension .php, .shtml or .html on the filesystem for a URL
 # without file extension
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^ %{REQUEST_FILENAME}.php [L,E=redirected:1]
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^ %{REQUEST_FILENAME}.html [L,E=redirected:1]
+RewriteRule ^ %{REQUEST_FILENAME}.php [END]
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.shtml -f
-RewriteRule ^ %{REQUEST_FILENAME}.shtml [L,E=redirected:1]
+RewriteRule ^ %{REQUEST_FILENAME}.shtml [END]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^ %{REQUEST_FILENAME}.html [END]
 
 # Execute main page as PHP (necessary because its template must be a .htms
 # file, which will only generate files ending in .html); cf.
 # https://www.uni-muenster.de/ZIV/Technik/WWW/WebspaceKonfig.html
-# Note: This sets PHP as the handler for ALL files called "index.html"
+# Note: This sets PHP as the handler for ALL files called “index.html”
 # in this directory’s subdirectories – not sure how to avoid this without
-# putting a .htaccess file in every subdirectory...
+# putting a .htaccess file in every subdirectory…
 <Files "index.html">
-    AddHandler php5-script .html
+    AddHandler php71-script .html
 </Files>
-
-
-#=============================================================================
-# URL aliases (should be avoided due to duplicate content)
-
-#RewriteRule ^(en/)?fachschaft/fachschaftler/ehemalige(\.html)?$ /Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
-
 
 #=============================================================================
 # URL redirects
