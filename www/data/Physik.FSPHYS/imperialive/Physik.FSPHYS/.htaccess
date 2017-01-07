@@ -1,5 +1,3 @@
-Options -MultiViews
-
 # enable PHP 7.1 (will be the default starting January 2017)
 AddHandler php71-script php
 
@@ -41,16 +39,6 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^ %{REQUEST_FILENAME}.html [END]
-
-# Execute main page as PHP (necessary because its template must be a .htms
-# file, which will only generate files ending in .html); cf.
-# https://www.uni-muenster.de/ZIV/Technik/WWW/WebspaceKonfig.html
-# Note: This sets PHP as the handler for ALL files called “index.html”
-# in this directory’s subdirectories – not sure how to avoid this without
-# putting a .htaccess file in every subdirectory…
-<Files "index.html">
-    AddHandler php71-script .html
-</Files>
 
 #=============================================================================
 # URL redirects
