@@ -3,12 +3,6 @@ namespace de\uni_muenster\fsphys;
 require_once 'error_handler.inc';
 
 /*
-	Thrown if a database-related error occurs, such as unexpected values
-	returned from the database.
-*/
-class DBException extends \RuntimeException {}
-
-/*
 	Connects to the MySQL database at mysql5.uni-muenster.de returning a PDO
 	object.
 	
@@ -22,7 +16,8 @@ function mysql_db_connect() {
 	$db_password = '*****';
 	$db = new \PDO("mysql:host=$db_server;dbname=$db_name;charset=utf8",
 		$db_user, $db_password);
-	// throw exceptions on PDO errors
+	// throw exceptions on PDO errors instead of silently returning false
+	// or similar
 	$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 	// see https://dev.mysql.com/doc/refman/en/sql-mode.html for information
 	// on MySQL modes

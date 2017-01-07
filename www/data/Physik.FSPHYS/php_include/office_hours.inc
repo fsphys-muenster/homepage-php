@@ -266,7 +266,7 @@ function office_hours_insert($db, $break, $row) {
 	$col_names_arr = array_keys($row);
 	foreach ($col_names_arr as $col) {
 		if (!oh_valid_col_name($break, $col)) {
-			return false;
+			throw new \DomainException("Invalid column name: $col");
 		}
 	}
 	list($tbl_name, ) = oh_table_info($break);
@@ -283,16 +283,10 @@ function office_hours_insert($db, $break, $row) {
 		// bindValue() uses 1-indexed positions
 		$query->bindValue($i + 1, $val, $pdo_dtype);
 	}
-	try {
-		$result = $query->execute();
-	}
-	catch (\PDOException $ex) {
-		$result = false;
-	}
+	$query->execute();
 	if ($opened_db) {
 		mysql_db_close($db);
 	}
-	return $result;
 }
 
 /*
@@ -303,13 +297,11 @@ function office_hours_insert($db, $break, $row) {
 		for this key will be created if needed or the existing row will be
 		updated. The new or updated row will have the value $value for the
 		column $col.
-	
-	Returns true on success or false on failure.
 */
 function office_hours_set($db, $break, $day, $start_time, $end_time,
 	$col, $value) {
 	if (!oh_valid_col_name($break, $col)) {
-		return false;
+		throw new \DomainException("Invalid column name: $col");
 	}
 	list($tbl_name, $day_col) = oh_table_info($break);
 	$key_arr = $break ? OH_BREAK_KEY_COL_NAMES : OH_KEY_COL_NAMES;
@@ -336,12 +328,7 @@ SQL;
 	$query->bindValue(':start_time', $start_time);
 	$query->bindValue(':end_time', $end_time);
 	$query->bindValue(':value', $value);
-	try {
-		$result = $query->execute();
-	}
-	catch (\PDOException $ex) {
-		$result = false;
-	}
+	$query->execute();
 	// if setting a key column and the row didn’t exist, insert instead
 	if ($set_key && !$query->rowCount()) {
 		$row = [
@@ -350,12 +337,11 @@ SQL;
 			'end_time' => $end_time
 		];
 		$row[$col] = $value;
-		$result = office_hours_insert($db, $break, $row);
+		office_hours_insert($db, $break, $row);
 	}
 	if ($opened_db) {
 		mysql_db_close($db);
 	}
-	return $result;
 }
 
 function office_hours_delete($db, $break, $day, $start_time, $end_time) {
@@ -367,16 +353,10 @@ function office_hours_delete($db, $break, $day, $start_time, $end_time) {
 	$query->bindValue(':day', $day);
 	$query->bindValue(':start_time', $start_time);
 	$query->bindValue(':end_time', $end_time);
-	try {
-		$result = $query->execute();
-	}
-	catch (\PDOException $ex) {
-		$result = false;
-	}
+	$query->execute();
 	if ($opened_db) {
 		mysql_db_close($db);
 	}
-	return $result;
 }
 
 /*

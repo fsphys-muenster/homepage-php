@@ -10,7 +10,9 @@ function get_setting($key, $db=NULL, $type='str') {
 		throw new \DomainException("Value of \$type is not valid: $type");
 	}
 	$tbl_name = "settings__$type";
-	$sql = "SELECT value FROM $tbl_name WHERE \"key\" = :key;";
+	$sql = <<<SQL
+	SELECT "value" FROM $tbl_name WHERE "key" = :key;
+SQL;
 	$opened_db = mysql_db_connect_if_null($db);
 	$query = $db->prepare($sql);
 	$query->bindValue(':key', $key);
@@ -19,10 +21,26 @@ function get_setting($key, $db=NULL, $type='str') {
 	if ($opened_db) {
 		mysql_db_close($db);
 	}
-	if ($result === false) {
-		throw new fsphys\DBException("Retrieving value for key $key from "
-			. "database table $tbl_name failed");
-	}
 	return $result[0];
+}
+
+function set_setting($key, $value, $db=NULL, $type='str') {
+	if (!in_array($type, SETTINGS_TYPES)) {
+		throw new \DomainException("Value of \$type is not valid: $type");
+	}
+	$tbl_name = "settings__$type";
+	$sql = <<<SQL
+	INSERT INTO $tbl_name ("key", "value")
+		VALUES(:key, :value)
+		ON DUPLICATE KEY UPDATE "value" = :value;
+SQL;
+	$opened_db = mysql_db_connect_if_null($db);
+	$query = $db->prepare($sql);
+	$query->bindValue(':key', $key);
+	$query->bindValue(':value', $value);
+	$query->execute();
+	if ($opened_db) {
+		mysql_db_close($db);
+	}
 }
 
