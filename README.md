@@ -5,11 +5,11 @@
 The code used for the pages written in PHP on https://www.uni-muenster.de/Physik.FSPHYS/.
 
 ## Requirements
-Code requires PHP ≥ 5.6 as well as the following extensions:
-- [intl](https://secure.php.net/manual/en/book.intl.php)
-- [mbstring](https://secure.php.net/manual/en/book.mbstring.php)
-- [PDO](https://secure.php.net/manual/en/book.pdo.php) including
-  [PDO_MYSQL](https://secure.php.net/manual/en/ref.pdo-mysql.php)
+The code requires PHP ≥ 7.1 as well as the following extensions:
+- [`intl`](https://secure.php.net/manual/en/book.intl.php)
+- [`mbstring`](https://secure.php.net/manual/en/book.mbstring.php)
+- [`PDO`](https://secure.php.net/manual/en/book.pdo.php) including
+  [`PDO_MYSQL`](https://secure.php.net/manual/en/ref.pdo-mysql.php)
 
 ## Execution
 In order for the included files to be found, PHP’s `include_path` .ini setting
@@ -24,4 +24,6 @@ to use from the location of the executed script on the file system.
 Alternatively, a script can define the constant `LOCALE` (e.&nbsp;g.
 `const LOCALE = 'de_DE'`) *before* including `localization.inc` and set the
 default locale used by `localization.inc` in this way.
+(Note: `LOCALE` can either be set in the global scope or in namespace
+`de\uni_muenster\fsphys`.)
 
