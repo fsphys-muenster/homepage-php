@@ -15,8 +15,8 @@ abbr[title] {
 a abbr[title] {
 	cursor: inherit;
 }
-/* do not apply <abbr> rules for claim & language switcher */
-.nav-language abbr[title], .claim abbr[title] {
+/* do not apply <abbr> rules for claim, language switcher and WWU app icon */
+.nav-language abbr[title], .claim abbr[title], .wwuapp abbr[title] {
 	text-decoration: none;
 	border-bottom: none !important;
 	cursor: inherit;
@@ -38,63 +38,69 @@ q::after {
 	content: close-quote;
 }
 /* use hyphenation */
-p {
+p, ul, ol, blockquote {
 	hyphens: auto;
+}
+/* but not for abbreviations (usually doesn’t work well);
+also disable for navigation */
+abbr, nav, nav * {
+	hyphens: none;
 }
 /**********
 	add flags to links with “hreflang” attribute
 	(adapted from https://imperia.uni-muenster.de/wwu/css/edit2014.css)
 **********/
-a[hreflang="ar"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ar.gif)
+/* prevent linebreaks before flags */
+a[hreflang]::after {
+	white-space: nowrap;
 }
-a[hreflang="zh"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_zh.gif)
+a[hreflang="ar"]:not(:lang(ar))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ar.gif);
 }
-a[hreflang="de"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_de.gif)
+a[hreflang="de"]:not(:lang(de))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_de.gif);
 }
-a[hreflang="en"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_en.gif)
+a[hreflang="el"]:not(:lang(el))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_el.gif);
 }
-a[hreflang="fr"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_fr.gif)
+a[hreflang="en"]:not(:lang(en))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_en.gif);
 }
-a[hreflang="el"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_el.gif)
+a[hreflang="es"]:not(:lang(es))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_es.gif);
 }
-a[hreflang="it"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_it.gif)
+a[hreflang="fr"]:not(:lang(fr))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_fr.gif);
 }
-a[hreflang="ja"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ja.gif)
+a[hreflang="he"]:not(:lang(he))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_he.gif);
 }
-a[hreflang="nl"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_nl.gif)
+a[hreflang="it"]:not(:lang(it))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_it.gif);
 }
-a[hreflang="pl"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_pl.gif)
+a[hreflang="ja"]:not(:lang(ja))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ja.gif);
 }
-a[hreflang="pt"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_pt.gif)
+a[hreflang="la"]:not(:lang(la))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_la.gif);
 }
-a[hreflang="ru"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ru.gif)
+a[hreflang="nl"]:not(:lang(nl))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_nl.gif);
 }
-a[hreflang="es"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_es.gif)
+a[hreflang="pl"]:not(:lang(pl))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_pl.gif);
 }
-a[hreflang="tr"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_tr.gif)
+a[hreflang="pt"]:not(:lang(pt))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_pt.gif);
 }
-a[hreflang="la"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_la.gif)
+a[hreflang="ru"]:not(:lang(ru))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_ru.gif);
 }
-a[hreflang="el"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_el.gif)
+a[hreflang="tr"]:not(:lang(tr))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_tr.gif);
 }
-a[hreflang="he"]::after {
-	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_he.gif)
+a[hreflang="zh"]:not(:lang(zh))::after {
+	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_zh.gif);
 }
 /**********
 	FSPHYS-specific, including some hacks to work around Imperia limitations
@@ -177,6 +183,11 @@ abbr, p {
 .nav-2015 .nav-item a *, .nav-2015 .nav-item strong * {
 	display: inline;
 }
+/* left padding is reduced for currently selected navigation item for some
+reason */
+.nav-item-main.current {
+	padding-left: 15px;
+}
 hr {
 	border-color: #09c;
 }
@@ -188,5 +199,13 @@ ol, ul {
 /* subheadings have *zero* margins for some reason */
 div.subhead {
 	margin: 1ex 0;
+}
+/* textarea height is set to 2em in main.css */
+.module-content form textarea, .element-content form textarea {
+	height: unset;
+}
+/* horizontal resize allows contents to spill out of containing boxes */
+textarea {
+	resize: vertical;
 }
 
