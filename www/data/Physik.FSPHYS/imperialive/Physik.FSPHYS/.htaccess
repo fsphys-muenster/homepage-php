@@ -1,76 +1,70 @@
-# enable PHP 7.1 (will be the default starting January 2017)
-AddHandler php71-script php
-
 RewriteEngine On
-
-# Define variable for /Physik.FSPHYS path
-RewriteRule ^ - [E=site_dir:/Physik.FSPHYS]
-
-# Redirect wwu-muenster.de to uni-muenster.de because the former has no valid
-# HTTPS certificate
-RewriteCond %{SERVER_NAME} =wwu-muenster.de [OR]
-RewriteCond %{SERVER_NAME} =www.wwu-muenster.de
-RewriteRule ^/?(.*)$ https://www.uni-muenster.de%{ENV:site_dir}/$1 [L,R=permanent]
+RewriteBase /Physik.FSPHYS
 
 # Redirect HTTP to HTTPS
 # default: [R] = [R=temp] = [R=302] (“Found”/“Moved Temporarily”)
 # [R=permanent] = [R=301]: “Moved Permanently”
 RewriteCond %{HTTPS} !=on
-RewriteRule ^/?(.*)$ https://%{SERVER_NAME}%{ENV:site_dir}/$1 [L,R=permanent]
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [R=permanent,L]
 
 # Redirect <…>/index.php, <…>/index.shtml, <…>/index.html to <…>/
-RewriteRule ^(.*)/index\.(php|s?html)$ %{ENV:site_dir}/$1/ [END,R=permanent]
-RewriteRule ^index\.(php|s?html)$ %{ENV:site_dir}/ [END,R=permanent]
-
+RewriteRule ^(.+/)?index\.(php|s?html)$ $1 [R=permanent,END]
 # Redirect <…>.php, <…>.html, <…>.shtml to <…> (without file extension)
-RewriteRule ^(.+)\.(php|s?html)$ %{ENV:site_dir}/$1 [END,R=permanent]
+RewriteRule ^(.+)\.(php|s?html)$ $1 [R=permanent,END]
 
 # Find file with file extension .php, .shtml or .html on the filesystem for a URL
 # without file extension
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^ %{REQUEST_FILENAME}.php [END]
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.shtml -f
-RewriteRule ^ %{REQUEST_FILENAME}.shtml [END]
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^ %{REQUEST_FILENAME}.html [END]
+<If "!-d '%{REQUEST_FILENAME}' && !-f '%{REQUEST_FILENAME}'">
+	RewriteCond %{REQUEST_FILENAME}.php -f
+	RewriteRule ^ %{REQUEST_FILENAME}.php [END]
+	RewriteCond %{REQUEST_FILENAME}.shtml -f
+	RewriteRule ^ %{REQUEST_FILENAME}.shtml [END]
+	RewriteCond %{REQUEST_FILENAME}.html -f
+	RewriteRule ^ %{REQUEST_FILENAME}.html [END]
+</If>
+
+#=============================================================================
+# use mod_substitute to alter the statically generated links (navigation etc.)
+# to also use clean URLs
+
+AddOutputFilterByType SUBSTITUTE text/html
+Substitute s~/Physik.FSPHYS/([^\s]+/)?index\.(php|s?html)~/Physik.FSPHYS/$1~
+Substitute s~/Physik.FSPHYS/([^\s]+)\.(php|s?html)~/Physik.FSPHYS/$1~
 
 #=============================================================================
 # URL redirects
+
 # URL for event calendar
-RedirectTemp /Physik.FSPHYS/termine/kalender \
-    /Rektorat/exec/termine.php?layout=toptermin-ergebnis&einrichtungsid=163
-RedirectTemp /Physik.FSPHYS/en/termine/kalender \
-    /Rektorat/exec/termine.php?layout=topterminenglish-ergebnis&einrichtungsid=163&language=english
-# URL for for study guide
+Redirect temp /Physik.FSPHYS/termine/kalender \
+	/Rektorat/exec/termine.php?layout=toptermin-ergebnis&einrichtungsid=163
+Redirect temp /Physik.FSPHYS/en/termine/kalender \
+	/Rektorat/exec/termine.php?layout=topterminenglish-ergebnis&einrichtungsid=163&language=english
+# URL for study guide
 RedirectMatch temp ^/Physik\.FSPHYS/(en/)?studieren/studienfuehrer$ \
-    http://xn--studienfhrer-physik-dbc.de/Universität_Münster
+	https://xn--studienfhrer-physik-dbc.de/Universität_Münster
 # URL for Facebook
 RedirectMatch temp ^/Physik\.FSPHYS/(en/)?fb$ \
-    https://www.facebook.com/fsphys/
+	https://www.facebook.com/fsphys/
 
 # List of URLs which have been changed, leaving the old URL to redirect to the new one
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/ehemalige_sammlung(\.html)?$ \
-    /Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
+	/Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/verteiler_richtlinie(\.html)?$ \
-    /Physik.FSPHYS/$1service/verteiler
+	/Physik.FSPHYS/$1service/verteiler
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/bernd_hofschoeer(\.html)?$ \
-    /Physik.FSPHYS/$1fachschaft/fachschaftler/bernd_hofschroeer
-RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/Maskottchen_Fritz(\.html)?$ \
-    /Physik.FSPHYS/$1fachschaft/fachschaftler/maskottchen_fritz
-RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?news/physiker-party_20151019(\.html)?$ \
-    /Physik.FSPHYS/$1news/physiker-party_20151029
+	/Physik.FSPHYS/$1fachschaft/fachschaftler/bernd_hofschroeer
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/bama-tage/(ap|ft|gp|kp|mp|pc|pi|tp|sonder)_2011(\.html)?$ \
-    /Physik.FSPHYS/$1studieren/bama-tage/$2
+	/Physik.FSPHYS/$1studieren/bama-tage/$2
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-woche(/|/index\.html)?$ \
-    /Physik.FSPHYS/$1studieren/erstis/woche/
+	/Physik.FSPHYS/$1studieren/erstis/woche/
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-woche/u18-eltern(\.html)?$ \
-    /Physik.FSPHYS/$1studieren/erstis/u18-eltern
+	/Physik.FSPHYS/$1studieren/erstis/u18-eltern
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-wochenende(/|/index\.html)?$ \
-    /Physik.FSPHYS/$1studieren/erstis/wochenende/
+	/Physik.FSPHYS/$1studieren/erstis/wochenende/
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-wochenende(/|/index\.html)?$ \
+	/Physik.FSPHYS/$1studieren/erstis/wochenende/
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler(/.*)?$ \
+	/Physik.FSPHYS/$1fachschaft/mitglieder$2
+RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?intern/intern-physiker(/.*)?$ \
+	/Physik.FSPHYS/$1intern/physiker$2
 
