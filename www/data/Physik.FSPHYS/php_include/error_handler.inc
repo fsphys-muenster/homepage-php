@@ -1,6 +1,5 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'localization.inc';
 
 const LOG_EMAIL = 'simon.may@uni-muenster.de';
 // all fatal PHP runtime errors (category “error”)
@@ -9,7 +8,7 @@ const E_CAT_ERROR = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR
 // all PHP warnings
 const E_CAT_WARNING = E_WARNING | E_CORE_WARNING | E_COMPILE_WARNING
 	| E_USER_WARNING;
-define('DEFAULT_ERR_MSG', loc_get_str('DEFAULT_ERR_MSG'));
+define('DEFAULT_ERR_MSG', Localization::get('DEFAULT_ERR_MSG'));
 
 /*
 	Convert a numerical error code to its name (e.g. 8 → E_NOTICE).
@@ -25,7 +24,7 @@ function error_type_to_string(int $errno): string {
 			}
 		}
 	}
-	return isset($types[$errno]) ? $types[$errno] : "Error #$errno";
+	return $types[$errno] ?? "Error #$errno";
 }
 
 /*
@@ -34,7 +33,7 @@ function error_type_to_string(int $errno): string {
 */
 function run_and_catch(callable $func, string $error_msg=DEFAULT_ERR_MSG,
 	bool $log=true): void {
-	static $catch_ex = function(\Throwable $ex) use ($error_msg, $log): void {
+	$catch_ex = function(\Throwable $ex) use ($error_msg, $log): void {
 		ob_end_clean();
 		if ($log) {
 			mail_and_log($ex);

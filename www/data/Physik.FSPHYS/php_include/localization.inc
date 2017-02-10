@@ -42,7 +42,7 @@ SQL;
 }
 
 function loc_get_locales() {
-	static $locales_str = get_setting('locales');
+	$locales_str = get_setting('locales');
 	return explode(',', $locales_str);
 }
 
