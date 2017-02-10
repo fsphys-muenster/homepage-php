@@ -1,7 +1,7 @@
 <?php
 use de\uni_muenster\fsphys;
-require_once 'init.inc';
-require_once 'office_hours.inc';
+require_once 'init.php';
+require_once 'office_hours.php';
 
 fsphys\run_and_catch(function() {
 	echo fsphys\office_hours_html();

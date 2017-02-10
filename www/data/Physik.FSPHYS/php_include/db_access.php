@@ -1,6 +1,6 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'error_handler.inc';
+require_once 'error_handler.php';
 
 /*
 	Connects to the MySQL database at mysql5.uni-muenster.de returning a PDO

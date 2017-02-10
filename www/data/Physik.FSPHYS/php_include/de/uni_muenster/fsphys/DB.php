@@ -1,7 +1,7 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'init.inc';
-require_once 'db_access.inc';
+require_once 'init.php';
+require_once 'db_access.php';
 
 class DB {
 	private static $db_instance;

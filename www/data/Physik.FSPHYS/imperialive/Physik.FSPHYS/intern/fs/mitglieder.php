@@ -2,7 +2,7 @@
 use de\uni_muenster\fsphys;
 use de\uni_muenster\fsphys\{CSRF, DB, Localization as Loc, Util,
 	Committee, CommitteeEntry, Member, MemberRecord};
-require_once 'init.inc';
+require_once 'init.php';
 
 function process_input_data(array $locales): void {
 	// CSRF check

@@ -19,11 +19,11 @@ so will be in effect for all scripts provided that evaluation of `.user.ini`
 files is enabled.
 
 ## Note on localization
-Localization is defined in `localization.inc`, which detects the correct locale
+Localization is defined in `Localization.php`, which detects the correct locale
 to use from the location of the executed script on the file system.
 Alternatively, a script can define the constant `LOCALE` (e.&nbsp;g.
-`const LOCALE = 'de_DE'`) *before* including `localization.inc` and set the
-default locale used by `localization.inc` in this way.
+`const LOCALE = 'de_DE'`) *before* including `Localization.php` and set the
+default locale used by `Localization.php` in this way.
 (Note: `LOCALE` can either be set in the global scope or in namespace
 `de\uni_muenster\fsphys`.)
 

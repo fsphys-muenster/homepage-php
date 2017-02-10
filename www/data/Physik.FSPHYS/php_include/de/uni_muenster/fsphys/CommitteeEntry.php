@@ -1,6 +1,6 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'init.inc';
+require_once 'init.php';
 
 class CommitteeEntry extends MemberRecord {
 	const TABLE_NAME = 'member_committees';

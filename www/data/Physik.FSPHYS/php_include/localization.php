@@ -1,8 +1,8 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'init.inc';
-require_once 'settings.inc';
-require_once 'util.inc';
+require_once 'init.php';
+require_once 'settings.php';
+require_once 'util.php';
 /*
 	Scripts including this file can define a constant LOCALE which determines
 	the locale used by default for the localization functions in this file. If

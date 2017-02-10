@@ -1,8 +1,8 @@
 <?php
 use de\uni_muenster\fsphys;
 use de\uni_muenster\fsphys\{Localization as Loc, SemesterInfo, Settings};
-require_once 'init.inc';
-require_once 'office_hours.inc';
+require_once 'init.php';
+require_once 'office_hours.php';
 
 // max. rows to show in preview for office hours during break
 const OH_BREAK_MAX_ROWS = 10;

@@ -1,6 +1,6 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'init.inc';
+require_once 'init.php';
 
 function sql_format_insert(array $data): array {
 	$column_names = array_keys($data);

@@ -1,8 +1,8 @@
 <?php
 use de\uni_muenster\fsphys;
 use de\uni_muenster\fsphys\{DB, Localization as Loc, Util};
-require_once 'init.inc';
-require_once 'office_hours.inc';
+require_once 'init.php';
+require_once 'office_hours.php';
 
 function html_input_type(string $col) {
 	static $types = NULL;

@@ -9,17 +9,12 @@ spl_autoload_register(function(string $class): void {
 {\\|_(?!.*\\)}
 RE;
 	$path_prefix = preg_replace($re, DIRECTORY_SEPARATOR, ltrim($class, '\\'));
-	if (stream_resolve_include_path("$path_prefix.php") !== FALSE) {
-		// can use require (instead of require_once) because this will only
-		// be called if a class wasn’t found, which won’t happen again
-		// after require is done
-		require "$path_prefix.php";
-	}
-	else {
-		require "$path_prefix.inc";
-	}
+	// can use require (instead of require_once) because this will only
+	// be called if a class wasn’t found, which won’t happen again
+	// after require is done
+	require "$path_prefix.php";
 });
 
 // ensure that error_handler settings are executed
-require_once 'error_handler.inc';
+require_once 'error_handler.php';
 

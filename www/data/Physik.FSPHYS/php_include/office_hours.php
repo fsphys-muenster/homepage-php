@@ -1,7 +1,7 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'init.inc';
-require_once 'util.inc';
+require_once 'init.php';
+require_once 'util.php';
 
 /*
 	The special value of the end_time column in the office_hours database

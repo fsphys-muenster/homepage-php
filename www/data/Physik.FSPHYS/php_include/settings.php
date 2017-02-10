@@ -1,7 +1,7 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'init.inc';
-require_once 'util.inc';
+require_once 'init.php';
+require_once 'util.php';
 
 const SETTINGS_TYPES = ['int', 'str'];
 

@@ -1,6 +1,6 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'init.inc';
+require_once 'init.php';
 
 class Util {
 	static function localized_table_name(string $table, $locale=NULL): string {
