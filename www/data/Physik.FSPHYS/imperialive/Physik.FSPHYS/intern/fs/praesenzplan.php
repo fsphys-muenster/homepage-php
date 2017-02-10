@@ -1,9 +1,7 @@
 <?php
 use de\uni_muenster\fsphys;
-use de\uni_muenster\fsphys\DB;
-use function de\uni_muenster\fsphys\loc_get_str;
+use de\uni_muenster\fsphys\{DB, Localization as Loc, Util};
 require_once 'init.inc';
-require_once 'util.inc';
 require_once 'office_hours.inc';
 
 function html_input_type(string $col) {
@@ -80,8 +78,8 @@ SQL;
 fsphys\run_and_catch(function() {
 ?>
 	<p style="text-align: center;">
-	<a href="?break="><?=loc_get_str('office hours', true)?></a> |
-	<a href="?break=1"><?=loc_get_str('office hours (break)', true)?></a>
+	<a href="?break="><?=Loc::get('office hours', true)?></a> |
+	<a href="?break=1"><?=Loc::get('office hours (break)', true)?></a>
 	</p>
 
 <?php
@@ -104,7 +102,7 @@ if (isset($_GET['break'])) {
 
 	$data_arr_raw = $mask_time ? $_GET : $_POST;
 	// apply htmlspecialchars to all GET/POST string input in $data_arr
-	$data_arr = array_map(fsphys\htmlspecialchars_if_str(), $data_arr_raw);
+	$data_arr = Util::html_str($data_arr_raw);
 	extract($data_arr, EXTR_PREFIX_ALL, 'req');
 	// form to edit an existing entry (both)
 	if ($mask_time) {
@@ -128,7 +126,7 @@ if (isset($_GET['break'])) {
 			<input type=hidden name=col value="<?=$req_col?>">
 			<input type=<?=html_input_type($req_col)?> name=val
 				size=50 value="<?=$val?>">
-			<input type=submit value="<?=loc_get_str('enter', true)?>">
+			<input type=submit value="<?=Loc::get('enter', true)?>">
 		</form>
 <?php
 	}
@@ -136,23 +134,23 @@ if (isset($_GET['break'])) {
 	elseif ($mask_new_entry) {
 ?>
 		<form method=post action="?break=<?=$break?>">
-			<label><?=loc_get_str('date', true)?>:
+			<label><?=Loc::get('date', true)?>:
 				<input type=date name=day required>
 			</label>
-			<label><?=loc_get_str('start time', true)?>:
+			<label><?=Loc::get('start time', true)?>:
 				<input type=time name=start_time required>
 			</label>
 			<label>
-				<?=loc_get_str('end time', true)?>:
+				<?=Loc::get('end time', true)?>:
 				<input type=time name=end_time required>
 			</label>
-			<label><?=loc_get_str('name', true)?>:
+			<label><?=Loc::get('name', true)?>:
 				<input type=text name=name size=50>
 			</label>
 			<input type=checkbox name=show value="" id=chk_show>
-			<label for=chk_show><?=loc_get_str('show', true)?></label>
+			<label for=chk_show><?=Loc::get('show', true)?></label>
 			<input type=submit name=new_entry
-				value="<?=loc_get_str('enter', true)?>">
+				value="<?=Loc::get('enter', true)?>">
 		</form>
 <?php
 	}
@@ -209,13 +207,12 @@ if (isset($_GET['break'])) {
 			<?=fsphys\office_hours_break_html($options)?>
 			<div class=center>
 				<input type=submit name=save_shows
-					value="<?=loc_get_str('save show setting', true)?>">
+					value="<?=Loc::get('save show setting', true)?>">
 			</div>
 		</form>
 		<div class=center>
 			<a href="?break=<?=$break?>&amp;new_entry"
-				class=fsphys_oh_new_entry><?=
-				loc_get_str('new entry', true)?></a>
+				class=fsphys_oh_new_entry><?=Loc::get('new entry', true)?></a>
 		</div>
 <?php
 		}
@@ -245,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			let submitActor = this.submitActor;
 			if (submitActor && submitActor.matches('.fsphys_oh_delete')) {
 				return window.confirm('<?=
-					loc_get_str('delete_confirmation_dialog')?>');
+					Loc::get('delete_confirmation_dialog')?>');
 			}
 		}
 	}
@@ -253,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php
-}, loc_get_str('members.edit.error_message')); // fsphys\run_and_catch() end
+}, Loc::get('members.edit.error_message')); // fsphys\run_and_catch() end
 ?>
 
 </div>
