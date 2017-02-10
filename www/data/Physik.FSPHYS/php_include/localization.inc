@@ -1,7 +1,8 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'error_handler.inc';
-require_once 'db_access.inc';
+require_once 'init.inc';
+require_once 'settings.inc';
+require_once 'util.inc';
 /*
 	Scripts including this file can define a constant LOCALE which determines
 	the locale used by default for the localization functions in this file. If
@@ -24,32 +25,25 @@ if (!defined('LOCALE')) {
 	}
 }
 
-/*
-	Makes a string’s first character uppercase.
-	Like PHP’s ucfirst(), but for multibyte strings.
-*/
-function mb_ucfirst($str) {
-	$first_char = mb_strtoupper(mb_substr($str, 0, 1));
-	return $first_char . mb_substr($str, 1);
-}
-
-function loc_get_str($key, $capitalize=false, $locale=LOCALE) {
-	if (!in_array($type, SETTINGS_TYPES)) {
-		throw new \DomainException("Value of \$type is not valid: $type");
-	}
-	$tbl_name = 'localization__' . loc_lang_code();
+function loc_get_str(string $key, bool $capitalize=false, $locale=LOCALE) {
+	$tbl_name = 'localization__' . loc_lang_code($locale);
 	$sql = <<<SQL
-	SELECT "value" FROM $tbl_name WHERE "key" = :key;
+	SELECT "value" FROM "$tbl_name" WHERE "key" = :key;
 SQL;
-	$opened_db = mysql_db_connect_if_null($db);
-	$query = $db->prepare($sql);
+	$query = DB::prepare($sql);
 	$query->bindValue(':key', $key);
 	$query->execute();
 	$result = $query->fetch();
-	if ($opened_db) {
-		mysql_db_close($db);
+	if (!$result) {
+		throw new \UnexpectedValueException('Database returned no values in '
+			. "table “{$tbl_name}” for key “{$key}”");
 	}
 	return $capitalize ? mb_ucfirst($result[0]) : $result[0];
+}
+
+function loc_get_locales() {
+	static $locales_str = get_setting('locales');
+	return explode(',', $locales_str);
 }
 
 function loc_lang_code($locale=LOCALE) {
