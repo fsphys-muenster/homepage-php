@@ -2,8 +2,27 @@
 # Executed daily, see
 # https://www.uni-muenster.de/ZIV/Technik/WWW/EigeneProgramme.html
 
-cd /www/data/Physik.FSPHYS/
+fsphys_root='/www/data/Physik.FSPHYS'
+cd "$fsphys_root/"
 
-cd cron/
-/usr/sbin/logrotate -s logrotate_status logrotate.conf
+cd 'cron/'
+# backup database
+backup_prefix="$fsphys_root/db_backup/"$(date -Iminutes)
+db_pw='*****'
+mysqldump -h 'mysql5.uni-muenster.de' -u 'pinfofs' -p"$db_pw" \
+	--log_error='mysqldump.log' --compatible=ansi --all-databases \
+	> "${backup_prefix}_backup.sql"
+# backup INFORMATION_SCHEMA
+mysqldump -h 'mysql5.uni-muenster.de' -u 'pinfofs' -p"$db_pw" \
+	--log_error='mysqldump.log' --compatible=ansi --skip-lock-tables \
+	INFORMATION_SCHEMA \
+	> "${backup_prefix}_backup_schema.sql"
+$db_pw=
+# compress database backups
+gzip "${backup_prefix}_backup.sql" "${backup_prefix}_backup_schema.sql"
+# delete backups older than 3 years
+find "$fsphys_root/db_backup/" -ctime +1095 -delete
+
+# rotate logs
+logrotate -s 'logrotate_status' 'logrotate.conf'
 
