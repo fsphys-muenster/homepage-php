@@ -39,22 +39,22 @@ function update_times($start_time, $end_time, $time_col, $new_time) {
 		WHERE "$time_col" = :old_time AND "$other_time_col" = :other_time;
 SQL;
 	DB::beginTransaction();
-	$query = DB::prepare($sql);
-	$query->bindValue(':old_time', $old_time);
-	$query->bindValue(':new_time', $new_time);
-	$query->bindValue(':other_time', $$other_time_col);
-	$result = $query->execute();
+	$result = Util::sql_execute($sql, [
+		'old_time' => $old_time,
+		'new_time' => $new_time,
+		'other_time' => $other_time_col
+	]);
 	DB::commit();
 	return $result;
 }
 
-function save_shows() {
+function save_shows(): void {
 	$data = $_POST['r'];
 	$PK_CONDITION = fsphys\BREAK_PK_CONDITION;
 	$sql = <<<SQL
 	UPDATE "office_hours_break" SET "show" = :show WHERE $PK_CONDITION;
 SQL;
-	$result = true;
+	DB::beginTransaction();
 	$query = DB::prepare($sql);
 	foreach ($data as $row) {
 		if (!is_array($row)) {
@@ -65,9 +65,9 @@ SQL;
 		$query->bindValue(':start_time', $row['start_time'] ?? NULL);
 		$query->bindValue(':end_time', $row['end_time'] ?? NULL);
 		$query->bindValue(':show', isset($row['show']), \PDO::PARAM_BOOL);
-		$result &= $query->execute();
+		$query->execute();
 	}
-	return $result;
+	DB::commit();
 }
 ?>
 

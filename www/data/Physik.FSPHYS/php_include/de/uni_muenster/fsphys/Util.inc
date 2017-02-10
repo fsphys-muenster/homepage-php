@@ -101,7 +101,7 @@ class Util {
 		// https://secure.php.net/manual/en/function.filter-input-array.php#97491
 		elseif ($add_empty && $result === NULL) {
 			foreach ($definition as $key => $value) {
-				$result[$key] = $value['default'] ?? NULL;
+				$result[$key] = $value['options']['default'] ?? NULL;
 			}
 		}
 		return $result;
@@ -118,7 +118,7 @@ class Util {
 	
 	private static function filter_set_defaults(array &$data, &$definition) {
 		foreach ($data as $key => $value) {
-			$default = $definition[$key]['default'] ?? NULL;
+			$default = $definition[$key]['options']['default'] ?? NULL;
 			if (!isset($value) && isset($default)) {
 				$data[$key] = $default;
 			}
