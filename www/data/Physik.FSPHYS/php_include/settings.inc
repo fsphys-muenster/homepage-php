@@ -1,11 +1,11 @@
 <?php
 namespace de\uni_muenster\fsphys;
-require_once 'error_handler.inc';
-require_once 'db_access.inc';
+require_once 'init.inc';
+require_once 'util.inc';
 
 const SETTINGS_TYPES = ['int', 'str'];
 
-function get_setting($key, $db=NULL, $type='str') {
+function get_setting(string $key, $type='str') {
 	if (!in_array($type, SETTINGS_TYPES)) {
 		throw new \DomainException("Value of \$type is not valid: $type");
 	}
@@ -13,34 +13,30 @@ function get_setting($key, $db=NULL, $type='str') {
 	$sql = <<<SQL
 	SELECT "value" FROM $tbl_name WHERE "key" = :key;
 SQL;
-	$opened_db = mysql_db_connect_if_null($db);
-	$query = $db->prepare($sql);
+	$query = DB::prepare($sql);
 	$query->bindValue(':key', $key);
 	$query->execute();
 	$result = $query->fetch();
-	if ($opened_db) {
-		mysql_db_close($db);
+	if (!$result) {
+		throw new \UnexpectedValueException('Database returned no values in '
+			. "table $tbl_name for key $key");
 	}
 	return $result[0];
 }
 
-function set_setting($key, $value, $db=NULL, $type='str') {
+function set_setting(string $key, $value, $type='str') {
 	if (!in_array($type, SETTINGS_TYPES)) {
 		throw new \DomainException("Value of \$type is not valid: $type");
 	}
 	$tbl_name = "settings__$type";
 	$sql = <<<SQL
 	INSERT INTO $tbl_name ("key", "value")
-		VALUES(:key, :value)
+		VALUES (:key, :value)
 		ON DUPLICATE KEY UPDATE "value" = :value;
 SQL;
-	$opened_db = mysql_db_connect_if_null($db);
-	$query = $db->prepare($sql);
+	$query = DB::prepare($sql);
 	$query->bindValue(':key', $key);
 	$query->bindValue(':value', $value);
 	$query->execute();
-	if ($opened_db) {
-		mysql_db_close($db);
-	}
 }
 
