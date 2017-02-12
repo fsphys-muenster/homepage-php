@@ -10,7 +10,7 @@ class Settings {
 		if (!in_array($type, self::TYPES)) {
 			throw new \DomainException("Value of \$type is not valid: $type");
 		}
-		if (!isset(self::$cache[$key])) {
+		if (!isset(self::$cache[$type][$key])) {
 			$tbl_name = "settings__$type";
 			$sql = <<<SQL
 			SELECT "value" FROM $tbl_name WHERE "key" = :key;
@@ -21,9 +21,9 @@ SQL;
 				throw new \UnexpectedValueException('Database returned no '
 					. "values in table $tbl_name for key $key");
 			}
-			self::$cache[$key] = $result[0];
+			self::$cache[$type][$key] = $result[0];
 		}
-		return self::$cache[$key];
+		return self::$cache[$type][$key];
 	}
 
 	static function set(string $key, $value, $type='str') {
@@ -37,6 +37,7 @@ SQL;
 			ON DUPLICATE KEY UPDATE "value" = :value;
 SQL;
 		Util::sql_execute($sql, ['key' => $key, 'value' => $value]);
+		$cache[$type][$key] = $value;
 	}
 }
 

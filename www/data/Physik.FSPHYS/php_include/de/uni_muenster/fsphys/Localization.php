@@ -27,7 +27,7 @@ class Localization {
 	private static $cache = [];
 
 	static function get(string $key, bool $capitalize=false, $locale=LOCALE) {
-		if (!isset(self::$cache[$key])) {
+		if (!isset(self::$cache[$locale][$key])) {
 			$tbl_name = Util::localized_table_name('localization', $locale);
 			$sql = <<<SQL
 			SELECT "value" FROM "$tbl_name" WHERE "key" = :key;
@@ -38,9 +38,9 @@ SQL;
 				throw new \UnexpectedValueException('Database returned no '
 					. "values in table “{$tbl_name}” for key “{$key}”");
 			}
-			self::$cache[$key] = $result[0];
+			self::$cache[$locale][$key] = $result[0];
 		}
-		$value = self::$cache[$key];
+		$value = self::$cache[$locale][$key];
 		return $capitalize ? Util::mb_ucfirst($value) : $value;
 	}
 
