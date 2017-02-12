@@ -69,8 +69,8 @@ COMMENT='Start and end dates for each semester';
 
 -- member data
 CREATE TABLE IF NOT EXISTS "members" (
-	"member_id" INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	"forenames"    VARCHAR(100) NOT NULL,
+	"member_id"    INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	"forenames"    VARCHAR(200) NOT NULL,
 	"nickname"     VARCHAR(50) NOT NULL,
 	"surname"	   VARCHAR(100) NOT NULL,
 	"name_url"     VARCHAR(250) NOT NULL
@@ -82,8 +82,8 @@ CREATE TABLE IF NOT EXISTS "members" (
 	"member_end"   DATE
 		COMMENT 'NULL means unspecified (i.e. until today)',
 	"pgp_id"	   VARCHAR(100) NOT NULL,
-	"pgp_url"      VARCHAR(250) NOT NULL,
-	"mem_sort_key" VARCHAR(100) NOT NULL,
+	"pgp_url"      VARCHAR(300) NOT NULL,
+	"mem_sort_key" VARCHAR(300) NOT NULL,
 	PRIMARY KEY ("member_id"),
 	UNIQUE KEY ("uni_email"),
 	UNIQUE KEY ("name_url")
@@ -92,9 +92,9 @@ COMMENT='Data about the members of the Physics Student Council';
 
 CREATE TABLE IF NOT EXISTS "members__de" (
 	"member_id"       INT UNSIGNED NOT NULL,
-	"title"           VARCHAR(50) NOT NULL,
-	"duties"          VARCHAR(200) NOT NULL,
-	"program"         VARCHAR(100) NOT NULL,
+	"title"           VARCHAR(100) NOT NULL,
+	"duties"          VARCHAR(300) NOT NULL,
+	"program"         VARCHAR(300) NOT NULL,
 	"additional_info" VARCHAR(1000) NOT NULL,
 	PRIMARY KEY ("member_id"),
 	FOREIGN KEY ("member_id") REFERENCES "members" ("member_id")
@@ -104,9 +104,9 @@ COMMENT='Localized member information for locale “de”';
 
 CREATE TABLE IF NOT EXISTS "members__en" (
 	"member_id"       INT UNSIGNED NOT NULL,
-	"title"           VARCHAR(50) NOT NULL,
-	"duties"          VARCHAR(200) NOT NULL,
-	"program"         VARCHAR(100) NOT NULL,
+	"title"           VARCHAR(100) NOT NULL,
+	"duties"          VARCHAR(300) NOT NULL,
+	"program"         VARCHAR(300) NOT NULL,
 	"additional_info" VARCHAR(1000) NOT NULL,
 	PRIMARY KEY ("member_id"),
 	FOREIGN KEY ("member_id") REFERENCES "members" ("member_id")
@@ -116,18 +116,17 @@ COMMENT='Localized member information for locale “en”';
 
 CREATE TABLE IF NOT EXISTS "committees" (
 	"committee_id"   INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	"committee_name" VARCHAR(250) NOT NULL,
 	"category"       ENUM('student_body', 'department', 'central', 'other')
 		NOT NULL DEFAULT 'other',
-	"com_sort_key"   INT UNSIGNED NOT NULL DEFAULT 1000,
-	PRIMARY KEY ("committee_id"),
-	UNIQUE KEY "data" ("committee_name", "category")
+	"com_sort_key"   INT UNSIGNED NOT NULL DEFAULT 100000,
+	PRIMARY KEY ("committee_id")
 ) -- ENGINE=InnoDB
 COMMENT='Stores the possible committees where members can be active';
 
 CREATE TABLE IF NOT EXISTS "committees__de" (
-	"committee_id" INT UNSIGNED NOT NULL,
-	"html"         VARCHAR(1000) NOT NULL,
+	"committee_id"   INT UNSIGNED NOT NULL,
+	"committee_name" VARCHAR(300) NOT NULL,
+	"html"           VARCHAR(1000) NOT NULL,
 	PRIMARY KEY ("committee_id"),
 	FOREIGN KEY ("committee_id") REFERENCES "committees" ("committee_id")
 		ON DELETE CASCADE
@@ -135,8 +134,9 @@ CREATE TABLE IF NOT EXISTS "committees__de" (
 COMMENT='Localized committee information for locale “de”';
 
 CREATE TABLE IF NOT EXISTS "committees__en" (
-	"committee_id" INT UNSIGNED NOT NULL,
-	"html" VARCHAR(1000) NOT NULL,
+	"committee_id"   INT UNSIGNED NOT NULL,
+	"committee_name" VARCHAR(300) NOT NULL,
+	"html"           VARCHAR(1000) NOT NULL,
 	PRIMARY KEY ("committee_id"),
 	FOREIGN KEY ("committee_id") REFERENCES "committees" ("committee_id")
 		ON DELETE CASCADE
@@ -159,8 +159,8 @@ CREATE TABLE IF NOT EXISTS "member_committees" (
 COMMENT='Data about which committees a member is in';
 
 CREATE TABLE IF NOT EXISTS "member_committees__de" (
-	"row_id"       INT UNSIGNED NOT NULL,
-	"info"         VARCHAR(250) NOT NULL,
+	"row_id" INT UNSIGNED NOT NULL,
+	"info"   VARCHAR(300) NOT NULL,
 	PRIMARY KEY ("row_id"),
 	FOREIGN KEY ("row_id") REFERENCES "member_committees" ("row_id")
 		ON DELETE CASCADE
@@ -168,8 +168,8 @@ CREATE TABLE IF NOT EXISTS "member_committees__de" (
 COMMENT='Data about which committees a member is in (for locale “de”)';
 
 CREATE TABLE IF NOT EXISTS "member_committees__en" (
-	"row_id"       INT UNSIGNED NOT NULL,
-	"info"         VARCHAR(250) NOT NULL,
+	"row_id" INT UNSIGNED NOT NULL,
+	"info"   VARCHAR(300) NOT NULL,
 	PRIMARY KEY ("row_id"),
 	FOREIGN KEY ("row_id") REFERENCES "member_committees" ("row_id")
 		ON DELETE CASCADE

@@ -4,7 +4,7 @@ use de\uni_muenster\fsphys\{DB, Localization as Loc, Util};
 require_once 'init.php';
 require_once 'office_hours.php';
 
-function html_input_type(string $col) {
+function html_input_type(string $col): string {
 	static $types = NULL;
 	if ($types === NULL) {
 		$types = [
@@ -16,7 +16,7 @@ function html_input_type(string $col) {
 	return $types[$col] ?? 'text';
 }
 
-function update_times($start_time, $end_time, $time_col, $new_time) {
+function update_times($start_time, $end_time, $time_col, $new_time): void {
 	if (!in_array($time_col, ['start_time', 'end_time'])) {
 		return false;
 	}
@@ -45,7 +45,6 @@ SQL;
 		'other_time' => $other_time_col
 	]);
 	DB::commit();
-	return $result;
 }
 
 function save_shows(): void {

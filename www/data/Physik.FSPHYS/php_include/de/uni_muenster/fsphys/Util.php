@@ -90,25 +90,31 @@ class Util {
 		return filter_var_array($data, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	}
 	
+	static function filter_input_array(int $type, $definition=FILTER_DEFAULT,
+		bool $add_empty=true): array {
+		$result = filter_input_array($type, $definition, $add_empty);
+		if ($result === NULL) {
+			self::filter_input_array_workaround($result, $definition,
+				$add_empty, false);
+		}
+		return $result;
+	}
+	
 	static function filter_input_array_defaults(int $type,
-		$definition=FILTER_DEFAULT, bool $add_empty=true) {
+		$definition=FILTER_DEFAULT, bool $add_empty=true): array {
 		$result = filter_input_array($type, $definition, $add_empty);
 		if ($add_empty && $result) {
 			self::filter_set_defaults($result, $definition);
 		}
-		// workaround for bug: filter_input_array returns NULL if the specified
-		// array is empty
-		// https://secure.php.net/manual/en/function.filter-input-array.php#97491
-		elseif ($add_empty && $result === NULL) {
-			foreach ($definition as $key => $value) {
-				$result[$key] = $value['options']['default'] ?? NULL;
-			}
+		elseif ($result === NULL) {
+			self::filter_input_array_workaround($result, $definition,
+				$add_empty, true);
 		}
 		return $result;
 	}
 	
 	static function filter_var_array_defaults(array $data,
-		$definition=FILTER_DEFAULT, bool $add_empty=true) {
+		$definition=FILTER_DEFAULT, bool $add_empty=true): array {
 		$result = filter_var_array($data, $definition, $add_empty);
 		if ($add_empty && $result) {
 			self::filter_set_defaults($result, $definition);
@@ -116,12 +122,31 @@ class Util {
 		return $result;
 	}
 	
-	private static function filter_set_defaults(array &$data, &$definition) {
+	private static function filter_set_defaults(array &$data, &$definition):
+		void {
 		foreach ($data as $key => $value) {
 			$default = $definition[$key]['options']['default'] ?? NULL;
 			if (!isset($value) && isset($default)) {
 				$data[$key] = $default;
 			}
+		}
+	}
+	
+	/*
+	   workaround for bug: filter_input_array returns NULL if the specified
+	   array is empty
+	   https://secure.php.net/manual/en/function.filter-input-array.php#97491
+	*/
+	private static function filter_input_array_workaround(?array &$result,
+		&$definition, bool $add_empty, bool $defaults): void {
+		if ($add_empty && is_array($definition)) {
+			foreach ($definition as $key => $value) {
+				$result[$key] = $defaults ?
+					($value['options']['default'] ?? NULL) : NULL;
+			}
+		}
+		else {
+			$result = [];
 		}
 	}
 }

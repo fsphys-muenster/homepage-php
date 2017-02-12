@@ -5,7 +5,7 @@ require_once 'init.php';
 class Member extends MemberRecord {
 	const TABLE_NAME = 'members';
 	
-	function __construct(int $member_id=MemberRecord::ID_NONE) {
+	function __construct(?int $member_id=MemberRecord::ID_NONE) {
 		parent::__construct($member_id, 'member_id', self::TABLE_NAME);
 	}
 	
@@ -33,16 +33,14 @@ class Member extends MemberRecord {
 	}
 	
 	protected function process_input_data(array &$data, $locale): void {
-		switch ($locale) {
-			case NULL:
-				if (isset($data['member_end']) && !$data['member_end']) {
-					unset($data['member_end']);
-				}
-				if (!isset($data['mem_sort_key'])) {
-					$data['mem_sort_key']
-						= "{$data['surname']}, {$data['forenames']}";
-				}
-				break;
+		if (!$locale) {
+			if (isset($data['member_end']) && !$data['member_end']) {
+				unset($data['member_end']);
+			}
+			if (!isset($data['mem_sort_key'])) {
+				$data['mem_sort_key']
+					= "{$data['surname']}, {$data['forenames']}";
+			}
 		}
 	}
 	
@@ -85,7 +83,8 @@ class Member extends MemberRecord {
 			"$entries_tbl" NATURAL JOIN "$entries_loc_tbl"
 				NATURAL JOIN "$com_tbl" NATURAL JOIN "$com_loc_tbl"
 			WHERE "member_id" = :member_id
-			ORDER BY "category", "com_sort_key", "start", "end";
+			ORDER BY "category", "com_sort_key", "committee_name",
+				"start", "end";
 SQL;
 		$query = Util::sql_execute($sql, ['member_id' => $this->get_id()]);
 		if ($group) {
@@ -114,8 +113,9 @@ SQL;
 		if (!$data) {
 			return '';
 		}
-		$result = <<<'HTML'
-		<table class=fsphys_member>
+		$edit_class = $edit_callback ? ' fsphys_edit_table' : '';
+		$result = <<<HTML
+		<table class="fsphys_member_committees$edit_class">
 HTML;
 		foreach ($data as $category => $category_data) {
 			$category_name = Localization::get("members.committees.$category",
@@ -141,10 +141,9 @@ HTML;
 					$name_cell = $edit_cell = '';
 					$end = $row['end'] ?? Localization::get('today');
 					if ($first_row) {
-						// XXX subhead
 						$name_cell = <<<HTML
-						<!-- class=subhead -->
-					<th scope=row rowspan=$row_count>$com_html</th>
+						<th scope=row rowspan=$row_count
+							class="subhead fix">$com_html</th>
 HTML;
 					}
 					if ($edit_callback) {
@@ -173,7 +172,8 @@ HTML;
 	static function list_all(): array {
 		$tbl_name = self::TABLE_NAME;
 		$sql = <<<SQL
-		SELECT * FROM "$tbl_name";
+		SELECT * FROM "$tbl_name"
+			ORDER BY "mem_sort_key";
 SQL;
 		$query = DB::query($sql);
 		$result = [];

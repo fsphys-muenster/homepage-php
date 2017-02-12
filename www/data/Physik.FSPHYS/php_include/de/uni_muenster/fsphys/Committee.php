@@ -5,7 +5,7 @@ require_once 'init.php';
 class Committee extends MemberRecord {
 	const TABLE_NAME = 'committees';
 	
-	function __construct(int $committee_id=MemberRecord::ID_NONE) {
+	function __construct(?int $committee_id=MemberRecord::ID_NONE) {
 		parent::__construct($committee_id, 'committee_id', self::TABLE_NAME);
 	}
 	
@@ -15,12 +15,11 @@ class Committee extends MemberRecord {
 			$valid_names = [
 				false => [
 					// table “committees”
-					'committee_id', 'committee_name', 'category',
-					'com_sort_key',
+					'committee_id', 'category', 'com_sort_key',
 				],
 				true => [
 					// tables “committees__<lang_code>”
-					'committee_id', 'html',
+					'committee_id', 'committee_name', 'html',
 				],
 			];
 			foreach ($valid_names as $localized => $arr) {
@@ -31,7 +30,25 @@ class Committee extends MemberRecord {
 	}
 	
 	protected function process_input_data(array &$data, $locale): void {
-		// XXX
+		if ($locale) {
+			if (!isset($data['html'])) {
+				if (Util::keys_set_all($data, 'url', 'committee_name',
+					'url_overwrite') && $data['url']) {
+					$url = htmlspecialchars($data['url']);
+					$name = htmlspecialchars($data['committee_name']);
+					$html = <<<HTML
+					<a class=ext href="$url">$name</a>
+HTML;
+					$data['html'] = trim($html);
+				}
+				elseif ($this->is_new()) {
+					$data['html'] = htmlspecialchars(
+						$data['committee_name'] ?? 'unnamed');
+				}
+			}
+			unset($data['url']);
+			unset($data['url_overwrite']);
+		}
 	}
 
 	function has_entry(CommitteeEntry $entry): bool {
@@ -54,16 +71,19 @@ SQL;
 		return $result[0];
 	}
 	
-	static function list_all(): array {
+	static function list_all($locale=LOCALE): array {
 		$tbl_name = self::TABLE_NAME;
+		$loc_tbl_name = Util::localized_table_name($tbl_name, $locale);
 		$sql = <<<SQL
-		SELECT * FROM "$tbl_name" ORDER BY "com_sort_key";
+		SELECT * FROM "$tbl_name" NATURAL JOIN "$loc_tbl_name"
+			ORDER BY "category", "com_sort_key", "committee_name";
 SQL;
 		$query = DB::query($sql);
 		$result = [];
 		while ($row = $query->fetch()) {
 			$committee = new Committee($row['committee_id']);
 			$committee->data_cache['unloc'] = $row;
+			$committee->data_cache[$locale] = $row;
 			$result[] = $committee;
 		}
 		return $result;

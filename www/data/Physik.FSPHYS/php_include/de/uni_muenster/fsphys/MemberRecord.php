@@ -11,7 +11,8 @@ abstract class MemberRecord {
 	private $table_name;
 	protected $data_cache = [];
 
-	function __construct(int $id, string $id_name, string $table_name) {
+	function __construct(?int $id, string $id_name, string $table_name) {
+		$id = $id ?? self::ID_NONE;
 		$this->set_id($id);
 		$this->id_name = $id_name;
 		$this->table_name = $table_name;
@@ -122,7 +123,7 @@ SQL;
 	}
 	
 	function get_attr(string $name, $locale=NULL) {
-		$this->check_new();
+		if ($this->is_new()) return NULL;
 		$data = $this->get_data($locale);
 		return $data[$name];
 	}
