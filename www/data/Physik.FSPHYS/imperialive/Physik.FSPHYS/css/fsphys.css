@@ -46,6 +46,7 @@ also disable for navigation */
 abbr, nav, nav * {
 	hyphens: none;
 }
+
 /**********
 	add flags to links with “hreflang” attribute
 	(adapted from https://imperia.uni-muenster.de/wwu/css/edit2014.css)
@@ -102,6 +103,42 @@ a[hreflang="tr"]:not(:lang(tr))::after {
 a[hreflang="zh"]:not(:lang(zh))::after {
 	content: url(/imperia/md/images/allgemein/farbunabhaengig/lang_flag_zh.gif);
 }
+
+/**********
+	fix some mistakes in the central CSS (main.css etc.)
+**********/
+abbr, p {
+	font-style: inherit;
+}
+.nav-2015 .nav-item a *, .nav-2015 .nav-item strong * {
+	display: inline;
+}
+/* left padding is reduced for currently selected navigation item for some
+reason */
+.nav-item-main.current {
+	padding-left: 15px;
+}
+hr {
+	border-color: #09c;
+}
+/* fixes list item bullets overlapping left-floating images
+(see also https://stackoverflow.com/q/710158/595306) */
+ol, ul {
+	overflow: hidden;
+}
+/* subheadings have *zero* margins for some reason */
+div.subhead {
+	margin: 1ex 0;
+}
+/* textarea height is set to 2em in main.css */
+.module-content form textarea, .element-content form textarea {
+	height: unset;
+}
+/* horizontal resize allows contents to spill out of containing boxes */
+textarea {
+	resize: vertical;
+}
+
 /**********
 	FSPHYS-specific, including some hacks to work around Imperia limitations
 **********/
@@ -137,7 +174,7 @@ br.fsphys-par {
 .fsphys-inline-li + br {
 	display: none;
 }
-/* CSS for office hours */
+/***** CSS for office hours *****/
 table.fsphys_oh_table {
 	width: 100%;
 }
@@ -149,7 +186,20 @@ table.fsphys_oh_table th.fsphys_oh_day_col:not(.fsphys_oh_single) {
 .fsphys_oh_front_page td {
 	padding: 5px 10px;
 }
-/* grade calculator
+/***** CSS for member database *****/
+table.fsphys_member_committees {
+	width: 100%;
+}
+table.fsphys_member_committees th.subhead:first-child {
+	width: 40%;
+}
+table.fsphys_member_committees td:nth-child(2) {
+	width: 35%;
+}
+table.fsphys_member_committees td:nth-child(3) {
+	width: 25%;
+}
+/***** CSS for grade calculator *****
    https://www.uni-muenster.de/Physik.FSPHYS/studieren/notenrechner */
 #fsphys_gc_form table {
 	width: 100%;
@@ -172,40 +222,5 @@ table.fsphys_oh_table th.fsphys_oh_day_col:not(.fsphys_oh_single) {
 }
 #fsphys_gc_form .fsphys_gc_weight {
 	text-align: right;
-}
-
-/**********
-	fix some mistakes in the central CSS (main.css etc.)
-**********/
-abbr, p {
-	font-style: inherit;
-}
-.nav-2015 .nav-item a *, .nav-2015 .nav-item strong * {
-	display: inline;
-}
-/* left padding is reduced for currently selected navigation item for some
-reason */
-.nav-item-main.current {
-	padding-left: 15px;
-}
-hr {
-	border-color: #09c;
-}
-/* fixes list item bullets overlapping left-floating images
-(see also https://stackoverflow.com/q/710158/595306) */
-ol, ul {
-	overflow: hidden;
-}
-/* subheadings have *zero* margins for some reason */
-div.subhead {
-	margin: 1ex 0;
-}
-/* textarea height is set to 2em in main.css */
-.module-content form textarea, .element-content form textarea {
-	height: unset;
-}
-/* horizontal resize allows contents to spill out of containing boxes */
-textarea {
-	resize: vertical;
 }
 

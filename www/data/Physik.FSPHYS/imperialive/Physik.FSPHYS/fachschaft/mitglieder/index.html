@@ -1,0 +1,51 @@
+<?php
+use de\uni_muenster\fsphys;
+use de\uni_muenster\fsphys\{Localization as Loc, Member, MemberFormatter};
+require_once 'init.php';
+
+ob_start();
+$ob_offset = 0;
+$started = false;
+
+function member_teaser_start(): void {
+	global $started;
+	// since the person’s name & title are duplicated in the “alt” attribute
+	// of the img element, this function will be called several times and
+	// should not do anything if it has been called before without a call to
+	// member_teaser_end in between
+	if ($started) return;
+	static $href_re = <<<'RE'
+~.*href\s*=\s*(["'])([^"']+)\.(php|s?html)\1.*$~u
+RE;
+	global $mem;
+	global $ob_offset;
+	$output = ob_get_contents();
+	$found = preg_match($href_re, $output, $matches, PREG_OFFSET_CAPTURE,
+		$ob_offset);
+	if ($found) {
+		[$url, $ob_offset] = $matches[2];
+		$member = Member::from_url($url);
+		$mem = new MemberFormatter($member);
+	}
+	else {
+		$mem = new MemberFormatter(new Member());
+		echo Loc::get('members.error.name_url not found', true);
+	}
+}
+
+function member_teaser_end(): void {
+	global $started;
+	$started = false;
+}
+?>
+
+<?php
+/***
+	Imperia modules…
+***/
+?>
+
+<?php
+ob_end_flush();
+?>
+

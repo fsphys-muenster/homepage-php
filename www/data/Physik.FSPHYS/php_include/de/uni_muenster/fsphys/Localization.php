@@ -24,6 +24,7 @@ if (!defined('LOCALE')) {
 }
 
 class Localization {
+	const LOCALE = LOCALE;
 	private static $cache = [];
 
 	static function get(string $key, bool $capitalize=false, $locale=LOCALE) {

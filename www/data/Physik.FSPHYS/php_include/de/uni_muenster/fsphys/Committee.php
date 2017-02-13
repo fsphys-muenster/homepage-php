@@ -5,7 +5,7 @@ require_once 'init.php';
 class Committee extends MemberRecord {
 	const TABLE_NAME = 'committees';
 	
-	function __construct(?int $committee_id=MemberRecord::ID_NONE) {
+	function __construct(?int $committee_id=self::ID_NONE) {
 		parent::__construct($committee_id, 'committee_id', self::TABLE_NAME);
 	}
 	

@@ -5,7 +5,41 @@ require_once 'init.php';
 class Member extends MemberRecord {
 	const TABLE_NAME = 'members';
 	
-	function __construct(?int $member_id=MemberRecord::ID_NONE) {
+	static function from_url(?string $url_str=NULL): self {
+		$url_str = $url_str ?? $_SERVER['REQUEST_URI'];
+		$url = parse_url($url_str);
+		$segments = explode('/', $url['path']);
+		$name_url = array_pop($segments);
+		$tbl_name = self::TABLE_NAME;
+		$sql = <<<SQL
+		SELECT "member_id" FROM "$tbl_name" WHERE "name_url" = :name_url;
+SQL;
+		$sql_result = Util::sql_execute($sql,
+			['name_url' => $name_url])->fetch();
+		if (!$sql_result) {
+			throw new \UnexpectedValueException('Database returned no values '
+				. "in table “{$tbl_name}” for name_url = $name_url");
+		}
+		return new Member($sql_result[0]);
+	}
+	
+	static function list_all(): array {
+		$tbl_name = self::TABLE_NAME;
+		$sql = <<<SQL
+		SELECT * FROM "$tbl_name"
+			ORDER BY "mem_sort_key";
+SQL;
+		$query = DB::query($sql);
+		$result = [];
+		while ($row = $query->fetch()) {
+			$member = new Member($row['member_id']);
+			$member->data_cache['unloc'] = $row;
+			$result[] = $member;
+		}
+		return $result;
+	}
+	
+	function __construct(?int $member_id=self::ID_NONE) {
 		parent::__construct($member_id, 'member_id', self::TABLE_NAME);
 	}
 	
@@ -54,7 +88,7 @@ class Member extends MemberRecord {
 	}
 	
 	/*
-		Returns data in the form
+		If $group is true: Returns data in the form
 		[
 			category_0 => [
 				committee_0 => [row_0, row_1, …],
@@ -100,89 +134,6 @@ SQL;
 		else {
 			return $query->fetchAll() ?? [];
 		}
-	}
-	
-	function format_committee_data(callable $edit_callback=NULL,
-		$locale=LOCALE): string {
-		$data = $this->get_committee_data($locale, true);
-		return self::format_committee_data_arr($data, $edit_callback, $locale);
-	}
-
-	protected function format_committee_data_arr(array $data,
-		callable $edit_callback=NULL, $locale=LOCALE): string {
-		if (!$data) {
-			return '';
-		}
-		$edit_class = $edit_callback ? ' fsphys_edit_table' : '';
-		$result = <<<HTML
-		<table class="fsphys_member_committees$edit_class">
-HTML;
-		foreach ($data as $category => $category_data) {
-			$category_name = Localization::get("members.committees.$category",
-				true, $locale);
-			$edit_header = '';
-			if ($edit_callback) {
-				$edit_header = $edit_callback('header');
-			}
-			$result .= <<<HTML
-			<tbody>
-				<tr>
-					<th scope=rowgroup colspan=3>$category_name</th>
-					$edit_header
-				</tr>
-HTML;
-			foreach ($category_data as $committee_id => $committee_data) {
-				$committee = new Committee($committee_id);
-				$com_html = $committee->get_html($locale);
-				$row_count = count($committee_data);
-				$first_row = true;
-				// data is sorted by timespan
-				foreach ($committee_data as $row) {
-					$name_cell = $edit_cell = '';
-					$end = $row['end'] ?? Localization::get('today');
-					if ($first_row) {
-						$name_cell = <<<HTML
-						<th scope=row rowspan=$row_count
-							class="subhead fix">$com_html</th>
-HTML;
-					}
-					if ($edit_callback) {
-						$row_id = $row['row_id'];
-						$edit_cell = $edit_callback('cell', [
-							'member_id' => $this->get_id(), 'row_id' => $row_id
-						]);
-					}
-					$result .= <<<HTML
-				<tr>
-					$name_cell
-					<td>{$row['start']}–$end</td>
-					<td>{$row['info']}</td>
-					$edit_cell
-				</tr>
-HTML;
-					$first_row = false;
-				}
-			}
-			$result .= '</tbody>';
-		}
-		$result .= '</table>';
-		return $result;
-	}
-	
-	static function list_all(): array {
-		$tbl_name = self::TABLE_NAME;
-		$sql = <<<SQL
-		SELECT * FROM "$tbl_name"
-			ORDER BY "mem_sort_key";
-SQL;
-		$query = DB::query($sql);
-		$result = [];
-		while ($row = $query->fetch()) {
-			$member = new Member($row['member_id']);
-			$member->data_cache['unloc'] = $row;
-			$result[] = $member;
-		}
-		return $result;
 	}
 }
 

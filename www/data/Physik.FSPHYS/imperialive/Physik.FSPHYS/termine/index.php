@@ -9,9 +9,9 @@ fsphys\run_and_catch(function() {
 ?>
 
 <?php
-/*
+/***
 	Imperia modules…
-*/
+***/
 ?>
 
 <?php

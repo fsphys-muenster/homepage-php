@@ -34,8 +34,8 @@ class CSRF {
 		// let validation pass if neither header is present, but log the
 		// occurrence
 		if (!$origin_present && !$referrer_present) {
-			mail_and_log(new \Exception('Neither ORIGIN nor REFERER HTTP'
-				. ' headers were present.'));
+			mail_and_log(new CSRFException('Neither ORIGIN nor REFERER HTTP '
+				. 'headers were present.'));
 			return true;
 		}
 		return $origin_valid && $referrer_valid;

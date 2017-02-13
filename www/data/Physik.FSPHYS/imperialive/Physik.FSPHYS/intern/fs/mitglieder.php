@@ -1,7 +1,7 @@
 <?php
 use de\uni_muenster\fsphys;
 use de\uni_muenster\fsphys\{CSRF, DB, Localization as Loc, Util,
-	Committee, CommitteeEntry, Member, MemberRecord};
+	Committee, CommitteeEntry, Member, MemberFormatter, MemberRecord};
 require_once 'init.php';
 
 function process_input_data(array $locales): void {
@@ -182,8 +182,9 @@ fsphys\run_and_catch(function() {
 		</fieldset>
 <?php
 			if (!$member->is_new()) {
-				echo $member->format_committee_data(
-					function($part, array $data=NULL) {
+				$format = new MemberFormatter($member, $locale);
+				echo $format->committee_data(
+					function($part, array $data=NULL): string {
 						$loc_edit = Loc::get('edit', true);
 						$loc_delete = Loc::get('delete', true);
 						switch ($part) {
@@ -204,8 +205,9 @@ fsphys\run_and_catch(function() {
 									title="$loc_delete"
 									class=fsphys_delete>❌</button></td>
 HTML;
+						default: return '';
 						}
-					}, $locale);
+					});
 			}
 		}
 		if (!$member->is_new()) {
