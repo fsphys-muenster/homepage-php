@@ -28,7 +28,7 @@ RE;
 		$mem = new MemberFormatter($member);
 	}
 	else {
-		$mem = new MemberFormatter(new Member());
+		$mem = new MemberFormatter(new Member);
 		echo Loc::get('members.error.name_url not found', true);
 	}
 }

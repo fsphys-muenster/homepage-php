@@ -128,7 +128,7 @@ function office_hours_break_data(int $limit=NULL, $date=NULL) {
 	if ($limit) {
 		if (!$date) {
 			// DateTime for yesterday: subtract 1 day
-			$date = (new \DateTime())->sub(new \DateInterval('P1D'));
+			$date = (new \DateTime)->sub(new \DateInterval('P1D'));
 		}
 		$where_clause = "WHERE \"date\" >= '{$date->format('Y-m-d')}'";
 		$limit_clause = 'LIMIT ' . intval($limit);

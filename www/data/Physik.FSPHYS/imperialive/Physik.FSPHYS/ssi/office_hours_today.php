@@ -18,7 +18,7 @@ fsphys\run_and_catch(function() {
 
 <div class=subhead>
 <?php
-$dt_now = new \DateTime();
+$dt_now = new \DateTime;
 $semester = SemesterInfo::get($dt_now)['during_semester'];
 $holidays = Settings::get('office_hours.start_page_holiday_message',
 	'int');

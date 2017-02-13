@@ -82,7 +82,7 @@ SQL;
 		CommitteeEntry {
 		$data['member_id'] = $this->get_id();
 		$data['committee_id'] = $committee->get_id();
-		$new_row = new CommitteeEntry();
+		$new_row = new CommitteeEntry;
 		$new_row->create_new($data);
 		return $new_row;
 	}
