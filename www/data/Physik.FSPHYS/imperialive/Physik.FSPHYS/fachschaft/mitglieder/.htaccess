@@ -1,0 +1,4 @@
+<Files "index.html">
+	AddHandler php71-script .html
+</Files>
+
