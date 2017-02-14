@@ -54,7 +54,7 @@ class Util {
 		}
 		return true;
 	}
-	
+
 	/*
 		Returns true if any of the $keys are set (i.e. non-null) in the array,
 		false otherwise.
@@ -82,14 +82,17 @@ class Util {
 	}
 
 	static function this_page_url_path(): string {
-		$url = parse_url($_SERVER['REQUEST_URI']);
-		return $url['path'];
+		return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 	}
-	
+
+	static function htmlspecialchars(string $string): string {
+		return htmlspecialchars($string, ENT_HTML5 | ENT_QUOTES);
+	}
+
 	static function html_str(array $data): array {
 		return filter_var_array($data, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 	}
-	
+
 	static function filter_input_array(int $type, $definition=FILTER_DEFAULT,
 		bool $add_empty=true): array {
 		$result = filter_input_array($type, $definition, $add_empty);
@@ -99,7 +102,7 @@ class Util {
 		}
 		return $result;
 	}
-	
+
 	static function filter_input_array_defaults(int $type,
 		$definition=FILTER_DEFAULT, bool $add_empty=true): array {
 		$result = filter_input_array($type, $definition, $add_empty);
@@ -112,7 +115,7 @@ class Util {
 		}
 		return $result;
 	}
-	
+
 	static function filter_var_array_defaults(array $data,
 		$definition=FILTER_DEFAULT, bool $add_empty=true): array {
 		$result = filter_var_array($data, $definition, $add_empty);
@@ -121,7 +124,7 @@ class Util {
 		}
 		return $result;
 	}
-	
+
 	private static function filter_set_defaults(array &$data, &$definition):
 		void {
 		foreach ($data as $key => $value) {
@@ -131,7 +134,7 @@ class Util {
 			}
 		}
 	}
-	
+
 	/*
 	   workaround for bug: filter_input_array returns NULL if the specified
 	   array is empty

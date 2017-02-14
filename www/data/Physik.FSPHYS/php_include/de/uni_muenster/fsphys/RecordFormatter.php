@@ -12,7 +12,11 @@ class RecordFormatter {
 	}
 
 	function attr(string $attr): string {
-		return htmlspecialchars($this->data->get_attr($attr, $this->locale));
+		return Util::htmlspecialchars($this->attr_raw($attr));
+	}
+
+	protected function attr_raw(string $attr): string {
+		return $this->data->get_attr($attr, $this->locale) ?? '';
 	}
 }
 

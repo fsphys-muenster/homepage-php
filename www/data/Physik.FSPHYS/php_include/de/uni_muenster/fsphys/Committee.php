@@ -34,15 +34,15 @@ class Committee extends MemberRecord {
 			if (!isset($data['html'])) {
 				if (Util::keys_set_all($data, 'url', 'committee_name',
 					'url_overwrite') && $data['url']) {
-					$url = htmlspecialchars($data['url']);
-					$name = htmlspecialchars($data['committee_name']);
+					$url = Util::htmlspecialchars($data['url']);
+					$name = Util::htmlspecialchars($data['committee_name']);
 					$html = <<<HTML
 					<a class=ext href="$url">$name</a>
 HTML;
 					$data['html'] = trim($html);
 				}
 				elseif ($this->is_new()) {
-					$data['html'] = htmlspecialchars(
+					$data['html'] = Util::htmlspecialchars(
 						$data['committee_name'] ?? 'unnamed');
 				}
 			}

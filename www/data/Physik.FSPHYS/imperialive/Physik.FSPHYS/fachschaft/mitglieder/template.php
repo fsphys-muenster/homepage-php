@@ -35,7 +35,6 @@ Uni-interne E-Mail-Adresse: <?=$mem->attr('uni_email')?>
 <?php
 fsphys\run_and_catch(function() {
 	global $mem;
-	// XXX additional_info should be formatted as Markdown
 	echo $mem->attr('additional_info');
 	echo $mem->committee_data();
 });

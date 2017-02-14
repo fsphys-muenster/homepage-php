@@ -5,10 +5,10 @@ require_once 'init.php';
 class Member extends MemberRecord {
 	const TABLE_NAME = 'members';
 	
-	static function from_url(?string $url_str=NULL): self {
-		$url_str = $url_str ?? $_SERVER['REQUEST_URI'];
-		$url = parse_url($url_str);
-		$segments = explode('/', $url['path']);
+	static function from_url(?string $url=NULL): self {
+		$url = $url ?? $_SERVER['REQUEST_URI'];
+		$path = parse_url($url, PHP_URL_PATH);
+		$segments = explode('/', $path);
 		$name_url = array_pop($segments);
 		$tbl_name = self::TABLE_NAME;
 		$sql = <<<SQL

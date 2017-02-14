@@ -7,21 +7,53 @@ class SemesterInfo {
 		Returns an array containing information about what semester $date is in:
 		[
 			'summer_winter' => 'SS' or 'WS',
+			'year_str' => semester’s year label (e.g. 2016/2017 for WS),
 			'lecture_start' => lecture start date for the semester (DateTime),
 			'lecture_end' => lecture end date for the semester (DateTime),
 			'during_semester' => if $date is during the semester (between
 				lecture_start and lecture_end) or during the break
 		]
 	*/
-	static function get($date): array {
+	static function get(\DateTimeInterface $date): array {
+		// XXX implement database retrieval
 		return self::fallback($date);
 	}
 
+	static function semester_str(\DateTimeInterface $date, ?bool $short=false):
+		string {
+		$short = $short ? ' (short)' : '';
+		// only need 'summer_winter' and 'year_str' ⇒ use fallback
+		$info = self::fallback($date);
+		if ($info['summer_winter'] == 'SS') {
+			$semester_text = Localization::get("summer semester$short");
+		}
+		else {
+			$semester_text = Localization::get("winter semester$short");
+		}
+		return "$semester_text&nbsp;{$info['year_str']}";
+	}
+
+	static function format_timespan(\DateTimeInterface $start,
+		?\DateTimeInterface $end=NULL, array $opt): string {
+		$opt = filter_var_array($opt, [
+			'no_end_pre' => NULL, 'no_end_post' => NULL, 'between' => NULL,
+			'short' => FILTER_VALIDATE_BOOLEAN
+		]);
+		$start_str = self::semester_str($start, $opt['short']);
+		if ($end) {
+			$end_str = self::semester_str($end, $opt['short']);
+			return "$start_str{$options['between']}$end_str";
+		}
+		else {
+			return "{$opt['no_end_pre']}$start_str{$opt['no_end_post']}";
+		}
+	}
+
 	/*
-		Fallback function for semester_info() if there is no database information
-		about lecture start/end for $date.
+		Fallback function for get() if there is no database information about
+		lecture start/end for $date.
 	*/
-	private static function fallback($date):array {
+	private static function fallback(\DateTimeInterface $date): array {
 		$year = $date->format('Y');
 		$month = $date->format('n');
 		// between 1st of April and end 30th of September
@@ -51,6 +83,7 @@ class SemesterInfo {
 			|| ($date >= $ws_start && $date < $ws_lecture_end);
 		$res = [
 			'summer_winter' => $is_ss ? 'SS' : 'WS',
+			'year_str' => $is_ss ? "$year" : "$ws_start_yr/$ws_start_yr_nxt",
 			'lecture_start' => $is_ss ? $ss_start : $ws_start,
 			'lecture_end' => $is_ss ? $ss_lecture_end : $ws_lecture_end,
 			'during_semester' => $semester

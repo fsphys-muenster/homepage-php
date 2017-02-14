@@ -187,16 +187,3 @@ table.fsphys_oh_table_edit td.fsphys_oh_edit_col .fsphys_oh_delete:active {
 	background-color: red;
 }
 
-/*****************************************************************************
-	member database (edit mode)
-*****************************************************************************/
-table.fsphys_member_committees th.subhead:first-child {
-	width: 40%;
-}
-table.fsphys_member_committees td:nth-child(2) {
-	width: 35%;
-}
-table.fsphys_member_committees td:nth-child(3) {
-	width: 25%;
-}
-
