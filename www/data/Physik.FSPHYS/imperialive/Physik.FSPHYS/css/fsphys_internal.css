@@ -37,9 +37,6 @@ table td.fsphys_edit_col * {
 /**********
 	fix some stuff in the central CSS (main.css etc.)
 **********/
-th.subhead.fix {
-	outline: 0;
-}
 .module-content form abbr, .element-content form abbr {
 	line-height: inherit;
 	color: inherit;
@@ -99,6 +96,14 @@ even be focused by default!) */
 	background-color: #333;
 	border-color: #333;
 	color: #fff;
+}
+/* prevent linebreaks between checkbox/radio icon and label */
+.module-content form:not(#ie) input[type="checkbox"] + label::before,
+.element-content form:not(#ie) input[type="checkbox"] + label::before,
+.module-content form:not(#ie) input[type="radio"] + label::before,
+.element-content form:not(#ie) input[type="radio"] + label::before {
+	display: inline;
+	float: none;
 }
 
 /*****************************************************************************
@@ -185,5 +190,14 @@ table.fsphys_oh_table_edit td.fsphys_oh_edit_col .fsphys_oh_delete:hover,
 table.fsphys_oh_table_edit td.fsphys_oh_edit_col .fsphys_oh_delete:focus,
 table.fsphys_oh_table_edit td.fsphys_oh_edit_col .fsphys_oh_delete:active {
 	background-color: red;
+}
+
+/*****************************************************************************
+	member database (edit mode)
+	https://sso.uni-muenster.de/Physik.FSPHYS/intern/fs/mitglieder
+*****************************************************************************/
+/* enable hyphens due to lack of space in edit mode */
+table.fsphys_member_committees.fsphys_edit_table {
+	hyphens: auto;
 }
 

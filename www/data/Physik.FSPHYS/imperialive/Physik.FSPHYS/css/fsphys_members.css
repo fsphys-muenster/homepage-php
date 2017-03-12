@@ -7,4 +7,11 @@ are also left-aligned */
 .content figure.inline-left figcaption address {
 	display: none;
 }
+/* indent all lines after the first if duties, member timespan or study program
+runs over multiple lines */
+.h-card span.p-role, .h-card span.p-org, .h-card span.p-organization-unit {
+	display: inline-block;
+	margin-left: 1em;
+	text-indent: -1em;
+}
 

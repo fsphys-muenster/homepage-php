@@ -79,11 +79,10 @@ CREATE TABLE IF NOT EXISTS "members" (
 	"uni_email"    VARCHAR(100) NOT NULL
 		COMMENT 'Without “@uni-muenster.de”, “@wwu.de” etc.',
 	"member_start" DATE NOT NULL,
-	"member_end"   DATE
+	"member_end"   DATE DEFAULT NULL
 		COMMENT 'NULL means unspecified (i.e. until today)',
 	"pgp_id"	   VARCHAR(100) NOT NULL,
 	"pgp_url"      VARCHAR(300) NOT NULL,
-	"mem_sort_key" VARCHAR(300) NOT NULL,
 	PRIMARY KEY ("member_id"),
 	UNIQUE KEY ("uni_email"),
 	UNIQUE KEY ("name_url")
@@ -148,7 +147,7 @@ CREATE TABLE IF NOT EXISTS "member_committees" (
 	"member_id"    INT UNSIGNED NOT NULL,
 	"committee_id" INT UNSIGNED NOT NULL,
 	"start"        DATE NOT NULL,
-	"end"          DATE
+	"end"          DATE DEFAULT NULL
 		COMMENT 'NULL means unspecified (i.e. until today)',
 	PRIMARY KEY ("row_id"),
 	FOREIGN KEY ("member_id") REFERENCES "members" ("member_id")
@@ -159,8 +158,9 @@ CREATE TABLE IF NOT EXISTS "member_committees" (
 COMMENT='Data about which committees a member is in';
 
 CREATE TABLE IF NOT EXISTS "member_committees__de" (
-	"row_id" INT UNSIGNED NOT NULL,
-	"info"   VARCHAR(300) NOT NULL,
+	"row_id"       INT UNSIGNED NOT NULL,
+	"timespan_alt" VARCHAR(200) NOT NULL COMMENT 'Only used if not empty',
+	"info"         VARCHAR(300) NOT NULL,
 	PRIMARY KEY ("row_id"),
 	FOREIGN KEY ("row_id") REFERENCES "member_committees" ("row_id")
 		ON DELETE CASCADE
@@ -168,8 +168,9 @@ CREATE TABLE IF NOT EXISTS "member_committees__de" (
 COMMENT='Data about which committees a member is in (for locale “de”)';
 
 CREATE TABLE IF NOT EXISTS "member_committees__en" (
-	"row_id" INT UNSIGNED NOT NULL,
-	"info"   VARCHAR(300) NOT NULL,
+	"row_id"       INT UNSIGNED NOT NULL,
+	"timespan_alt" VARCHAR(200) NOT NULL COMMENT 'Only used if not empty',
+	"info"         VARCHAR(300) NOT NULL,
 	PRIMARY KEY ("row_id"),
 	FOREIGN KEY ("row_id") REFERENCES "member_committees" ("row_id")
 		ON DELETE CASCADE
