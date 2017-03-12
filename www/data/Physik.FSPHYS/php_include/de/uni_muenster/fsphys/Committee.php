@@ -37,7 +37,7 @@ class Committee extends MemberRecord {
 					$url = Util::htmlspecialchars($data['url']);
 					$name = Util::htmlspecialchars($data['committee_name']);
 					$html = <<<HTML
-					<a class=ext href="$url">$name</a>
+					<a class=ext target=_blank href="$url">$name</a>
 HTML;
 					$data['html'] = trim($html);
 				}

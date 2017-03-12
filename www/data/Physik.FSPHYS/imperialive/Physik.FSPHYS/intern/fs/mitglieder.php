@@ -104,22 +104,26 @@ fsphys\run_and_catch(function() {
 	// =======================================================================
 	if ($member_form) {
 		if (!$member->is_new()) {
-			$mem_data['unloc'] = Util::html_str($member->get_data());
+			$mem_data['unloc'] = Util::htmlspecialchars($member->get_data());
 		}
 ?>
-	<form method=post action="<?=Util::this_page_url_path()?>">
+	<h2><?=Loc::get('members.enter member data', true)?></h2>
+	<form method=post action="<?=Util::this_page_url_path()?>" class=fsphys>
 		<input name=member_id type=hidden value="<?=$member->get_id()?>">
 		<fieldset>
 			<legend><?=Loc::get('name', true)?></legend>
 			<label class="two columns"><?=Loc::get('forename(s)', true)?>
 				<input name=unloc[forenames] type=text required
-					value="<?=$mem_data['unloc']['forenames'] ?? ''?>"></label>
+					value="<?=$mem_data['unloc']['forenames'] ?? ''?>"
+					autocomplete=given-name></label>
 			<label class="two columns"><?=Loc::get('surname', true)?>
 				<input name=unloc[surname] type=text required
-					value="<?=$mem_data['unloc']['surname'] ?? ''?>"></label>
+					value="<?=$mem_data['unloc']['surname'] ?? ''?>"
+					autocomplete=family-name></label>
 			<label class="two columns"><?=Loc::get('nickname', true)?>
 				<input name=unloc[nickname] type=text
-					value="<?=$mem_data['unloc']['nickname'] ?? ''?>"></label>
+					value="<?=$mem_data['unloc']['nickname'] ?? ''?>"
+					autocomplete=nickname></label>
 			<label><?=Loc::get('members.edit.name_url', true)?>
 			<input name=unloc[name_url] type=text required
 				pattern="[-_A-Za-z]+"
@@ -130,26 +134,29 @@ fsphys\run_and_catch(function() {
 				value="<?=$mem_data['unloc']['uni_email'] ?? ''?>"></label>	
 		<fieldset>
 			<legend><?=Loc::get('member timespan', true)?></legend>
-			<label class="two columns"><?=Loc::get('from', true)?>
+			<label class="three columns"><?=Loc::get('members.from', true)?>
 				<input name=unloc[member_start] type=date required
+					placeholder="YYYY-MM-DD"
 					value="<?=$mem_data['unloc']['member_start'] ?? ''?>">
 			</label>
-			<label class="two columns"><?=Loc::get('to', true)?>
+			<label class="three columns"><?=Loc::get('members.to', true)?>
 				<input name=unloc[member_end] type=date
+					placeholder="YYYY-MM-DD"
 					value="<?=$mem_data['unloc']['member_end'] ?? ''?>">
 			</label>
 		</fieldset>
 		<fieldset>
-			<label class="three columns"><?=Loc::get('PGP key', true)?>
+			<label class="three columns"><?=Loc::get('members.pgp_key', true)?>
 				<input name=unloc[pgp_id] type=text
 					value="<?=$mem_data['unloc']['pgp_id'] ?? ''?>"></label>
-			<label class="three columns"><?=Loc::get('PGP URL', true)?>
+			<label class="three columns"><?=Loc::get('members.pgp_url', true)?>
 				<input name=unloc[pgp_url] type=url
 					value="<?=$mem_data['unloc']['pgp_url'] ?? ''?>"></label>
 		</fieldset>
 <?php
 		foreach ($locales as $locale) {
-			$mem_data[$locale] = Util::html_str($member->get_data($locale));
+			$mem_data[$locale]
+				= Util::htmlspecialchars($member->get_data($locale));
 ?>
 		<hr>
 		<fieldset>
@@ -189,7 +196,10 @@ fsphys\run_and_catch(function() {
 						$loc_delete = Loc::get('delete', true);
 						switch ($part) {
 						case 'header':
-							return "<th scope=col colspan=2>$loc_edit</th>";
+							return "<th scope=col colspan=2
+								class=fsphys_subhead_fix>$loc_edit</th>";
+						case 'col':
+							return "<col span=2 style='min-width: 2.5em;'>";
 						case 'cell':
 							$mem_id = $data['member_id'];
 							$row_id = $data['row_id'];
@@ -201,7 +211,7 @@ fsphys\run_and_catch(function() {
 									class=fsphys_icon>🖉</button></td>
 							<td class=fsphys_edit_col>
 								<button name=delete_row value="$row_id"
-									type=submit formaction="?member=$mem_id"
+									type=submit form=fsphys_delete_entry
 									title="$loc_delete"
 									class=fsphys_delete>❌</button></td>
 HTML;
@@ -223,6 +233,8 @@ HTML;
 	</form>
 	<form method=get action="?" id=fsphys_new_row hidden>
 		<input name=new_row type=hidden></form>
+	<form method=post action="?member=<?=$member->get_id()?>" class=fsphys
+		id=fsphys_delete_entry hidden></form>
 <?php
 	}
 	elseif ($committee_form) {
@@ -237,9 +249,10 @@ HTML;
 		];
 		$selected[$committee->get_attr('category') ?? 'other'] = ' selected';
 ?>
+	<h2><?=Loc::get('members.enter committee data', true)?></h2>
 	<form method=post action="?list_committees=">
 		<input name=committee_id type=hidden value="<?=$committee->get_id()?>">
-		<label><?=Loc::get('members.edit.committee level', true)?>
+		<p><label><?=Loc::get('members.edit.committee level', true)?>
 			<select name=unloc[category] required>
 				<option value="student_body"<?=$selected['student_body']?>><?=
 					Loc::get('members.edit.committees.student_body')?></option>
@@ -252,7 +265,9 @@ HTML;
 			</select></label>
 <?php
 		foreach ($locales as $locale) {
-			$com_data[$locale] = Util::html_str($committee->get_data($locale));
+			$com_data[$locale]
+				= Util::htmlspecialchars($committee->get_data($locale));
+			// retrieve committee URL from “html” column, if there is one
 			preg_match('/href="([^"]*)"/u',
 				$committee->get_attr('html', $locale), $url_matches);
 			$url = $url_matches[1] ?? '';
@@ -266,7 +281,7 @@ HTML;
 				<input name=<?=$locale?>[committee_name] type=text required
 					value="<?=$com_data[$locale]['committee_name'] ?? ''?>">
 			</label>
-			<p><label class="six columns"><?=
+			<p><label><?=
 				Loc::get('members.edit.link for the committee', true)?>
 				<input name=<?=$locale?>[url] type=url value="<?=$url?>">
 			</label>
@@ -293,15 +308,16 @@ HTML;
 		if (!$row->is_new()) {
 			$row_data_raw = $row->get_data();
 			$member = new Member($row_data_raw['member_id']);
-			$row_data['unloc'] = Util::html_str($row_data_raw);
+			$row_data['unloc'] = Util::htmlspecialchars($row_data_raw);
 		}
 		$committees = Committee::list_all();
 ?>
+	<h2><?=Loc::get('members.enter committee membership data', true)?></h2>
 	<form method=post action="?member=<?=$member->get_id()?>">
 		<input name=row_id type=hidden value="<?=$row->get_id()?>">
 		<input name=unloc[member_id] type=hidden value="<?=
 			$member->get_id()?>">
-		<label><?=Loc::get('committee', true)?>
+		<p><label><?=Loc::get('members.post/committee', true)?>
 			<select name=unloc[committee_id] required>
 <?php
 		if ($row->is_new()) {
@@ -336,22 +352,29 @@ HTML;
 		</label>
 		<fieldset>
 			<legend><?=Loc::get('timespan', true)?></legend>
-			<label class="three columns"><?=Loc::get('from', true)?>
+			<label class="three columns"><?=Loc::get('members.from', true)?>
 				<input name=unloc[start] type=date required
+					placeholder="YYYY-MM-DD"
 					value="<?=$row_data['unloc']['start'] ?? ''?>"></label>
-			<label class="three columns"><?=Loc::get('to', true)?>
+			<label class="three columns"><?=Loc::get('members.to', true)?>
 				<input name=unloc[end] type=date
+					placeholder="YYYY-MM-DD"
 					value="<?=$row_data['unloc']['end'] ?? ''?>"></label>
 		</fieldset>
 <?php
 		foreach ($locales as $locale) {
-			$row_data[$locale] = Util::html_str($row->get_data($locale));
+			$row_data[$locale]
+				= Util::htmlspecialchars($row->get_data($locale));
 ?>
 		<hr>
 		<fieldset>
 			<legend><?=Loc::get('data for language', true)?>
 				<?=$locale?></legend>
-			<label class="six columns"><?=
+			<p><label><?=Loc::get('members.timespan_alt', true)?>
+				<input name=<?=$locale?>[timespan_alt] type=text
+					value="<?=$row_data[$locale]['timespan_alt'] ?? ''?>">
+			</label>
+			<p><label><?=
 				Loc::get('additional information (e.g. full/deputy member)',
 					true)?>
 				<input type=text name=<?=$locale?>[info]
@@ -375,7 +398,8 @@ HTML;
 	// =======================================================================
 	elseif ($committee_list) {
 ?>
-	<form method=post action="?list_committees=">
+	<h2><?=Loc::get('members.list of committees', true)?></h2>
+	<form method=post action="?list_committees=" class=fsphys>
 		<table class=fsphys_edit_table>
 <?php
 		$committees = Committee::list_all();
@@ -420,7 +444,8 @@ HTML;
 	// =======================================================================
 	else {
 ?>
-	<form method=post action="<?=Util::this_page_url_path()?>">
+	<h2><?=Loc::get('members.list of members', true)?></h2>
+	<form method=post action="<?=Util::this_page_url_path()?>" class=fsphys>
 		<table class=fsphys_edit_table>
 			<tr>
 				<th scope=col><?=Loc::get('name', true)?></th>
@@ -431,7 +456,7 @@ HTML;
 <?php
 		$members = Member::list_all();
 		foreach ($members as $member) {
-			$mem_row = Util::html_str($member->get_data());
+			$mem_row = Util::htmlspecialchars($member->get_data());
 ?>
 			<tr>
 				<td><?=$mem_row['forenames']?> <?=$mem_row['surname']?></td>
@@ -461,4 +486,12 @@ HTML;
 
 </div>
 </article>
+
+<!-- add JavaScript confirmation dialog for the delete buttons -->
+<script type=text/javascript>
+	let DELETE_CONFIRMATION_DIALOG = '<?=
+		Loc::get('delete_confirmation_dialog')?>';
+</script>
+<script type=text/javascript
+	src="/Physik.FSPHYS/js/form_delete_confirmation.js"></script>
 

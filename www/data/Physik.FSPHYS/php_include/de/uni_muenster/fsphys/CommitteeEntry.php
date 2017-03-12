@@ -19,7 +19,7 @@ class CommitteeEntry extends MemberRecord {
 				],
 				true => [
 					// tables “member_committees__<lang_code>”
-					'row_id', 'info',
+					'row_id', 'timespan_alt', 'info',
 				],
 			];
 			foreach ($valid_names as $localized => $arr) {

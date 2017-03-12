@@ -27,7 +27,7 @@ SQL;
 		$tbl_name = self::TABLE_NAME;
 		$sql = <<<SQL
 		SELECT * FROM "$tbl_name"
-			ORDER BY "mem_sort_key";
+			ORDER BY "surname", "forenames";
 SQL;
 		$query = DB::query($sql);
 		$result = [];
@@ -51,7 +51,7 @@ SQL;
 					// table “members”
 					'member_id', 'forenames', 'nickname', 'surname',
 					'name_url', 'uni_email', 'member_start', 'member_end',
-					'pgp_id', 'pgp_url', 'mem_sort_key',
+					'pgp_id', 'pgp_url',
 				],
 				true => [
 					// tables “members__<lang_code>”
@@ -68,12 +68,9 @@ SQL;
 	
 	protected function process_input_data(array &$data, $locale): void {
 		if (!$locale) {
+			// empty string is an invalid date value, use NULL instead
 			if (isset($data['member_end']) && !$data['member_end']) {
-				unset($data['member_end']);
-			}
-			if (!isset($data['mem_sort_key'])) {
-				$data['mem_sort_key']
-					= "{$data['surname']}, {$data['forenames']}";
+				$data['member_end'] = NULL;
 			}
 		}
 	}

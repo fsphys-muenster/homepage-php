@@ -12,7 +12,7 @@ fsphys\run_and_catch(function() {
 
 <!-- IMPERIA MODULE: CONTACT DATA -->
 Name:             <?=$mem->attr('surname')?>
-Vorname:          <?=$mem->attr('forenames')?>
+Vorname:          <?=$mem->attr('forenames')?> <?=$mem->attr('nickname')?>
 Titel:            <?=$mem->attr('title')?>
 Position[de]:     <?=Loc::get('members.duties', true)?> <?=$mem->attr('duties')?>
 Position[en]:     <?=Loc::get('members.duties', true)?> <?=$mem->attr('duties')?>
@@ -27,25 +27,27 @@ Uni-interne E-Mail-Adresse: <?=$mem->attr('uni_email')?>
 
 <?php
 }); // fsphys\run_and_catch() end
-?>
 
-<article class="module extended">
-<div class="module-content">
-
-<?php
 fsphys\run_and_catch(function() {
 	global $mem;
-	echo $mem->attr('additional_info');
-	echo $mem->committee_data();
-});
+	$additional_info = $mem->attr('additional_info');
+	$committee_data = $mem->committee_data();
+	if (!$additional_info && !$committee_data) return;
 ?>
-
+<article class="module extended">
+<div class="module-content">
+	<?=$additional_info?>
+	<?=$committee_data?>
 </div>
 </article>
+<?php
+}, '<article class="module extended"><div class="module-content">'
+	. fsphys\DEFAULT_ERR_MSG
+	. '</div></article>'
+);
+?>
 
 <!-- IMPERIA TEASERS -->
-Einstellungen für Kurzfassungen: <?=$mem->attr('mem_sort_key')?>
-
 <!--
 	The call to member_teaser_start is put in the name fields because the
 	contents of these fields are inserted first. Note that the title field (if
@@ -58,7 +60,7 @@ Einstellungen für Kurzfassungen: <?=$mem->attr('mem_sort_key')?>
 -->
 Kurzfassung der Form WWU_KFSG in der Sprache (de|en):
 	Name:         <?php member_teaser_start();?><?=$mem->attr('surname')?>
-	Vorname:      <?php member_teaser_start();?><?=$mem->attr('forenames')?>
+	Vorname:      <?php member_teaser_start();?><?=$mem->attr('forenames')?> <?=$mem->attr('nickname')?>
 	Position:     <?=Loc::get('members.duties', true)?> <?=$mem->attr('duties')?>
 	Einrichtung:  <?=Loc::get('members.timespan', true)?> <?=$mem->attr('timespan')?>
 	Abteilung:    <?=Loc::get('members.program', true)?> <?=$mem->attr('program')?>
