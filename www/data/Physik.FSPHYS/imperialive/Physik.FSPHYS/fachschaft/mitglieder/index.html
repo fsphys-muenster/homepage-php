@@ -14,6 +14,7 @@ function member_teaser_start(): void {
 	// should not do anything if it has been called before without a call to
 	// member_teaser_end in between
 	if ($started) return;
+	$started = true;
 	static $href_re = <<<'RE'
 ~.*href\s*=\s*(["'])([^"']+)\.(php|s?html)\1.*$~u
 RE;
