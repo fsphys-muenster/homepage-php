@@ -12,16 +12,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	// get dates for current and next semester
 	// WS lecture start: ≈ 7th October, SS lecture start: ≈ 7th April
 	let ws_start = new Date(current_year, 9, 7);
-	if (ws_start > current_date && !is_ss(current_date)) {
-		ws_start.setFullYear(ws_start.getFullYear() - 1);
-	}
 	let ss_start = new Date(current_year, 3, 7);
-	if (ss_start < current_date && !is_ss(current_date)) {
-		ss_start.setFullYear(ss_start.getFullYear() + 1);
+	// correct WS start year if we are in the second year of WS
+	// (January, February or March)
+	if (!is_ss(current_date) && current_date.getMonth() < 9) {
+		ws_start.setFullYear(current_year - 1);
 	}
 	// WS lecture end: ≈ 1st February, SS lecture end: ≈ 20th July
 	let ws_lecture_end = new Date(ws_start.getFullYear() + 1, 1, 1);
-	let ss_lecture_end = new Date(ws_start.getFullYear(), 6, 20);
+	let ss_lecture_end = new Date(current_year, 6, 20);
 	// get tab tags
 	let tabs = $('ul.element.tabs').children();
 	if ((current_date >= ss_start && current_date < ss_lecture_end)

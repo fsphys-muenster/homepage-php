@@ -45,6 +45,15 @@ SQL;
 		return $capitalize ? Util::mb_ucfirst($value) : $value;
 	}
 
+	static function enquote(string $str, $locale=LOCALE) {
+		$quotes = Util::string_to_array(self::get('quotes', $locale));
+		if (count($quotes) < 2) {
+			throw new \UnexpectedValueException('Quotes string returned from '
+				. "database too short for locale “{$locale}”");
+		}
+		return "{$quotes[0]}$str{$quotes[1]}";
+	}
+
 	static function list_locales(): array {
 		static $locales_str = NULL;
 		if ($locales_str === NULL) $locales_str = Settings::get('locales');

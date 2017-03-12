@@ -18,7 +18,8 @@ function html_input_type(string $col): string {
 
 function update_times($start_time, $end_time, $time_col, $new_time): void {
 	if (!in_array($time_col, ['start_time', 'end_time'])) {
-		return false;
+		throw new \DomainException('$time_col must be \'start_time\' or '
+			. "'end_time'");
 	}
 	if ($time_col === 'start_time') {
 		$old_time = $start_time;
@@ -101,7 +102,7 @@ if (isset($_GET['break'])) {
 
 	$data_arr_raw = $mask_time ? $_GET : $_POST;
 	// apply htmlspecialchars to all GET/POST string input in $data_arr
-	$data_arr = Util::html_str($data_arr_raw);
+	$data_arr = Util::htmlspecialchars($data_arr_raw);
 	extract($data_arr, EXTR_PREFIX_ALL, 'req');
 	// form to edit an existing entry (both)
 	if ($mask_time) {
@@ -115,7 +116,7 @@ if (isset($_GET['break'])) {
 			$req_day = '';
 			$val = $data_arr[$req_col] ?? NULL;
 		}
-		$val = htmlspecialchars($val);
+		$val = Util::htmlspecialchars($val);
 ?>
 		<form method=post action="?break=<?=$break?>">
 			<input type=hidden name=day value="<?=$req_day?>">
@@ -220,8 +221,9 @@ if (isset($_GET['break'])) {
 		}
 	}
 }
-?>
 
+// XXX use /Physik.FSPHYS/js/form_delete_confirmation.js
+?>
 <!-- add a JavaScript confirmation dialog for the delete buttons -->
 <script type=text/javascript>
 document.addEventListener('DOMContentLoaded', function() {

@@ -23,7 +23,8 @@ RE;
 });
 
 // settings for error handling
-define('DEFAULT_ERR_MSG', Localization::get('DEFAULT_ERR_MSG'));
+define(__NAMESPACE__ . '\DEFAULT_ERR_MSG',
+	Localization::get('DEFAULT_ERR_MSG'));
 
 /*
 	Convert a numerical error code to its name (e.g. 8 → E_NOTICE).

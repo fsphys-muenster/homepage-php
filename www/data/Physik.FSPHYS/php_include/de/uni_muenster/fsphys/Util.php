@@ -77,6 +77,10 @@ class Util {
 		return $first_char . mb_substr($str, 1);
 	}
 
+	static function string_to_array(string $str): array {
+		return preg_split('//u', $str, NULL, PREG_SPLIT_NO_EMPTY);
+	}
+
 	static function starts_with(string $haystack, string $needle): bool {
 		return strpos($haystack, $needle) === 0;
 	}
@@ -85,12 +89,27 @@ class Util {
 		return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 	}
 
-	static function htmlspecialchars(string $string): string {
-		return htmlspecialchars($string, ENT_HTML5 | ENT_QUOTES);
-	}
-
-	static function html_str(array $data): array {
-		return filter_var_array($data, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+	static function htmlspecialchars($data, bool $double_encode=true) {
+		// We could use filter_var_array:
+		//   filter_var_array($data, FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+		// but with that, there is no way to set double_encode to true (or
+		// ENT_HTML5).
+		// (This is undocumented/incorrectly documented, but the function call
+		// above acts like htmlspecialchars() with double_encode=false.)
+		// https://secure.php.net/manual/en/filter.filters.sanitize.php
+		// https://secure.php.net/manual/en/function.htmlspecialchars.php
+		$htmlspecialchars_if_str = function($val) use ($double_encode) {
+			$flags = ENT_QUOTES | ENT_HTML5;
+			$coding = ini_get('default_charset');
+			return is_string($val) ?
+				htmlspecialchars($val, $flags, $coding, $double_encode) : $val;
+		};
+		if (is_array($data)) {
+			return array_map($htmlspecialchars_if_str, $data);
+		}
+		else {
+			return $htmlspecialchars_if_str($data);
+		}
 	}
 
 	static function filter_input_array(int $type, $definition=FILTER_DEFAULT,

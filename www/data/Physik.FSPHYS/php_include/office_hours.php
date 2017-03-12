@@ -374,8 +374,8 @@ HTML;
 		}
 		if ($edit_mode) {
 			$qstr_base = "?break=&start_time=$start_time&end_time=$end_time";
-			$qstr_start = htmlspecialchars("$qstr_base&col=start_time");
-			$qstr_end = htmlspecialchars("$qstr_base&col=end_time");
+			$qstr_start = Util::htmlspecialchars("$qstr_base&col=start_time");
+			$qstr_end = Util::htmlspecialchars("$qstr_base&col=end_time");
 			$result .= <<<HTML
 		<tr>
 			<td><a href="$qstr_start"><span class=fsphys_oh_webkit-fix>$start_time_show</span></a></td>
@@ -389,10 +389,11 @@ HTML;
 		foreach ($timetable as $day => $day_data) {
 			$name_show = '';
 			if (key_exists($time_key, $day_data)) {
-				$name_show = htmlspecialchars($day_data[$time_key]);
+				$name_show = Util::htmlspecialchars($day_data[$time_key]);
 			}
 			if ($edit_mode) {
-				$qstr_name = htmlspecialchars("$qstr_base&day=$day&col=name");
+				$qstr_name
+					= Util::htmlspecialchars("$qstr_base&day=$day&col=name");
 				$result .= <<<HTML
 			<td><a href="$qstr_name"><span class=fsphys_oh_webkit-fix>$name_show</span></a></td>
 HTML;
@@ -498,14 +499,14 @@ HTML;
 		$date_show = <<<HTML
 <time datetime="{$date}T$start_time">$date</time>
 HTML;
-		$name_show = htmlspecialchars($name);
+		$name_show = Util::htmlspecialchars($name);
 		$qstr_base = "?break=1&day=$date&start_time=$start_time"
 			. "&end_time=$end_time";
 		if ($edit_mode) {
-			$qstr_date = htmlspecialchars("$qstr_base&col=date");
-			$qstr_start = htmlspecialchars("$qstr_base&col=start_time");
-			$qstr_end = htmlspecialchars("$qstr_base&col=end_time");
-			$qstr_name = htmlspecialchars("$qstr_base&col=name");
+			$qstr_date = Util::htmlspecialchars("$qstr_base&col=date");
+			$qstr_start = Util::htmlspecialchars("$qstr_base&col=start_time");
+			$qstr_end = Util::htmlspecialchars("$qstr_base&col=end_time");
+			$qstr_name = Util::htmlspecialchars("$qstr_base&col=name");
 			$loc_show = Localization::get('show');
 			$loc_delete = Localization::get('delete', true);
 			$checked = $show ? 'checked' : '';
