@@ -4,7 +4,7 @@ require_once 'init.php';
 
 class Member extends MemberRecord {
 	const TABLE_NAME = 'members';
-	
+
 	static function from_url(?string $url=NULL): self {
 		$url = $url ?? $_SERVER['REQUEST_URI'];
 		$path = parse_url($url, PHP_URL_PATH);
@@ -18,11 +18,11 @@ SQL;
 			['name_url' => $name_url])->fetch();
 		if (!$sql_result) {
 			throw new \UnexpectedValueException('Database returned no values '
-				. "in table “{$tbl_name}” for name_url = $name_url");
+				. "in table “{$tbl_name}” for name_url = “{$name_url}”");
 		}
 		return new Member($sql_result[0]);
 	}
-	
+
 	static function list_all(): array {
 		$tbl_name = self::TABLE_NAME;
 		$sql = <<<SQL
@@ -38,11 +38,11 @@ SQL;
 		}
 		return $result;
 	}
-	
+
 	function __construct(?int $member_id=self::ID_NONE) {
 		parent::__construct($member_id, 'member_id', self::TABLE_NAME);
 	}
-	
+
 	protected function check_col_func($locale): callable {
 		static $valid_names = NULL;
 		if ($valid_names === NULL) {
@@ -50,8 +50,8 @@ SQL;
 				false => [
 					// table “members”
 					'member_id', 'forenames', 'nickname', 'surname',
-					'name_url', 'uni_email', 'member_start', 'member_end',
-					'pgp_id', 'pgp_url',
+					'name_url', 'uni_email', 'uni_username', 'member_start',
+					'member_end', 'pgp_id', 'pgp_url',
 				],
 				true => [
 					// tables “members__<lang_code>”
@@ -65,7 +65,7 @@ SQL;
 		}
 		return $this->create_check_col_func($valid_names, $locale);
 	}
-	
+
 	protected function process_input_data(array &$data, $locale): void {
 		if (!$locale) {
 			// empty string is an invalid date value, use NULL instead
@@ -74,7 +74,7 @@ SQL;
 			}
 		}
 	}
-	
+
 	function add_committee_entry(Committee $committee, array $data):
 		CommitteeEntry {
 		$data['member_id'] = $this->get_id();
@@ -83,7 +83,7 @@ SQL;
 		$new_row->create_new($data);
 		return $new_row;
 	}
-	
+
 	/*
 		If $group is true: Returns data in the form
 		[

@@ -78,6 +78,8 @@ CREATE TABLE IF NOT EXISTS "members" (
 		'The suffix that will be used in the URL for this member’s page',
 	"uni_email"    VARCHAR(100) NOT NULL
 		COMMENT 'Without “@uni-muenster.de”, “@wwu.de” etc.',
+	"uni_username" VARCHAR(50) DEFAULT NULL
+		COMMENT 'Can be unspecified (NULL)',
 	"member_start" DATE NOT NULL,
 	"member_end"   DATE DEFAULT NULL
 		COMMENT 'NULL means unspecified (i.e. until today)',
@@ -85,6 +87,7 @@ CREATE TABLE IF NOT EXISTS "members" (
 	"pgp_url"      VARCHAR(300) NOT NULL,
 	PRIMARY KEY ("member_id"),
 	UNIQUE KEY ("uni_email"),
+	UNIQUE KEY ("uni_username"),
 	UNIQUE KEY ("name_url")
 ) -- ENGINE=InnoDB
 COMMENT='Data about the members of the Physics Student Council';
