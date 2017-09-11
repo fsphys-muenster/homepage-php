@@ -138,6 +138,7 @@ br.fsphys-par {
 /***** CSS for office hours *****/
 table.fsphys_oh_table {
 	width: 100%;
+	hyphens: none;
 }
 table.fsphys_oh_table th.fsphys_oh_day_col:not(.fsphys_oh_single) {
 	width: 18%;
@@ -146,6 +147,9 @@ table.fsphys_oh_table th.fsphys_oh_day_col:not(.fsphys_oh_single) {
    similar width (main.css has padding: 9px 10px) */
 .fsphys_oh_front_page td {
 	padding: 5px 10px;
+}
+.fsphys_oh_no_name {
+	color: gray;
 }
 /***** CSS for member database *****/
 table.fsphys_member_committees {

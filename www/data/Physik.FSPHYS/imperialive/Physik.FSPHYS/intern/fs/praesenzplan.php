@@ -124,8 +124,10 @@ if (isset($_GET['break'])) {
 				value="<?=$req_start_time?>">
 			<input type=hidden name=end_time value="<?=$req_end_time?>">
 			<input type=hidden name=col value="<?=$req_col?>">
-			<input type=<?=html_input_type($req_col)?> name=val
-				size=50 value="<?=$val?>">
+			<label><?=Loc::get('office_hours.edit.enter_value', true)?>:
+				<input type=<?=html_input_type($req_col)?> name=val
+					size=50 value="<?=$val?>">
+			</label>
 			<input type=submit value="<?=Loc::get('enter', true)?>">
 		</form>
 <?php

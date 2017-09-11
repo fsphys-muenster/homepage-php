@@ -33,7 +33,7 @@ elseif ($semester) {
 	// the schedule for Tuesday isn’t still displayed at 23:30 Tuesday night)
 ?>
 	<?=Loc::get('during the semester', true)?></div>
-	<div class=fsphys_oh_front_page>
+	<div class="fsphys_oh_front_page table-wrapper">
 		<?=fsphys\office_hours_html([],
 			$dt_now->add(new \DateInterval('PT5H')))?>
 	</div>
@@ -42,7 +42,7 @@ elseif ($semester) {
 else {
 ?>
 	<?=Loc::get('semester break', true)?></div>
-	<div class=fsphys_oh_front_page>
+	<div class="fsphys_oh_front_page table-wrapper">
 		<?=fsphys\office_hours_break_html(['short' => true],
 			OH_BREAK_MAX_ROWS)?>
 	</div>

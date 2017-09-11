@@ -78,7 +78,7 @@ class SemesterInfo {
 		$ws_start_yr_nxt = $ws_start_yr + 1;
 		// WS lecture end: ≈ 2nd February, SS lecture end: ≈ 20th July
 		$ws_end = new \DateTime("$ws_start_yr_nxt-02-02");
-		$ss_end = new \DateTime("$year-07-20");
+		$ss_end = new \DateTime("$year-07-30");
 		// during semester: true; during break: false
 		$semester = ($date >= $ss_start && $date < $ss_end)
 			|| ($date >= $ws_start && $date < $ws_end);

@@ -500,6 +500,11 @@ HTML;
 <time datetime="{$date}T$start_time">$date</time>
 HTML;
 		$name_show = Util::htmlspecialchars($name);
+		# display placeholder text if the name cell is empty
+		if (!$name_show) {
+			$loc_no_name = Localization::get('office_hours.no_name', true);
+			$name_show = "<span class=fsphys_oh_no_name>$loc_no_name</span>";
+		}
 		$qstr_base = "?break=1&day=$date&start_time=$start_time"
 			. "&end_time=$end_time";
 		if ($edit_mode) {
