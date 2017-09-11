@@ -20,8 +20,11 @@ mysqldump -h 'mysql5.uni-muenster.de' -u 'pinfofs' -p"$db_pw" \
 $db_pw=
 # compress database backups
 gzip "${backup_prefix}_backup.sql" "${backup_prefix}_backup_schema.sql"
-# delete backups older than 3 years
-find "$fsphys_root/db_backup/" -ctime +1095 -delete
+# delete backups made on even days (so backups are only stored for every
+# second day)
+find "$fsphys_root/db_backup/" -name '*-*-[0-9][02468]T*' -delete
+# delete backups older than 1 year
+find "$fsphys_root/db_backup/" -ctime +365 -delete
 
 # rotate logs
 logrotate -s 'logrotate_status' 'logrotate.conf'
