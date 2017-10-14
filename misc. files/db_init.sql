@@ -1,6 +1,6 @@
 -- Initialize the database with the required tables
 
--- For MySQL:
+-- For MySQL/MariaDB:
 -- SET sql_mode = 'ANSI,TRADITIONAL';
 
 -- global tables

@@ -37,7 +37,7 @@ const OH_BREAK_KEY_COL_NAMES = ['date', 'start_time', 'end_time'];
 
 /*
 	Map between numerical values and text aliases for the days of the week, as
-	used in the ENUM defined in the MySQL database.
+	used in the ENUM defined in the MariaDB database.
 */
 const DAYS_OF_WEEK = [
 	1 => 'Monday',
@@ -155,7 +155,8 @@ function oh_table_info(bool $break): array {
 }
 
 /*
-	$break (bool): Select which MySQL table to use (during semester or break).
+	$break (bool): Select which database table to use (during semester or
+	               break).
 	$day: If $break: The value for the 'date' column
 	      Else: The value for the 'day' column
 	
@@ -207,7 +208,8 @@ function office_hours_insert(bool $break, $row) {
 }
 
 /*
-	$break (bool): Select which MySQL table to use (during semester or break).
+	$break (bool): Select which database table to use (during semester or
+	               break).
 	$day: If $break: The value for the 'date' column
 	      Else: The value for the 'day' column
 	$col: The name of the table column whose value is to be set. A new row
@@ -232,7 +234,7 @@ SQL;
 	}
 	// insert row into table or update if row already exists (“upsert”);
 	// in standard SQL, this is done with the MERGE statement, but this is not
-	// available in MySQL
+	// available in MySQL/MariaDB
 	// https://en.wikipedia.org/wiki/Merge_%28SQL%29
 	else {
 		$sql = <<<SQL

@@ -9,11 +9,11 @@ cd 'cron/'
 # backup database
 backup_prefix="$fsphys_root/db_backup/"$(date -Iminutes)
 db_pw='*****'
-mysqldump -h 'mysql5.uni-muenster.de' -u 'pinfofs' -p"$db_pw" \
+mysqldump -h 'localhost' -u 'pinfofs' -p"$db_pw" \
 	--log_error='mysqldump.log' --compatible=ansi --all-databases \
 	> "${backup_prefix}_backup.sql"
 # backup INFORMATION_SCHEMA
-mysqldump -h 'mysql5.uni-muenster.de' -u 'pinfofs' -p"$db_pw" \
+mysqldump -h 'localhost' -u 'pinfofs' -p"$db_pw" \
 	--log_error='mysqldump.log' --compatible=ansi --skip-lock-tables \
 	INFORMATION_SCHEMA \
 	> "${backup_prefix}_backup_schema.sql"

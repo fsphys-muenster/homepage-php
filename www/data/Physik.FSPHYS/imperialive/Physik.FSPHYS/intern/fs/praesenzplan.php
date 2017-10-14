@@ -31,7 +31,7 @@ function update_times($start_time, $end_time, $time_col, $new_time): void {
 	}
 	// overwrite rows that already exist;
 	// this could be done with the standard MERGE statement, but this is not
-	// available in MySQL
+	// available in MySQL/MariaDB
 	// https://en.wikipedia.org/wiki/Merge_%28SQL%29
 	$sql = <<<SQL
 	DELETE FROM "office_hours"
