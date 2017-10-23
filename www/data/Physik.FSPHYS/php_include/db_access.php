@@ -9,15 +9,19 @@ require_once 'init.php';
 	https://secure.php.net/manual/en/class.pdo.php
 */
 function mysql_db_connect() {
-	$db_server = '127.0.0.1';
-	$db_port = 3306;
-	$db_name = '*****';
-	$db_user = '*****';
-	$db_password = '*****';
+	$ini_path = '/www/data/Physik.FSPHYS/db_access.ini';
+	$dsn = parse_ini_file($ini_path);
+	if ($dsn === false) {
+		throw new \UnexpectedValueException('Could not open/parse .ini file '
+			. $ini_path);
+	}
 	$db = new \PDO(
-		"mysql:host=$db_server;port=$db_port;dbname=$db_name;charset=utf8",
-		$db_user, $db_password
+		"mysql:host={$dsn['db_server']};" .
+		"port={$dsn['db_port']};" .
+		"dbname={$dsn['db_name']};charset=utf8",
+		$dsn['db_user'], $dsn['db_password']
 	);
+	unset($dsn);
 	// throw exceptions on PDO errors instead of silently returning false
 	// or similar
 	$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
