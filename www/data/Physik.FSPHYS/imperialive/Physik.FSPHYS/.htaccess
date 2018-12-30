@@ -42,9 +42,7 @@ Redirect temp /Physik.FSPHYS/en/termine/kalender \
 # URL for study guide
 RedirectMatch temp ^/Physik\.FSPHYS/(en/)?studieren/studienfuehrer$ \
 	https://xn--studienfhrer-physik-dbc.de/Universität_Münster
-# URL for Facebook
-RedirectMatch temp ^/Physik\.FSPHYS/(en/)?fb$ \
-	https://www.facebook.com/fsphys/
+
 
 # List of URLs which have been changed, leaving the old URL to redirect to the new one
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/ehemalige_sammlung(\.html)?$ \

@@ -2,10 +2,10 @@
 # Executed daily, see
 # https://www.uni-muenster.de/ZIV/Technik/WWW/EigeneProgramme.html
 
-fsphys_root='/www/data/Physik.FSPHYS'
+fsphys_root=/www/data/Physik.FSPHYS
 cd "$fsphys_root/"
 
-cd 'cron/'
+cd cron/
 # backup database
 backup_prefix="$fsphys_root/db_backup/"$(date -Iminutes)
 db_pw='*****'
@@ -27,5 +27,5 @@ find "$fsphys_root/db_backup/" -name '*-*-[0-9][02468]T*' -delete
 find "$fsphys_root/db_backup/" -ctime +365 -delete
 
 # rotate logs
-logrotate -s 'logrotate_status' 'logrotate.conf'
+logrotate -l logrotate.log -s logrotate_status logrotate.conf
 
