@@ -1,6 +1,6 @@
 <?php
 namespace de\uni_muenster\fsphys;
-const LOG_EMAIL = 'simon.may@uni-muenster.de';
+const LOG_EMAIL = 'fsphys@uni-muenster.de';
 // all fatal PHP runtime errors (category “error”)
 const E_CAT_ERROR = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR
 	| E_USER_ERROR | E_RECOVERABLE_ERROR;
