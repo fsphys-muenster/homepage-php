@@ -189,4 +189,33 @@ table.fsphys_member_committees col:nth-child(3) {
 #fsphys_gc_form .fsphys_gc_weight {
 	text-align: right;
 }
+/* apply main.css style for input[type=submit|reset|button] outside of forms
+and to actual <button>s as well;
+also make “new entry” link look like a button using the same style */
+a.fsphys_oh_new_entry,
+.module-content button, .module-content input[type=submit],
+.module-content input[type=reset], .module-content input[type=button],
+.element-content button, .element-content input[type=submit],
+.element-content input[type=reset], .element-content input[type=button] {
+	width: 100%;
+	border: 0;
+	color: white;
+	background-color: black;
+	text-transform: uppercase;
+	/* from main.css for all input elements */
+	height: 2em;
+	padding: 3px 7px;
+	display: block;
+	/* addition over main.css: remove float and set some margins */
+	float: none !important;
+	margin: 1ex 0;
+	/* the following is only added to make to give an <a> (new entry) the same
+	defaults as a button */
+	cursor: default;
+	text-decoration: none;
+	text-align: center;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
 
