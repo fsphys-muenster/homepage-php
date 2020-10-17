@@ -48,7 +48,7 @@ class CSRF {
 			throw new CSRFException('CSRF validation failed – possible CSRF '
 				. 'attack!' . "\n"
 				. "ORIGIN  = $origin\n"
-				. "REFERER = $referer"
+				. "REFERER = $referrer"
 			);
 		}
 	}
