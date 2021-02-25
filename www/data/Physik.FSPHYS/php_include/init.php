@@ -117,7 +117,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
 // caught by set_error_handler()
 register_shutdown_function(function() {
 	$error = error_get_last();
-	if ($error['type'] & (E_CAT_ERROR | E_CAT_WARNING)) {
+	if ( $error && ($error['type'] & (E_CAT_ERROR | E_CAT_WARNING)) ) {
 		$ex = error_to_exception($error['type'], $error['message'],
 			$error['file'], $error['line']);
 		mail_and_log($ex);
