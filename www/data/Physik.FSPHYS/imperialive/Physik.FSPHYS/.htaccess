@@ -64,3 +64,6 @@ RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler(/.*)?$ \
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?intern/intern-physiker(/.*)?$ \
 	/Physik.FSPHYS/$1intern/physiker$2
 
+# Add cache-control, forcing validity check on browser and proxy caches for every page under /Physik.FSPHYS/
+# Media is not served from this domain, so this should not add any heavy load.
+Header set Cache-Control "s-maxage=0, max-age=0, must-revalidate"
