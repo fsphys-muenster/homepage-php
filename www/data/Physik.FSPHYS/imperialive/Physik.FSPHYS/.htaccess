@@ -49,8 +49,6 @@ RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/ehemalig
 	/Physik.FSPHYS/$1fachschaft/fachschaftler/ehemalige_ab_ss_2012
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/verteiler_richtlinie(\.html)?$ \
 	/Physik.FSPHYS/$1service/verteiler
-RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?fachschaft/fachschaftler/bernd_hofschoeer(\.html)?$ \
-	/Physik.FSPHYS/$1fachschaft/fachschaftler/bernd_hofschroeer
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/bama-tage/(ap|ft|gp|kp|mp|pc|pi|tp|sonder)_2011(\.html)?$ \
 	/Physik.FSPHYS/$1studieren/bama-tage/$2
 RedirectMatch permanent ^/Physik\.FSPHYS/(en/)?studieren/ersti-woche(/|/index\.html)?$ \
