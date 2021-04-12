@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 	//var FSPHYS_LOCALE = "de-DE";
-	var DATE = '2017-09-11';
-	var ER_VERSION = 'WS 2016/2017';
+	//var DATE = '2017-09-11';
+	//var ER_VERSION = 'WS 2016/2017';
 	var ID_PREFIX = 'fsphys_gc_';
 	var INPUT_FIELDS = [
 		'physics_1',
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		'lab_course_2',
 		'statistical_physics',
 		'bachelor_thesis'
-	]
+	];
 	var DEFAULT_WEIGHTS = {
 			"2016-11-17" : {
 				minor:               12,
@@ -57,6 +57,18 @@ document.addEventListener('DOMContentLoaded', function() {
 				math_3: 5,
 			},
 	};
+	var HINTS = {
+		"2016-11-17" : {
+			physics : "Aus den Modulen <i>Physik&nbsp;I–III</i> werden nur die zwei besten Noten mit einer Gewichtung von jeweils 11&nbsp;% in die Gesamtnote mit einbezogen.",
+			math : "Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und <i>Integrationstheorie</i> geht mit 11&nbsp;% in die Gesamtnote ein. (<i>Mathe für Physiker&nbsp;I</i> ist eine Studienleistung, hat also 0&nbsp;%.)",
+			minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+		},
+		"2021-04-12" : {
+			physics : "Aus den Modulen <i>Physik&nbsp;I–II</i> werden nur die beste Note mit einer Gewichtung von jeweils 10&nbsp;% in die Gesamtnote mit einbezogen.",
+			math : "",
+			minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+		}
+	};
 
 	var total_grade = 0;
 	var exams = {
@@ -70,6 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
 				lab_course_2:         9,
 				statistical_physics: 10,
 				bachelor_thesis:     10
+		},
+		hints : {
+			physics : "",
+			math : "",
+			minor : "",
 		},
 		version : "2016-11-17",
 
@@ -98,6 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			for (name in physics_weights) {
 				weights[name] = physics_weights[name];
 			}	
+			for (name in HINTS[version]) {
+				this.hints[name] = HINTS[version][name];
+			}
 			
 			weights.minor_1 = user_input.minor_1_weight;
 			weights.minor_2 = user_input.minor_2_weight;
@@ -199,6 +219,12 @@ document.addEventListener('DOMContentLoaded', function() {
 			var text_el = document.getElementById(ID_PREFIX + exam + '_weight');
 			if(text_el !== null)
 				text_el.textContent = exams.weights[exam];
+		}
+		// write (possibly updated) hint information to DOM
+		for (var hint in exams.hints) {
+			var text_el = document.getElementById(ID_PREFIX + hint + '_hint');
+			if(text_el !== null)
+				text_el.innerHTML= exams.hints[hint];
 		}
 		// write calculated grades to DOM
 		document.getElementById(ID_PREFIX + 'minor').textContent = minor_grade;
