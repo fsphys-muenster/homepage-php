@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	'use strict';
 
 
-	var FSPHYS_LOCALE = "de-DE";
+	//var FSPHYS_LOCALE = "de-DE";
 	var DATE = '2017-09-11';
 	var ER_VERSION = 'WS 2016/2017';
 	var ID_PREFIX = 'fsphys_gc_';
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var gc_form = document.getElementById(ID_PREFIX + 'form');
 	gc_form.addEventListener('input', update);
 	// assign action to save button
-	//TODO document.getElementById(ID_PREFIX + 'save').onclick = write_url_fragment;
+	document.getElementById(ID_PREFIX + 'save').onclick = write_url_fragment;
 	// run update to initialize input_data and for consistency
 	update();
 });
