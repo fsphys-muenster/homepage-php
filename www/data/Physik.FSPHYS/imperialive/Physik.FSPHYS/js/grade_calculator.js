@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
 	'use strict';
 
+
+	var FSPHYS_LOCALE = "de-DE";
 	var DATE = '2017-09-11';
 	var ER_VERSION = 'WS 2016/2017';
 	var ID_PREFIX = 'fsphys_gc_';
@@ -18,39 +20,85 @@ document.addEventListener('DOMContentLoaded', function() {
 		'minor_3_weight',
 		'quantum_mechanics',
 		'signal_processing',
+		'computational_physics',
 		'structure_of_matter',
+		'lab_course_1',
 		'lab_course_2',
 		'statistical_physics',
 		'bachelor_thesis'
 	]
+	var DEFAULT_WEIGHTS = {
+			"2016-11-17" : {
+				minor:               12,
+				quantum_mechanics:    7,
+				signal_processing:    7,
+				computational_physics:    0,
+				structure_of_matter: 12,
+				lab_course_1:         0,
+				lab_course_2:         9,
+				statistical_physics: 10,
+				bachelor_thesis:     10,
+				physics_X: 11,
+				math_X: 11,
+			},
+			"2021-04-12" : {
+				minor:               10,
+				quantum_mechanics:    7,
+				signal_processing:    6,
+				computational_physics:   4,
+				structure_of_matter: 10,
+				lab_course_1:         4,
+				lab_course_2:         9,
+				statistical_physics: 10,
+				bachelor_thesis:     10,
+				physics_X: 10,
+				physics_3: 10,
+				math_2: 5,
+				math_3: 5,
+			},
+	};
 
 	var total_grade = 0;
 	var exams = {
 		// weights of the individual module grades towards the total grade
 		// (percentages)
 		weights: {
-			minor:               12,
-			quantum_mechanics:    7,
-			signal_processing:    7,
-			structure_of_matter: 12,
-			lab_course_2:         9,
-			statistical_physics: 10,
-			bachelor_thesis:     10
+				minor:               12,
+				quantum_mechanics:    7,
+				signal_processing:    7,
+				structure_of_matter: 12,
+				lab_course_2:         9,
+				statistical_physics: 10,
+				bachelor_thesis:     10
 		},
+		version : "2016-11-17",
 
 		update: function(user_input) {
+			var e = document.getElementById("fsphys_gc_version");
+			var version = e.value;
+
+			this.weights = DEFAULT_WEIGHTS[version];
+
 			var weights = this.weights;
 			// special cases: Physics I–III, Math II–III and the minor
-			var physics_weights = this.best_of(
-				['physics_1', 'physics_2', 'physics_3'], 2, 11, user_input);
+			var physics_weights;
+			if(version == "2016-11-17") {
+			 	physics_weights= this.best_of(
+				['physics_1', 'physics_2', 'physics_3'], 2, this.weights["physics_X"], user_input);
+				var math_weights = this.best_of(
+				['math_2', 'math_3'], 1, this.weights["math_X"], user_input);
+				for (name in math_weights) {
+					weights[name] = math_weights[name];
+				}
+			}
+			else if(version =="2021-04-12") {
+			 	physics_weights= this.best_of(
+				['physics_1', 'physics_2'], 1, this.weights["physics_X"], user_input);
+			}
 			for (name in physics_weights) {
 				weights[name] = physics_weights[name];
-			}
-			var math_weights = this.best_of(
-				['math_2', 'math_3'], 1, 11, user_input);
-			for (name in math_weights) {
-				weights[name] = math_weights[name];
-			}
+			}	
+			
 			weights.minor_1 = user_input.minor_1_weight;
 			weights.minor_2 = user_input.minor_2_weight;
 			weights.minor_3 = user_input.minor_3_weight;
@@ -86,16 +134,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			// update for consistency
 			update();
 			// set document title to distinguish bookmarks
+			var loc = "de-DE";
 			switch (FSPHYS_LOCALE) {
 				case 'en-US':
 					var title_text = 'Saved bachelor’s grade: ';
+					loc = "en-US";
 					break;
 				case 'de-DE':
 				default:
+					loc = "de-DE";
 					var title_text = 'Gespeicherte Bachelor-Note: ';
 					break;
 			}
-			var total_grade_str = total_grade.toLocaleString(FSPHYS_LOCALE,
+			var total_grade_str = total_grade.toLocaleString(loc,
 					{minimumFractionDigits: 2, maximumFractionDigits: 2});
 			var re = /\[.+\]/;
 			if (re.test(document.title)) {
@@ -137,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		// total grade
 		total_grade = 0;
 		for (var exam in weights) {
-			if (exam.indexOf('minor_') !== 0) {
+			if (exam.indexOf('minor_') !== 0 && user_input[exam] !== undefined) {
 				total_grade += user_input[exam] * weights[exam];
 			}
 		}
@@ -146,7 +197,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		// write (possibly updated) weight information to DOM
 		for (var exam in exams.weights) {
 			var text_el = document.getElementById(ID_PREFIX + exam + '_weight');
-			text_el.textContent = exams.weights[exam];
+			if(text_el !== null)
+				text_el.textContent = exams.weights[exam];
 		}
 		// write calculated grades to DOM
 		document.getElementById(ID_PREFIX + 'minor').textContent = minor_grade;
@@ -169,13 +221,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	// update with changes to URL fragment
 	window.addEventListener('hashchange', load_url_data);
 	// print version information
-	document.getElementById(ID_PREFIX + 'version').textContent = DATE;
-	document.getElementById(ID_PREFIX + 'er_version').textContent = ER_VERSION;
+	//document.getElementById(ID_PREFIX + 'version').textContent = DATE;
+	//TODO document.getElementById(ID_PREFIX + 'er_version').textContent = ER_VERSION;
 	// update on user input
 	var gc_form = document.getElementById(ID_PREFIX + 'form');
 	gc_form.addEventListener('input', update);
 	// assign action to save button
-	document.getElementById(ID_PREFIX + 'save').onclick = write_url_fragment;
+	//TODO document.getElementById(ID_PREFIX + 'save').onclick = write_url_fragment;
 	// run update to initialize input_data and for consistency
 	update();
 });

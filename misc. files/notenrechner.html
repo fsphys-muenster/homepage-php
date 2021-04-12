@@ -10,8 +10,13 @@
 <div>
 <script type=text/javascript src=grade_calculator.js></script>
 
-<p><small>Version: <span id=fsphys_gc_version>2016-11-17</span>, <abbr title="Prüfungsordnung">PO</abbr>-Version: Ab <span id=fsphys_gc_er_version>WS 2016/2017</span></small></p>
 <div id=fsphys_gc_form>
+<p>PO-Version: 
+	<select id="fsphys_gc_version">
+		<option value="2016-11-17" id="fsphys_gc_er_version">Ab WS 2016/2017</option>
+		<option value="2021-04-12" id="fsphys_gc_er_version">Ab WS 2020/2021</option>
+	</select>
+</p>
 <table>
 <colgroup><col style="width: 35%;"><col><col><col style="width: 35%;"></colgroup>
 <thead>
@@ -86,16 +91,26 @@
 	<td></td>
 </tr>
 <tr>
+	<td><label for=fsphys_gc_computational_physics>Computational Physics</label></td>
+	<td><input id=fsphys_gc_computational_physics type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_computational_physics_weight class=fsphys_gc_weight>7</td>
+	<td></td>
+</tr>
+<tr>
 	<td><label for=fsphys_gc_structure_of_matter>Struktur der Materie</label></td>
 	<td><input id=fsphys_gc_structure_of_matter type=number min=1 max=4 step=0.1 value=4></td>
 	<td id=fsphys_gc_structure_of_matter_weight class=fsphys_gc_weight>12</td>
 	<td></td>
 </tr>
 <tr>
-	<td><label for=fsphys_gc_lab_course_2>Experimentelle Übungen&nbsp;II</label></td>
+	<td><label for=fsphys_gc_lab_course_1>Experimentelle Übungen&nbsp;I/Physikalisches Grundpraktikum</label></td>
+	<td><input id=fsphys_gc_lab_course_1 type=number min=1 max=4 step=0.1 value=4></td>
+	<td id=fsphys_gc_lab_course_1_weight class=fsphys_gc_weight>9</td>
+</tr>
+<tr>
+	<td><label for=fsphys_gc_lab_course_2>Experimentelle Übungen&nbsp;II/Physikalisches Praktikum für Fortgeschrittene</label></td>
 	<td><input id=fsphys_gc_lab_course_2 type=number min=1 max=4 step=0.1 value=4></td>
 	<td id=fsphys_gc_lab_course_2_weight class=fsphys_gc_weight>9</td>
-	<td>Die <i>Experimentellen Übungen&nbsp;I</i> gehen nicht in die Gesamtnote ein.</td>
 </tr>
 <tr>
 	<td><label for=fsphys_gc_statistical_physics>Quantentheorie und Statistische Physik</label></td>
