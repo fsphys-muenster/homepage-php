@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<!--
+    A test environment for the grade calculator.
+    To run this, serve homepage-php with a webserver like the one in serve.sh ,
+    and browse to notenrechner_standalone.html.
+-->
+<head>
+	<title>Notenrechner B.&nbsp;Sc.</title>
+	<meta charset=utf-8>
+<script>
+var test = "";
+function show(path) {
+    fetch(path+"?avoidcache="+ new Date()).then(function (response) {
+        // The API call was successful!
+        return response.text();
+    }).then(function (html) {
+
+        document.body.innerHTML = "";
+        document.write(
+            '<a href="?de">DE</a> | <a href="?en">EN</a><br/>' +
+            
+            html.replaceAll("/Physik.FSPHYS/", "../www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/")
+                .replaceAll("/Physik/", "https://www.uni-muenster.de/Physik/")
+                .replaceAll(".js", ".js?avoidcache="+ new Date())
+                
+            + '<script>var DOMContentLoaded_event = document.createEvent("Event");'
+            + 'DOMContentLoaded_event.initEvent("DOMContentLoaded", true, true);'
+            + 'window.document.dispatchEvent(DOMContentLoaded_event);<\/script>'
+                );
+
+    }).catch(function (err) {
+        // There was an error
+        console.warn('Something went wrong.', err);
+    });
+}
+
+function show_de() {
+    show('../www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/studieren/notenrechner_snippet_de.html');
+}
+function show_en() {
+    show('../www/data/Physik.FSPHYS/imperialive/Physik.FSPHYS/studieren/notenrechner_snippet_en.html');
+}
+
+if(window.location.search.substring(1).includes("de")) {
+    show_de();
+}
+else if (window.location.search.substring(1).includes("en")) {
+    show_en()
+}
+</script>
+</head>
+
+<body>
+<a href="?de">DE</a> | <a href="?en">EN</a><br/>
+<div id="content"></div>
+</body>
+
+</html>
+
