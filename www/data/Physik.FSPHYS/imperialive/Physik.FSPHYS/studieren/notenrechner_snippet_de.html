@@ -2,11 +2,12 @@
 <noscript><p class="fsphys_error"><strong>Zur Verwendung des Notenrechners muss im Browser <a href="https://de.wikipedia.org/wiki/JavaScript" class="ext" target="_blank">JavaScript</a> aktiviert sein! Ohne JavaScript können leider keine Berechnungen durchgeführt werden.</strong></p></noscript>
 <p>Mit diesem kleinen Tool kann die endgültige Durchschnittsnote im Bachelor berechnet werden. Dafür muss lediglich für jedes Modul entsprechend eine Note eingetragen werden. Falls diese noch nicht feststeht, muss eine erwartete Note angegeben werden.</p>
 <div id="fsphys_gc_form">
+<p><small>Version: <span id="fsphys_gc_version">2021-05-27</span></small></p>
 <p>PO-Version: 
-	<select id="fsphys_gc_version">
-		<option value="2016-11-17" id="fsphys_gc_er_version">Ab WS 2016/2017</option>
-		<option value="2021-04-12" id="fsphys_gc_er_version">Ab WS 2020/2021</option>
-	</select>
+	<select id="fsphys_gc_er_version">
+		<option value=20161117 >Ab WS 2016/2017</option>
+		<option value=20210412 >Ab WS 2020/2021</option>
+  </select>
 </p>
 <table>
   <colgroup><col style="width: 35%;" /><col /><col /><col style="width: 35%;" /></colgroup>
@@ -100,7 +101,7 @@
       <td><label for=fsphys_gc_lab_course_1>Experimentelle Übungen&nbsp;I/Physikalisches Grundpraktikum</label></td>
       <td><input id=fsphys_gc_lab_course_1 type=number min=1 max=4 step=0.1 value=4></td>
       <td id=fsphys_gc_lab_course_1_weight class=fsphys_gc_weight>9</td>
-      <td></td>
+      <td id=fsphys_gc_lab_course_hint rowspan="2"></td>
     </tr>
     <tr>
       <td><label for=fsphys_gc_lab_course_2>Experimentelle Übungen&nbsp;II/Physikalisches Praktikum für Fortgeschrittene</label></td>

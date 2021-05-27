@@ -3,10 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 	//var FSPHYS_LOCALE = "de-DE";
-	//var DATE = '2017-09-11';
-	//var ER_VERSION = 'WS 2016/2017';
+	var DATE = '2021-05-27';
+	//var GC_VERSION = 'SS 2020/2021';
 	var ID_PREFIX = 'fsphys_gc_';
 	var INPUT_FIELDS = [
+		'er_version',
 		'physics_1',
 		'physics_2',
 		'physics_3',
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		'bachelor_thesis'
 	];
 	var DEFAULT_WEIGHTS = {
-			"2016-11-17" : {
+			20161117 : {
 				minor:               12,
 				quantum_mechanics:    7,
 				signal_processing:    7,
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				physics_X: 11,
 				math_X: 11,
 			},
-			"2021-04-12" : {
+			20210412 : {
 				minor:               10,
 				quantum_mechanics:    7,
 				signal_processing:    6,
@@ -58,15 +59,31 @@ document.addEventListener('DOMContentLoaded', function() {
 			},
 	};
 	var HINTS = {
-		"2016-11-17" : {
-			physics : "Aus den Modulen <i>Physik&nbsp;I–III</i> werden nur die zwei besten Noten mit einer Gewichtung von jeweils 11&nbsp;% in die Gesamtnote mit einbezogen.",
-			math : "Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und <i>Integrationstheorie</i> geht mit 11&nbsp;% in die Gesamtnote ein. (<i>Mathe für Physiker&nbsp;I</i> ist eine Studienleistung, hat also 0&nbsp;%.)",
-			minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+		"de-DE": {
+			20161117 : {
+				physics : "Aus den Modulen <i>Physik&nbsp;I–III</i> werden nur die zwei besten Noten mit einer Gewichtung von jeweils 11&nbsp;% in die Gesamtnote mit einbezogen.",
+				math : "Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und <i>Integrationstheorie</i> geht mit 11&nbsp;% in die Gesamtnote ein. (<i>Mathe für Physiker&nbsp;I</i> ist eine Studienleistung, hat also 0&nbsp;%.)",
+				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+			},
+			20210412 : {
+				physics : "Aus den Modulen <i>Physik&nbsp;I–II</i> werden nur die beste Note mit einer Gewichtung von jeweils 10&nbsp;% in die Gesamtnote mit einbezogen.",
+				math : "",
+				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+			}
 		},
-		"2021-04-12" : {
-			physics : "Aus den Modulen <i>Physik&nbsp;I–II</i> werden nur die beste Note mit einer Gewichtung von jeweils 10&nbsp;% in die Gesamtnote mit einbezogen.",
-			math : "",
-			minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+		"en-US":{
+			20161117 : {
+				physics : "From the modules <i>Physics&#160;I–III</i>, only the best two grades are included in the total grade, with a weight of 11&#160;% each.",
+				math : "Only the best grade from the modules <i>Fundamental Mathematics</i> and <i>Integration Theory</i> enters the total grade with a weight of 11&#160;%. (<i>Math for Physicists&#160;I</i> is not an “exam” according to the regulations, so it counts with 0&#160;%.)",
+				minor : "The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href=\"/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)",
+				lab_course : "The <i>Laboratory Course&#160;I</i> does not enter into the total grade."
+			},
+			20210412 : {
+				physics : "From the modules <i>Physik&nbsp;I–II</i> only the best two grades are included in the total grade, with a wieght of 10&nbsp;% each.",
+				math : "",
+				lab_course : "",
+				minor : "The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href=\"/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)",
+			}
 		}
 	};
 
@@ -87,19 +104,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			physics : "",
 			math : "",
 			minor : "",
+			lab_course : ""
 		},
-		version : "2016-11-17",
+		version : 20161117,
 
 		update: function(user_input) {
-			var e = document.getElementById("fsphys_gc_version");
-			var version = e.value;
+			var version = user_input.er_version;
 
 			this.weights = DEFAULT_WEIGHTS[version];
 
 			var weights = this.weights;
 			// special cases: Physics I–III, Math II–III and the minor
 			var physics_weights;
-			if(version == "2016-11-17") {
+			if(version == 20161117) {
 			 	physics_weights= this.best_of(
 				['physics_1', 'physics_2', 'physics_3'], 2, this.weights["physics_X"], user_input);
 				var math_weights = this.best_of(
@@ -108,15 +125,15 @@ document.addEventListener('DOMContentLoaded', function() {
 					weights[name] = math_weights[name];
 				}
 			}
-			else if(version =="2021-04-12") {
+			else if(version ==20210412) {
 			 	physics_weights= this.best_of(
 				['physics_1', 'physics_2'], 1, this.weights["physics_X"], user_input);
 			}
 			for (name in physics_weights) {
 				weights[name] = physics_weights[name];
 			}	
-			for (name in HINTS[version]) {
-				this.hints[name] = HINTS[version][name];
+			for (name in HINTS[FSPHYS_LOCALE][version]) {
+				this.hints[name] = HINTS[FSPHYS_LOCALE][version][name];
 			}
 			
 			weights.minor_1 = user_input.minor_1_weight;
@@ -247,8 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// update with changes to URL fragment
 	window.addEventListener('hashchange', load_url_data);
 	// print version information
-	//document.getElementById(ID_PREFIX + 'version').textContent = DATE;
-	//TODO document.getElementById(ID_PREFIX + 'er_version').textContent = ER_VERSION;
+	document.getElementById(ID_PREFIX + 'version').textContent = DATE;
 	// update on user input
 	var gc_form = document.getElementById(ID_PREFIX + 'form');
 	gc_form.addEventListener('input', update);
