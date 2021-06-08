@@ -164,6 +164,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		try {
 			var url_fragment = decodeURIComponent(location.hash.substring(1));
 			user_input = JSON.parse(url_fragment);
+			if (!("er_version" in user_input)) {
+				user_input["er_version"] = 20161117;
+			}
 			INPUT_FIELDS.forEach(function(field) {
 				var input = document.getElementById(ID_PREFIX + field);
 				input.value = user_input[field];
