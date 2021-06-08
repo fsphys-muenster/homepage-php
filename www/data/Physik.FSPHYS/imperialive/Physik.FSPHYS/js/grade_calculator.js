@@ -111,7 +111,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		update: function(user_input) {
 			var version = user_input.er_version;
 
-			this.weights = DEFAULT_WEIGHTS[version];
+			// Copy dict so the original is not edited lateron
+			// Syntax: See e.g. https://stackoverflow.com/a/54460487/8575607
+			this.weights = {...DEFAULT_WEIGHTS[version]};
+			
+			// Hide irrelevant fields
+			for (var exam in this.weights) {
+				var text_el = document.getElementById(ID_PREFIX + exam + '_weight');
+				if(text_el !== null)
+					text_el.parentNode.hidden = this.weights[exam] == 0;
+			}
 
 			var weights = this.weights;
 			// special cases: Physics I–III, Math II–III and the minor
