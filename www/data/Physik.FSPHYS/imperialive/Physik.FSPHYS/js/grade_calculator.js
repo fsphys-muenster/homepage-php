@@ -63,12 +63,12 @@ document.addEventListener('DOMContentLoaded', function() {
 			20161117 : {
 				physics : "Aus den Modulen <i>Physik&nbsp;I–III</i> werden nur die zwei besten Noten mit einer Gewichtung von jeweils 11&nbsp;% in die Gesamtnote mit einbezogen.",
 				math : "Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und <i>Integrationstheorie</i> geht mit 11&nbsp;% in die Gesamtnote ein. (<i>Mathe für Physiker&nbsp;I</i> ist eine Studienleistung, hat also 0&nbsp;%.)",
-				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der <a href=\"/Physik/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">Prüfungsordnung</a> gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
 			},
 			20210412 : {
 				physics : "Aus den Modulen <i>Physik&nbsp;I–II</i> werden nur die beste Note mit einer Gewichtung von jeweils 10&nbsp;% in die Gesamtnote mit einbezogen.",
 				math : "",
-				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der Prüfungsordnung gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der <a href=\"/Physik/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">Prüfungsordnung</a> gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
 			}
 		},
 		"en-US":{
@@ -111,7 +111,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		update: function(user_input) {
 			var version = user_input.er_version;
 
-			this.weights = DEFAULT_WEIGHTS[version];
+			// Copy dict so the original is not edited lateron
+			// Syntax: See e.g. https://stackoverflow.com/a/54460487/8575607
+			this.weights = {...DEFAULT_WEIGHTS[version]};
+			
+			// Hide irrelevant fields
+			for (var exam in this.weights) {
+				var text_el = document.getElementById(ID_PREFIX + exam + '_weight');
+				if(text_el !== null)
+					text_el.parentNode.hidden = this.weights[exam] == 0;
+			}
 
 			var weights = this.weights;
 			// special cases: Physics I–III, Math II–III and the minor
@@ -164,6 +173,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		try {
 			var url_fragment = decodeURIComponent(location.hash.substring(1));
 			user_input = JSON.parse(url_fragment);
+			if (!("er_version" in user_input)) {
+				user_input["er_version"] = 20161117;
+			}
 			INPUT_FIELDS.forEach(function(field) {
 				var input = document.getElementById(ID_PREFIX + field);
 				input.value = user_input[field];
