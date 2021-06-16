@@ -76,12 +76,10 @@ document.addEventListener('DOMContentLoaded', function() {
 				physics : "From the modules <i>Physics&#160;I–III</i>, only the best two grades are included in the total grade, with a weight of 11&#160;% each.",
 				math : "Only the best grade from the modules <i>Fundamental Mathematics</i> and <i>Integration Theory</i> enters the total grade with a weight of 11&#160;%. (<i>Math for Physicists&#160;I</i> is not an “exam” according to the regulations, so it counts with 0&#160;%.)",
 				minor : "The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href=\"/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)",
-				lab_course : "The <i>Laboratory Course&#160;I</i> does not enter into the total grade."
 			},
 			20210412 : {
 				physics : "From the modules <i>Physik&nbsp;I–II</i> only the best two grades are included in the total grade, with a wieght of 10&nbsp;% each.",
 				math : "",
-				lab_course : "",
 				minor : "The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href=\"/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)",
 			}
 		}
