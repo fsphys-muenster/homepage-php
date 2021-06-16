@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
 	'use strict';
 
-	var DATE = '2017-09-11';
-	var ER_VERSION = 'WS 2016/2017';
+
+	//var FSPHYS_LOCALE = "de-DE";
+	var DATE = '2021-05-27';
+	//var GC_VERSION = 'SS 2020/2021';
 	var ID_PREFIX = 'fsphys_gc_';
 	var INPUT_FIELDS = [
+		'er_version',
 		'physics_1',
 		'physics_2',
 		'physics_3',
@@ -18,39 +21,130 @@ document.addEventListener('DOMContentLoaded', function() {
 		'minor_3_weight',
 		'quantum_mechanics',
 		'signal_processing',
+		'computational_physics',
 		'structure_of_matter',
+		'lab_course_1',
 		'lab_course_2',
 		'statistical_physics',
 		'bachelor_thesis'
-	]
+	];
+	var DEFAULT_WEIGHTS = {
+			20161117 : {
+				minor:               12,
+				quantum_mechanics:    7,
+				signal_processing:    7,
+				computational_physics:    0,
+				structure_of_matter: 12,
+				lab_course_1:         0,
+				lab_course_2:         9,
+				statistical_physics: 10,
+				bachelor_thesis:     10,
+				physics_X: 11,
+				math_X: 11,
+			},
+			20210412 : {
+				minor:               10,
+				quantum_mechanics:    7,
+				signal_processing:    6,
+				computational_physics:   4,
+				structure_of_matter: 10,
+				lab_course_1:         4,
+				lab_course_2:         9,
+				statistical_physics: 10,
+				bachelor_thesis:     10,
+				physics_X: 10,
+				physics_3: 10,
+				math_2: 5,
+				math_3: 5,
+			},
+	};
+	var HINTS = {
+		"de-DE": {
+			20161117 : {
+				physics : "Aus den Modulen <i>Physik&nbsp;I–III</i> werden nur die zwei besten Noten mit einer Gewichtung von jeweils 11&nbsp;% in die Gesamtnote mit einbezogen.",
+				math : "Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und <i>Integrationstheorie</i> geht mit 11&nbsp;% in die Gesamtnote ein. (<i>Mathe für Physiker&nbsp;I</i> ist eine Studienleistung, hat also 0&nbsp;%.)",
+				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der <a href=\"/Physik/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">Prüfungsordnung</a> gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+			},
+			20210412 : {
+				physics : "Aus den Modulen <i>Physik&nbsp;I–II</i> werden nur die beste Note mit einer Gewichtung von jeweils 10&nbsp;% in die Gesamtnote mit einbezogen.",
+				math : "",
+				minor : "Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der <a href=\"/Physik/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">Prüfungsordnung</a> gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&nbsp;B. im Fall <i>Informatik</i>: 50–50.)"
+			}
+		},
+		"en-US":{
+			20161117 : {
+				physics : "From the modules <i>Physics&#160;I–III</i>, only the best two grades are included in the total grade, with a weight of 11&#160;% each.",
+				math : "Only the best grade from the modules <i>Fundamental Mathematics</i> and <i>Integration Theory</i> enters the total grade with a weight of 11&#160;%. (<i>Math for Physicists&#160;I</i> is not an “exam” according to the regulations, so it counts with 0&#160;%.)",
+				minor : "The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href=\"/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)",
+				lab_course : "The <i>Laboratory Course&#160;I</i> does not enter into the total grade."
+			},
+			20210412 : {
+				physics : "From the modules <i>Physik&nbsp;I–II</i> only the best two grades are included in the total grade, with a wieght of 10&nbsp;% each.",
+				math : "",
+				lab_course : "",
+				minor : "The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href=\"/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)",
+			}
+		}
+	};
 
 	var total_grade = 0;
 	var exams = {
 		// weights of the individual module grades towards the total grade
 		// (percentages)
 		weights: {
-			minor:               12,
-			quantum_mechanics:    7,
-			signal_processing:    7,
-			structure_of_matter: 12,
-			lab_course_2:         9,
-			statistical_physics: 10,
-			bachelor_thesis:     10
+				minor:               12,
+				quantum_mechanics:    7,
+				signal_processing:    7,
+				structure_of_matter: 12,
+				lab_course_2:         9,
+				statistical_physics: 10,
+				bachelor_thesis:     10
 		},
+		hints : {
+			physics : "",
+			math : "",
+			minor : "",
+			lab_course : ""
+		},
+		version : 20161117,
 
 		update: function(user_input) {
+			var version = user_input.er_version;
+
+			// Copy dict so the original is not edited lateron
+			// Syntax: See e.g. https://stackoverflow.com/a/54460487/8575607
+			this.weights = {...DEFAULT_WEIGHTS[version]};
+			
+			// Hide irrelevant fields
+			for (var exam in this.weights) {
+				var text_el = document.getElementById(ID_PREFIX + exam + '_weight');
+				if(text_el !== null)
+					text_el.parentNode.hidden = this.weights[exam] == 0;
+			}
+
 			var weights = this.weights;
 			// special cases: Physics I–III, Math II–III and the minor
-			var physics_weights = this.best_of(
-				['physics_1', 'physics_2', 'physics_3'], 2, 11, user_input);
+			var physics_weights;
+			if(version == 20161117) {
+			 	physics_weights= this.best_of(
+				['physics_1', 'physics_2', 'physics_3'], 2, this.weights["physics_X"], user_input);
+				var math_weights = this.best_of(
+				['math_2', 'math_3'], 1, this.weights["math_X"], user_input);
+				for (name in math_weights) {
+					weights[name] = math_weights[name];
+				}
+			}
+			else if(version ==20210412) {
+			 	physics_weights= this.best_of(
+				['physics_1', 'physics_2'], 1, this.weights["physics_X"], user_input);
+			}
 			for (name in physics_weights) {
 				weights[name] = physics_weights[name];
+			}	
+			for (name in HINTS[FSPHYS_LOCALE][version]) {
+				this.hints[name] = HINTS[FSPHYS_LOCALE][version][name];
 			}
-			var math_weights = this.best_of(
-				['math_2', 'math_3'], 1, 11, user_input);
-			for (name in math_weights) {
-				weights[name] = math_weights[name];
-			}
+			
 			weights.minor_1 = user_input.minor_1_weight;
 			weights.minor_2 = user_input.minor_2_weight;
 			weights.minor_3 = user_input.minor_3_weight;
@@ -79,6 +173,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		try {
 			var url_fragment = decodeURIComponent(location.hash.substring(1));
 			user_input = JSON.parse(url_fragment);
+			if (!("er_version" in user_input)) {
+				user_input["er_version"] = 20161117;
+			}
 			INPUT_FIELDS.forEach(function(field) {
 				var input = document.getElementById(ID_PREFIX + field);
 				input.value = user_input[field];
@@ -86,16 +183,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			// update for consistency
 			update();
 			// set document title to distinguish bookmarks
+			var loc = "de-DE";
 			switch (FSPHYS_LOCALE) {
 				case 'en-US':
 					var title_text = 'Saved bachelor’s grade: ';
+					loc = "en-US";
 					break;
 				case 'de-DE':
 				default:
+					loc = "de-DE";
 					var title_text = 'Gespeicherte Bachelor-Note: ';
 					break;
 			}
-			var total_grade_str = total_grade.toLocaleString(FSPHYS_LOCALE,
+			var total_grade_str = total_grade.toLocaleString(loc,
 					{minimumFractionDigits: 2, maximumFractionDigits: 2});
 			var re = /\[.+\]/;
 			if (re.test(document.title)) {
@@ -137,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		// total grade
 		total_grade = 0;
 		for (var exam in weights) {
-			if (exam.indexOf('minor_') !== 0) {
+			if (exam.indexOf('minor_') !== 0 && user_input[exam] !== undefined) {
 				total_grade += user_input[exam] * weights[exam];
 			}
 		}
@@ -146,7 +246,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		// write (possibly updated) weight information to DOM
 		for (var exam in exams.weights) {
 			var text_el = document.getElementById(ID_PREFIX + exam + '_weight');
-			text_el.textContent = exams.weights[exam];
+			if(text_el !== null)
+				text_el.textContent = exams.weights[exam];
+		}
+		// write (possibly updated) hint information to DOM
+		for (var hint in exams.hints) {
+			var text_el = document.getElementById(ID_PREFIX + hint + '_hint');
+			if(text_el !== null)
+				text_el.innerHTML= exams.hints[hint];
 		}
 		// write calculated grades to DOM
 		document.getElementById(ID_PREFIX + 'minor').textContent = minor_grade;
@@ -170,7 +277,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	window.addEventListener('hashchange', load_url_data);
 	// print version information
 	document.getElementById(ID_PREFIX + 'version').textContent = DATE;
-	document.getElementById(ID_PREFIX + 'er_version').textContent = ER_VERSION;
 	// update on user input
 	var gc_form = document.getElementById(ID_PREFIX + 'form');
 	gc_form.addEventListener('input', update);

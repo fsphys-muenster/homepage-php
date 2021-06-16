@@ -1,8 +1,14 @@
 <h2>Calculating the average grade in the <abbr title="Bachelor of Science">B.&#160;Sc.</abbr> Physics program at <abbr title="Westfälische Wilhelms-Universität">WWU</abbr> Münster</h2>
-<p><small>Version: <span id="fsphys_gc_version">2016-11-17</span>, exam regulations version: from <span id="fsphys_gc_er_version">WS 2016/2017</span></small></p>
 <noscript><p class="fsphys_error"><strong><a href="https://en.wikipedia.org/wiki/JavaScript" class="ext" target="_blank">JavaScript</a> must be activated in your browser in order to use the grade calculator! Unfortunately, no calculations can be executed without JavaScript.</strong></p></noscript>
 <p>With this little tool, the final average grade for the bachelor’s program can be calculated. This can be done by simply entering a corresponding grade for each module. If there is no official grade yet, an expected one must be entered.</p>
 <div id="fsphys_gc_form">
+<p><small>Version: <span id="fsphys_gc_version">2021-05-27</span></small></p>
+<p>PO-Version: 
+	<select id="fsphys_gc_er_version">
+		<option value=20161117 >Since WS 2016/2017</option>
+		<option value=20210412 >Since WS 2020/2021</option>
+	</select>
+</p>
 <table>
   <colgroup><col style="width: 35%;" /><col /><col /><col style="width: 35%;" /></colgroup>
   <thead>
@@ -18,7 +24,7 @@
       <td><label for="fsphys_gc_physics_1">Physics&#160;I</label></td>
       <td><input id="fsphys_gc_physics_1" min="1" max="4" step="0.1" value="4" type="number" /></td>
       <td id="fsphys_gc_physics_1_weight" class="fsphys_gc_weight">11</td>
-      <td rowspan="3">From the modules <i>Physics&#160;I–III</i>, only the best two grades are included in the total grade, with a weight of 11&#160;% each.</td>
+      <td id=fsphys_gc_physics_hint rowspan="3">From the modules <i>Physics&#160;I–III</i>, only the best two grades are included in the total grade, with a weight of 11&#160;% each.</td>
     </tr>
     <tr>
       <td><label for="fsphys_gc_physics_2">Physics&#160;II</label></td>
@@ -35,7 +41,7 @@
       (Math for Physicists&#160;II)</label></td>
       <td><input id="fsphys_gc_math_2" min="1" max="4" step="0.1" value="4" type="number" /></td>
       <td id="fsphys_gc_math_2_weight" class="fsphys_gc_weight">11</td>
-      <td rowspan="2">Only the best grade from the modules <i>Fundamental Mathematics</i> and <i>Integration Theory</i> enters the total grade with a weight of 11&#160;%. (<i>Math for Physicists&#160;I</i> is not an “exam” according to the regulations, so it counts with 0&#160;%.)</td>
+      <td id=fsphys_gc_math_hint rowspan="2">Only the best grade from the modules <i>Fundamental Mathematics</i> and <i>Integration Theory</i> enters the total grade with a weight of 11&#160;%. (<i>Math for Physicists&#160;I</i> is not an “exam” according to the regulations, so it counts with 0&#160;%.)</td>
     </tr>
     <tr>
       <td><label for="fsphys_gc_math_3">Integration Theory<br />
@@ -45,7 +51,7 @@
     </tr>
     <tr>
       <td colspan="3">Interdisciplinary Studies</td>
-      <td rowspan="5">The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href="/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html" class="ext" target="_blank">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)</td>
+      <td  id=fsphys_gc_minor_hint rowspan="5">The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href="/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html" class="ext" target="_blank">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)</td>
     </tr>
     <tr class="fsphys_gc_indent">
       <td><label for="fsphys_gc_minor_1">Exam&#160;1</label></td>
@@ -80,16 +86,28 @@
       <td></td>
     </tr>
     <tr>
+        <td><label for=fsphys_gc_computational_physics>Computational Physics</label></td>
+        <td><input id=fsphys_gc_computational_physics type=number min=1 max=4 step=0.1 value=4></td>
+        <td id=fsphys_gc_computational_physics_weight class=fsphys_gc_weight>7</td>
+        <td></td>
+    </tr>
+    <tr>
       <td><label for="fsphys_gc_structure_of_matter">Structure of Matter</label></td>
       <td><input id="fsphys_gc_structure_of_matter" min="1" max="4" step="0.1" value="4" type="number" /></td>
       <td id="fsphys_gc_structure_of_matter_weight" class="fsphys_gc_weight">12</td>
       <td></td>
     </tr>
     <tr>
+      <td><label for=fsphys_gc_lab_course_1>Laboratory Course&#160;I</label></td>
+      <td><input id=fsphys_gc_lab_course_1 type=number min=1 max=4 step=0.1 value=4></td>
+      <td id=fsphys_gc_lab_course_1_weight class=fsphys_gc_weight>9</td>
+      <td id=fsphys_gc_lab_course_hint rowspan="2">The <i>Laboratory Course&#160;I</i> does not enter into the total grade.</td>
+    </tr>
+    <tr>
       <td><label for="fsphys_gc_lab_course_2">Laboratory Course&#160;II</label></td>
       <td><input id="fsphys_gc_lab_course_2" min="1" max="4" step="0.1" value="4" type="number" /></td>
       <td id="fsphys_gc_lab_course_2_weight" class="fsphys_gc_weight">9</td>
-      <td>The <i>Laboratory Course&#160;I</i> does not enter into the total grade.</td>
+      <td></td>
     </tr>
     <tr>
       <td><label for="fsphys_gc_statistical_physics">Quantum Theory and Statistical Physics</label></td>
