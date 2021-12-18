@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				lab_course : "The <i>Laboratory Course&#160;I</i> does not enter into the total grade."
 			},
 			20210412 : {
-				physics : "From the modules <i>Physik&nbsp;I–II</i> only the best two grades are included in the total grade, with a wieght of 10&nbsp;% each.",
+				physics : "From the modules <i>Physik&nbsp;I–II</i> only the best grade is included in the total grade, with a weight of 10&nbsp;% each.",
 				math : "",
 				lab_course : "",
 				minor : "The grade for the module <i>Interdisciplinary Studies</i> is formed, depending on the subject, as described in the <a href=\"/Physik/en/Studieren/Studiengaenge/InfoPhBSc.html\" class=\"ext\" target=\"_blank\">exam regulations</a>. (The weights for the individual exams have to be entered manually. E.&#160;g. in the case of <i>Computer Science</i>: 50–50.)",
@@ -158,7 +158,11 @@ document.addEventListener('DOMContentLoaded', function() {
 				return {exam: key, grade: user_input[key]};
 			});
 			grades.sort(function(a, b) {
-				return a.grade - b.grade;
+				var sc = 1
+				// grades with values 0 are to be weight less than actual grades
+				if(a.grade===0 || b.grade ===0)
+					sc = -1
+				return (a.grade - b.grade)*sc;
 			});
 			var weights_set = {};
 			grades.forEach(function(el, idx) {
@@ -224,24 +228,37 @@ document.addEventListener('DOMContentLoaded', function() {
 		var weights = exams.weights;
 		// minor grade
 		var minor_grade = 0;
+		var minor_weight_sum = 0;
 		for (var exam in weights) {
 			// build minor grade from values starting with 'minor_'
 			if (exam.indexOf('minor_') === 0) {
 				minor_grade += user_input[exam] * weights[exam];
+				if(user_input[exam] != 0)
+					minor_weight_sum +=weights[exam];
 			}
 		}
-		minor_grade /= 100;
+		if(minor_weight_sum != 0)
+			minor_grade /= minor_weight_sum;
+		else
+			minor_grade = 0
 		user_input.minor = minor_grade;
 		minor_grade = minor_grade.toLocaleString(FSPHYS_LOCALE,
 			{minimumFractionDigits: 2, maximumFractionDigits: 2});
 		// total grade
 		total_grade = 0;
+		var total_weight_sum =0;
 		for (var exam in weights) {
 			if (exam.indexOf('minor_') !== 0 && user_input[exam] !== undefined) {
 				total_grade += user_input[exam] * weights[exam];
+				if(user_input[exam] != 0)
+					total_weight_sum += weights[exam];
 			}
 		}
-		total_grade = (total_grade / 100).toLocaleString(FSPHYS_LOCALE,
+		if(total_weight_sum != 0)
+			total_grade = (total_grade / total_weight_sum)
+		else
+			total_grade = 0	
+		total_grade = total_grade.toLocaleString(FSPHYS_LOCALE,
 			{minimumFractionDigits: 2, maximumFractionDigits: 2});
 		// write (possibly updated) weight information to DOM
 		for (var exam in exams.weights) {
