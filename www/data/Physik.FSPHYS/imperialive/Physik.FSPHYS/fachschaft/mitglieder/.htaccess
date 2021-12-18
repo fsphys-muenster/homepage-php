@@ -1,7 +1,7 @@
 <Files "index.html">
-	AddHandler php71-script .html
+	AddHandler php74-script .html
 </Files>
 <Files "ehemalige_ab_ss_2012.html">
-	AddHandler php71-script .html
+	AddHandler php74-script .html
 </Files>
 
