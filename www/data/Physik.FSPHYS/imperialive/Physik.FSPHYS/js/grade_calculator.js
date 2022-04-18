@@ -295,6 +295,25 @@ document.addEventListener('DOMContentLoaded', function() {
 	// update on user input
 	var gc_form = document.getElementById(ID_PREFIX + 'form');
 	gc_form.addEventListener('input', update);
+	
+	// Add reset buttons
+	INPUT_FIELDS.forEach(function(field) {
+		if (field == 'er_version' || field.includes('_weight'))
+			return;
+		
+		var input = document.getElementById(ID_PREFIX + field);
+
+		var button = document.createElement("button");
+		button.innerHTML = "x";
+		
+		button.onclick = () => {
+			input.value = 0;
+			update();
+		};
+		
+		input.parentNode.appendChild(button);
+	});
+	
 	// assign action to save button
 	document.getElementById(ID_PREFIX + 'save').onclick = write_url_fragment;
 	// run update to initialize input_data and for consistency
