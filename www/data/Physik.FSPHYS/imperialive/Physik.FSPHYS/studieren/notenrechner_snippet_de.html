@@ -1,131 +1,166 @@
-<h2>Berechnung der Durchschnittsnote im <abbr title="Bachelor of Science">B.&#160;Sc.</abbr> Physik an der <abbr title="Westfälischen Wilhelms-Universität">WWU</abbr> Münster</h2>
-<noscript><p class="fsphys_error"><strong>Zur Verwendung des Notenrechners muss im Browser <a href="https://de.wikipedia.org/wiki/JavaScript" class="ext" target="_blank">JavaScript</a> aktiviert sein! Ohne JavaScript können leider keine Berechnungen durchgeführt werden.</strong></p></noscript>
-<p>Mit diesem kleinen Tool kann die endgültige Durchschnittsnote im Bachelor berechnet werden. Dafür muss lediglich für jedes Modul entsprechend eine Note eingetragen werden. Falls diese noch nicht feststeht, muss eine erwartete Note angegeben werden.</p>
+<h2>Berechnung der Durchschnittsnote im <abbr title="Bachelor of Science">B.&#160;Sc.</abbr> Physik an der <abbr
+    title="Westfälischen Wilhelms-Universität">WWU</abbr> Münster</h2>
+<noscript>
+  <p class="fsphys_error"><strong>Zur Verwendung des Notenrechners muss im Browser <a
+        href="https://de.wikipedia.org/wiki/JavaScript" class="ext" target="_blank">JavaScript</a> aktiviert sein! Ohne
+      JavaScript können leider keine Berechnungen durchgeführt werden.</strong></p>
+</noscript>
+<p>Mit diesem kleinen Tool kann die endgültige Durchschnittsnote im Bachelor berechnet werden. Dafür muss lediglich für
+  jedes Modul entsprechend eine Note eingetragen werden. Falls diese noch nicht feststeht, muss eine erwartete Note
+  angegeben werden.</p>
 <div id="fsphys_gc_form">
-<p><small>Version: <span id="fsphys_gc_version">2021-05-27</span></small></p>
-<p>PO-Version: 
-	<select id="fsphys_gc_er_version">
-		<option value=20161117 >Ab WS 2016/2017</option>
-		<option value=20210412 >Ab WS 2020/2021</option>
-  </select>
-</p>
-<table>
-  <colgroup><col style="width: 35%;" /><col /><col /><col style="width: 35%;" /></colgroup>
-  <thead>
-    <tr>
-      <th scope="col">Modul</th>
-      <th scope="col">Note</th>
-      <th scope="col">Gewichtung nach <a href="/Physik/Studieren/Studiengaenge/InfoPhBSc.html" class="ext" target="_blank"><abbr title="Prüfungsordnung">PO</abbr></a>&#160;(%)</th>
-      <th scope="col">Hinweise</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><label for="fsphys_gc_physics_1">Physik&#160;I</label></td>
-      <td><input id="fsphys_gc_physics_1" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_physics_1_weight" class="fsphys_gc_weight">11</td>
-      <td id=fsphys_gc_physics_hint rowspan="3">Aus den Modulen <i>Physik&#160;I–III</i> werden nur die zwei besten Noten mit einer Gewichtung von jeweils 11&#160;% in die Gesamtnote mit einbezogen.</td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_physics_2">Physik&#160;II</label></td>
-      <td><input id="fsphys_gc_physics_2" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_physics_2_weight" class="fsphys_gc_weight">11</td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_physics_3">Physik&#160;III</label></td>
-      <td><input id="fsphys_gc_physics_3" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_physics_3_weight" class="fsphys_gc_weight">0</td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_math_2">Mathematische Grundlagen<br />
-      (Mathe für Physiker&#160;II)</label></td>
-      <td><input id="fsphys_gc_math_2" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_math_2_weight" class="fsphys_gc_weight">11</td>
-      <td id=fsphys_gc_math_hint rowspan="2">Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und <i>Integrationstheorie</i> geht mit 11&#160;% in die Gesamtnote ein. (<i>Mathe für Physiker&#160;I</i> ist eine Studienleistung, hat also 0&#160;%.)</td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_math_3">Integrationstheorie<br />
-      (Mathe für Physiker&#160;III)</label></td>
-      <td><input id="fsphys_gc_math_3" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_math_3_weight" class="fsphys_gc_weight">0</td>
-    </tr>
-    <tr>
-      <td colspan="3">Fachübergreifende Studien</td>
-      <td id=fsphys_gc_minor_hint rowspan="5">Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je nach Beschreibung in der <a href="/Physik/Studieren/Studiengaenge/InfoPhBSc.html" class="ext" target="_blank">Prüfungsordnung</a> gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen eigenhändig eingetragen werden. Z.&#160;B. im Fall <i>Informatik</i>: 50–50.)</td>
-    </tr>
-    <tr class="fsphys_gc_indent">
-      <td><label for="fsphys_gc_minor_1">Prüfungsleistung&#160;1</label></td>
-      <td><input id="fsphys_gc_minor_1" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td class="fsphys_gc_weight"><input id="fsphys_gc_minor_1_weight" min="0" max="100" value="50" type="number" /></td>
-    </tr>
-    <tr class="fsphys_gc_indent">
-      <td><label for="fsphys_gc_minor_2">Prüfungsleistung&#160;2</label></td>
-      <td><input id="fsphys_gc_minor_2" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td class="fsphys_gc_weight"><input id="fsphys_gc_minor_2_weight" min="0" max="100" value="50" type="number" /></td>
-    </tr>
-    <tr class="fsphys_gc_indent">
-      <td><label for="fsphys_gc_minor_3">Prüfungsleistung&#160;3</label></td>
-      <td><input id="fsphys_gc_minor_3" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td class="fsphys_gc_weight"><input id="fsphys_gc_minor_3_weight" min="0" max="100" value="0" type="number" /></td>
-    </tr>
-    <tr class="fsphys_gc_indent">
-      <td>Gesamtnote Nebenfach</td>
-      <td><output id="fsphys_gc_minor" for="fsphys_gc_minor_1 fsphys_gc_minor_2 fsphys_gc_minor_3 fsphys_gc_minor_1_weight fsphys_gc_minor_2_weight fsphys_gc_minor_3_weight">4,00</output></td>
-      <td id="fsphys_gc_minor_weight" class="fsphys_gc_weight">12</td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_quantum_mechanics">Atom- und Quantenphysik</label></td>
-      <td><input id="fsphys_gc_quantum_mechanics" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_quantum_mechanics_weight" class="fsphys_gc_weight">7</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_signal_processing">Messtechnik und Signalverarbeitung</label></td>
-      <td><input id="fsphys_gc_signal_processing" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_signal_processing_weight" class="fsphys_gc_weight">7</td>
-      <td></td>
-    </tr>
-    <tr>
+  <p><small>Version: <span id="fsphys_gc_version">2021-05-27</span></small></p>
+  <p>PO-Version:
+    <select id="fsphys_gc_er_version">
+      <option value=20161117>Ab WS 2016/2017</option>
+      <option value=20210412>Ab WS 2020/2021</option>
+    </select>
+  </p>
+  <table>
+    <colgroup>
+      <col style="width: 35%;" />
+      <col />
+      <col />
+      <col style="width: 35%;" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th scope="col">Modul</th>
+        <th scope="col">Note</th>
+        <th scope="col">Gewichtung nach <a href="/Physik/Studieren/Studiengaenge/InfoPhBSc.html" class="ext"
+            target="_blank"><abbr title="Prüfungsordnung">PO</abbr></a>&#160;(%)</th>
+        <th scope="col">Hinweise</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><label for="fsphys_gc_physics_1">Physik&#160;I</label></td>
+        <td><input id="fsphys_gc_physics_1" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_physics_1_weight" class="fsphys_gc_weight">11</td>
+        <td id=fsphys_gc_physics_hint rowspan="3">Aus den Modulen <i>Physik&#160;I–III</i> werden nur die zwei besten
+          Noten mit einer Gewichtung von jeweils 11&#160;% in die Gesamtnote mit einbezogen.</td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_physics_2">Physik&#160;II</label></td>
+        <td><input id="fsphys_gc_physics_2" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_physics_2_weight" class="fsphys_gc_weight">11</td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_physics_3">Physik&#160;III</label></td>
+        <td><input id="fsphys_gc_physics_3" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_physics_3_weight" class="fsphys_gc_weight">0</td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_math_2">Mathematische Grundlagen<br />
+            (Mathe für Physiker&#160;II)</label></td>
+        <td><input id="fsphys_gc_math_2" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_math_2_weight" class="fsphys_gc_weight">11</td>
+        <td id=fsphys_gc_math_hint rowspan="2">Nur die bessere Note der Module <i>Mathematische Grundlagen</i> und
+          <i>Integrationstheorie</i> geht mit 11&#160;% in die Gesamtnote ein. (<i>Mathe für Physiker&#160;I</i> ist
+          eine Studienleistung, hat also 0&#160;%.)
+        </td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_math_3">Integrationstheorie<br />
+            (Mathe für Physiker&#160;III)</label></td>
+        <td><input id="fsphys_gc_math_3" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_math_3_weight" class="fsphys_gc_weight">0</td>
+      </tr>
+      <tr>
+        <td colspan="3">Fachübergreifende Studien</td>
+        <td id=fsphys_gc_minor_hint rowspan="5">Bei dem Modul <i>Fachübergreifende Studien</i> wird die Gesamtnote je
+          nach Beschreibung in der <a href="/Physik/Studieren/Studiengaenge/InfoPhBSc.html" class="ext"
+            target="_blank">Prüfungsordnung</a> gebildet. (Die Gewichtungen für die einzelnen Prüfungsleistungen müssen
+          eigenhändig eingetragen werden. Z.&#160;B. im Fall <i>Informatik</i>: 50–50.)</td>
+      </tr>
+      <tr class="fsphys_gc_indent">
+        <td><label for="fsphys_gc_minor_1">Prüfungsleistung&#160;1</label></td>
+        <td><input id="fsphys_gc_minor_1" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td class="fsphys_gc_weight"><input id="fsphys_gc_minor_1_weight" min="0" max="100" value="50" type="number" />
+        </td>
+      </tr>
+      <tr class="fsphys_gc_indent">
+        <td><label for="fsphys_gc_minor_2">Prüfungsleistung&#160;2</label></td>
+        <td><input id="fsphys_gc_minor_2" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td class="fsphys_gc_weight"><input id="fsphys_gc_minor_2_weight" min="0" max="100" value="50" type="number" />
+        </td>
+      </tr>
+      <tr class="fsphys_gc_indent">
+        <td><label for="fsphys_gc_minor_3">Prüfungsleistung&#160;3</label></td>
+        <td><input id="fsphys_gc_minor_3" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td class="fsphys_gc_weight"><input id="fsphys_gc_minor_3_weight" min="0" max="100" value="0" type="number" />
+        </td>
+      </tr>
+      <tr class="fsphys_gc_indent">
+        <td>Gesamtnote Nebenfach</td>
+        <td><output id="fsphys_gc_minor"
+            for="fsphys_gc_minor_1 fsphys_gc_minor_2 fsphys_gc_minor_3 fsphys_gc_minor_1_weight fsphys_gc_minor_2_weight fsphys_gc_minor_3_weight">4,00</output>
+        </td>
+        <td id="fsphys_gc_minor_weight" class="fsphys_gc_weight">12</td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_quantum_mechanics">Atom- und Quantenphysik</label></td>
+        <td><input id="fsphys_gc_quantum_mechanics" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_quantum_mechanics_weight" class="fsphys_gc_weight">7</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_signal_processing">Messtechnik und Signalverarbeitung</label></td>
+        <td><input id="fsphys_gc_signal_processing" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_signal_processing_weight" class="fsphys_gc_weight">7</td>
+        <td></td>
+      </tr>
+      <tr>
         <td><label for=fsphys_gc_computational_physics>Computational Physics</label></td>
-        <td><input id=fsphys_gc_computational_physics type=number min=1 max=4 step=0.1 value=4></td>
+        <td><input id=fsphys_gc_computational_physics min="1" max="4" step="0.1" value="0" type="number"></td>
         <td id=fsphys_gc_computational_physics_weight class=fsphys_gc_weight>7</td>
         <td></td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_structure_of_matter">Struktur der Materie</label></td>
-      <td><input id="fsphys_gc_structure_of_matter" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_structure_of_matter_weight" class="fsphys_gc_weight">12</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><label for=fsphys_gc_lab_course_1>Experimentelle Übungen&nbsp;I/Physikalisches Grundpraktikum</label></td>
-      <td><input id=fsphys_gc_lab_course_1 type=number min=1 max=4 step=0.1 value=4></td>
-      <td id=fsphys_gc_lab_course_1_weight class=fsphys_gc_weight>9</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><label for=fsphys_gc_lab_course_2>Experimentelle Übungen&nbsp;II/Physikalisches Praktikum für Fortgeschrittene</label></td>
-      <td><input id="fsphys_gc_lab_course_2" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_lab_course_2_weight" class="fsphys_gc_weight">9</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_statistical_physics">Quantentheorie und Statistische Physik</label></td>
-      <td><input id="fsphys_gc_statistical_physics" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_statistical_physics_weight" class="fsphys_gc_weight">10</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><label for="fsphys_gc_bachelor_thesis">Examensmodul<br />
-      (Bachelor-Arbeit)</label></td>
-      <td><input id="fsphys_gc_bachelor_thesis" min="1" max="4" step="0.1" value="4" type="number" /></td>
-      <td id="fsphys_gc_bachelor_thesis_weight" class="fsphys_gc_weight">10</td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-<p style="font-size: larger;"><strong>Gesamtnote Bachelor:&#160;<output id="fsphys_gc_total" for="fsphys_gc_physics_1 fsphys_gc_physics_2 fsphys_gc_physics_3 fsphys_gc_math_2 fsphys_gc_math_3 fsphys_gc_minor_1 fsphys_gc_minor_2 fsphys_gc_minor_3 fsphys_gc_minor_1_weight fsphys_gc_minor_2_weight fsphys_gc_minor_3_weight fsphys_gc_quantum_mechanics fsphys_gc_signal_processing fsphys_gc_structure_of_matter fsphys_gc_lab_course_2 fsphys_gc_statistical_physics fsphys_gc_bachelor_thesis">4,00</output></strong></p>
-<p>Mit einem Klick auf den folgenden Knopf könnt ihr eure derzeitig eingegebenen Daten in der <a href="https://de.wikipedia.org/wiki/Uniform_Resource_Locator" class="ext" target="_blank">URL</a> „speichern“. Um die Daten später wieder laden zu können, müsst ihr die URL irgendwo sichern – ihr könnt z.&#160;B. nach Drücken des Knopfs ein Lesezeichen setzen.</p>
-<p><small>Hier noch einmal der Hinweis, dass sämtliche Daten auf eurem Gerät verbleiben. Die Daten werden im <a href="https://de.wikipedia.org/wiki/Fragmentbezeichner" class="ext" target="_blank">URL-Fragment</a> gespeichert, welches vom Browser nie an die aufgerufene Webseite übertragen wird.</small></p>
-<button id="fsphys_gc_save">Daten speichern (⇒ Lesezeichen kann danach gesetzt werden!)</button></div>
-<script type="text/javascript">let FSPHYS_LOCALE = 'de-DE';</script> <script type="text/javascript" src="/Physik.FSPHYS/js/grade_calculator.js"></script>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_structure_of_matter">Struktur der Materie</label></td>
+        <td><input id="fsphys_gc_structure_of_matter" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_structure_of_matter_weight" class="fsphys_gc_weight">12</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><label for=fsphys_gc_lab_course_1>Experimentelle Übungen&nbsp;I/Physikalisches Grundpraktikum</label></td>
+        <td><input id=fsphys_gc_lab_course_1 min="1" max="4" step="0.1" value="0" type="number"></td>
+        <td id=fsphys_gc_lab_course_1_weight class=fsphys_gc_weight>9</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><label for=fsphys_gc_lab_course_2>Experimentelle Übungen&nbsp;II/Physikalisches Praktikum für
+            Fortgeschrittene</label></td>
+        <td><input id="fsphys_gc_lab_course_2" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_lab_course_2_weight" class="fsphys_gc_weight">9</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_statistical_physics">Quantentheorie und Statistische Physik</label></td>
+        <td><input id="fsphys_gc_statistical_physics" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_statistical_physics_weight" class="fsphys_gc_weight">10</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><label for="fsphys_gc_bachelor_thesis">Examensmodul<br />
+            (Bachelor-Arbeit)</label></td>
+        <td><input id="fsphys_gc_bachelor_thesis" min="1" max="4" step="0.1" value="0" type="number" /></td>
+        <td id="fsphys_gc_bachelor_thesis_weight" class="fsphys_gc_weight">10</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size: larger;"><strong>Gesamtnote Bachelor:&#160;<output id="fsphys_gc_total"
+        for="fsphys_gc_physics_1 fsphys_gc_physics_2 fsphys_gc_physics_3 fsphys_gc_math_2 fsphys_gc_math_3 fsphys_gc_minor_1 fsphys_gc_minor_2 fsphys_gc_minor_3 fsphys_gc_minor_1_weight fsphys_gc_minor_2_weight fsphys_gc_minor_3_weight fsphys_gc_quantum_mechanics fsphys_gc_signal_processing fsphys_gc_structure_of_matter fsphys_gc_lab_course_2 fsphys_gc_statistical_physics fsphys_gc_bachelor_thesis">4,00</output></strong>
+  </p>
+  <p>Mit einem Klick auf den folgenden Knopf könnt ihr eure derzeitig eingegebenen Daten in der <a
+      href="https://de.wikipedia.org/wiki/Uniform_Resource_Locator" class="ext" target="_blank">URL</a> „speichern“. Um
+    die Daten später wieder laden zu können, müsst ihr die URL irgendwo sichern – ihr könnt z.&#160;B. nach Drücken des
+    Knopfs ein Lesezeichen setzen.</p>
+  <p><small>Hier noch einmal der Hinweis, dass sämtliche Daten auf eurem Gerät verbleiben. Die Daten werden im <a
+        href="https://de.wikipedia.org/wiki/Fragmentbezeichner" class="ext" target="_blank">URL-Fragment</a>
+      gespeichert, welches vom Browser nie an die aufgerufene Webseite übertragen wird.</small></p>
+  <button id="fsphys_gc_save">Daten speichern (⇒ Lesezeichen kann danach gesetzt werden!)</button>
+</div>
+<script type="text/javascript">let FSPHYS_LOCALE = 'de-DE';</script>
+<script type="text/javascript" src="/Physik.FSPHYS/js/grade_calculator.js"></script>
