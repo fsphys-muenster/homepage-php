@@ -7,7 +7,7 @@ ob_start();
 $ob_offset = 0;
 $started = false;
 
-function member_teaser_start(): void {
+function member_teaser_start_impl(): void {
 	global $started;
 	// since the person’s name & title are duplicated in the “alt” attribute
 	// of the img element, this function will be called several times and
@@ -34,7 +34,7 @@ RE;
 	}
 }
 
-function member_teaser_end(): void {
+function member_teaser_end_impl(): void {
 	global $started;
 	$started = false;
 }

@@ -1,5 +1,19 @@
 <?php
-namespace de\uni_muenster\fsphys;
+namespace {
+	// Prevent errors from teasers being included in full pages
+	function member_teaser_start(): void {
+		if (function_exists('member_teaser_start_impl')) {
+			member_teaser_start_impl();
+		}
+	}
+	function member_teaser_end(): void {
+		if (function_exists('member_teaser_end_impl')) {
+			member_teaser_end_impl();
+		}
+	}
+}
+
+namespace de\uni_muenster\fsphys {
 const LOG_EMAIL = 'fsphys@uni-muenster.de';
 // all fatal PHP runtime errors (category “error”)
 const E_CAT_ERROR = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR
@@ -124,3 +138,4 @@ register_shutdown_function(function() {
 	}
 });
 
+}
