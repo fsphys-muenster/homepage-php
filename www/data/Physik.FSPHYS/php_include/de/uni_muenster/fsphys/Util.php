@@ -76,9 +76,9 @@ class Util {
 		$first_char = mb_strtoupper(mb_substr($str, 0, 1));
 		return $first_char . mb_substr($str, 1);
 	}
-
+	
 	static function string_to_array(string $str): array {
-		return preg_split('//u', $str, NULL, PREG_SPLIT_NO_EMPTY);
+		return preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
 	}
 
 	static function starts_with(string $haystack, string $needle): bool {
