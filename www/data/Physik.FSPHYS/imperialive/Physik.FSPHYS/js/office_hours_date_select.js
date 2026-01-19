@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	let ws_lecture_end = new Date(ws_start.getFullYear() + 1, 1, 1);
 	let ss_lecture_end = new Date(current_year, 6, 20);
 	// get tab tags
-	let tabs = $('ul.element.tabs').children();
+	let tabs = $('ul.element.akkordeon').children();
 	if ((current_date >= ss_start && current_date < ss_lecture_end)
 		|| (current_date >= ws_start && current_date < ws_lecture_end)) {
 		tabClicks($(tabs.get(0)));
